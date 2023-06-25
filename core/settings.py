@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-s2v*ko$0$n&k^dy#t3h0i9i2t^$70l9l28*ez7-tgllzwk-hb0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['67.205.174.42']
+ALLOWED_HOSTS = ['147.182.215.149']
 
 
 # Application definition
@@ -108,8 +108,8 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'roydb2',
-        'USER': 'threeInOneUser',
+        'NAME': 'roydb1',
+        'USER': 'royuser',
         'PASSWORD': 'postgresql',
         'HOST': 'localhost',
         'PORT': '5432',
