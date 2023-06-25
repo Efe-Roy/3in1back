@@ -110,7 +110,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'roydb2',
         'USER': 'threeInOneApp',
-        'PASSWORD': 'postgres',
+        'PASSWORD': 'postgresql',
         'HOST': 'localhost',
         'PORT': '5432',
     }
