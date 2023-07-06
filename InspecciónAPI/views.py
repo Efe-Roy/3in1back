@@ -8,7 +8,21 @@ from rest_framework.status import (
 )
 from rest_framework.authentication import TokenAuthentication
 from .models import PoliceCompliant, UrbanControl, PoliceSubmissionLGGS, TrafficViolationCompared, TrafficViolationComparedMyColission, ComplaintAndOfficeToAttend, File2Return2dOffice
-from .serializers import PoliceCompliantSerializer, UrbanControlSerializer, PoliceSubmissionLGGSSerializer, TrafficViolationComparedSerializer, TrafficViolationComparedMyColissionSerializer,ComplaintAndOfficeToAttendSerializer, File2Return2dOfficeSerializer
+from .serializers import ( 
+    PoliceCompliantSerializer, ByIdPoliceCompliantSerializer, 
+    UrbanControlSerializer,ByIdUrbanControlSerializer, 
+    PoliceSubmissionLGGSSerializer, ByIdPoliceSubmissionLGGSSerializer, 
+    TrafficViolationComparedSerializer, ByIdTrafficViolationComparedSerializer,
+    TrafficViolationComparedMyColissionSerializer, ByIdTrafficViolationComparedMyColissionSerializer,
+    ComplaintAndOfficeToAttendSerializer, ByIdComplaintAndOfficeToAttendSerializer,
+    File2Return2dOfficeSerializer, ByIdFile2Return2dOfficeSerializer
+)
+from rest_framework.generics import (
+    ListAPIView, RetrieveAPIView, CreateAPIView,
+    UpdateAPIView, DestroyAPIView, GenericAPIView,
+    ListCreateAPIView
+)
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 # Create your views here.
 # PoliceSubmissionLGGSSerializer 
@@ -51,6 +65,14 @@ class PoliceCompliantDetailView(APIView):
         ById.delete()
         return Response(status= HTTP_204_NO_CONTENT)
     
+class PoliceCompliantPrivateView(UpdateAPIView):
+    permission_classes = (AllowAny,)
+    # permission_classes = (IsAuthenticated, )
+    serializer_class = ByIdPoliceCompliantSerializer
+    queryset = PoliceCompliant.objects.all()
+
+
+
 class UrbanControlView(APIView):
     authentication_classes = [TokenAuthentication]
 
@@ -91,6 +113,15 @@ class UrbanControlDetailView(APIView):
         ById.delete()
         return Response(status= HTTP_204_NO_CONTENT)
     
+class UrbanControlPrivateView(UpdateAPIView):
+    permission_classes = (AllowAny,)
+    # permission_classes = (IsAuthenticated, )
+    serializer_class = ByIdUrbanControlSerializer
+    queryset = UrbanControl.objects.all()
+    
+
+
+
 class PoliceSubmissionLGGSView(APIView):
     authentication_classes = [TokenAuthentication]
 
@@ -131,6 +162,16 @@ class PoliceSubmissionLGGSDetailView(APIView):
         ById.delete()
         return Response(status= HTTP_204_NO_CONTENT)
         
+class PoliceSubmissionLGGSPrivateView(UpdateAPIView):
+    permission_classes = (AllowAny,)
+    # permission_classes = (IsAuthenticated, )
+    serializer_class = ByIdPoliceSubmissionLGGSSerializer
+    queryset = PoliceSubmissionLGGS.objects.all()
+
+
+
+
+
 class TrafficViolationComparedView(APIView):
     authentication_classes = [TokenAuthentication]
 
@@ -171,6 +212,15 @@ class TrafficViolationComparedDetailView(APIView):
         ById.delete()
         return Response(status= HTTP_204_NO_CONTENT)
     
+class TrafficViolationComparedPrivateView(UpdateAPIView):
+    permission_classes = (AllowAny,)
+    # permission_classes = (IsAuthenticated, )
+    serializer_class = ByIdTrafficViolationComparedSerializer
+    queryset = TrafficViolationCompared.objects.all()
+
+
+
+
 class TrafficViolationComparedMyColissionView(APIView):
     authentication_classes = [TokenAuthentication]
 
@@ -210,7 +260,16 @@ class TrafficViolationComparedMyColissionDetailView(APIView):
         ById = self.get_object(pk)
         ById.delete()
         return Response(status= HTTP_204_NO_CONTENT)
-    
+
+class TrafficViolationComparedMyColissionPrivateView(UpdateAPIView):
+    permission_classes = (AllowAny,)
+    # permission_classes = (IsAuthenticated, )
+    serializer_class = ByIdTrafficViolationComparedMyColissionSerializer
+    queryset = TrafficViolationComparedMyColission.objects.all()
+
+
+
+
 class ComplaintAndOfficeToAttendView(APIView):
     authentication_classes = [TokenAuthentication]
 
@@ -251,6 +310,14 @@ class ComplaintAndOfficeToAttendDetailView(APIView):
         ById.delete()
         return Response(status= HTTP_204_NO_CONTENT)
     
+class ComplaintAndOfficeToAttendPrivateView(UpdateAPIView):
+    permission_classes = (AllowAny,)
+    # permission_classes = (IsAuthenticated, )
+    serializer_class = ByIdComplaintAndOfficeToAttendSerializer
+    queryset = ComplaintAndOfficeToAttend.objects.all()
+
+
+
 class File2Return2dOfficeView(APIView):
     authentication_classes = [TokenAuthentication]
 
@@ -291,3 +358,8 @@ class File2Return2dOfficeDetailView(APIView):
         ById.delete()
         return Response(status= HTTP_204_NO_CONTENT)
     
+class File2Return2dOfficePrivateView(UpdateAPIView):
+    permission_classes = (AllowAny,)
+    # permission_classes = (IsAuthenticated, )
+    serializer_class = ByIdFile2Return2dOfficeSerializer
+    queryset = File2Return2dOffice.objects.all()

@@ -8,7 +8,9 @@ from .serializers import (PqrsMainSerializer, EntityTypeSerializer,
                           NameTypeSerializer, AllPqrsSerializer, RestrictedPqrsMaintSerializer,
                           MediumResTypeSerializer, InnerFormPqrsMaintSerializer
                           )
-from .models import PqrsMain, EntityType, NameType, MediumResType
+from .models import PqrsMain, EntityType, NameType, MediumResType, FileResNum
+from Auth.models import Agent, Team
+
 from rest_framework.views import APIView
 from django.http import Http404
 from rest_framework.response import Response
@@ -39,11 +41,45 @@ class get_all_pqrs2(ListAPIView):
     serializer_class = AllPqrsSerializer
     queryset = PqrsMain.objects.all()
 
-class In_Form_pqrs(UpdateAPIView):
-    permission_classes = (AllowAny,)
-    serializer_class = InnerFormPqrsMaintSerializer
-    queryset = PqrsMain.objects.all()
+# class In_Form_pqrs(UpdateAPIView):
+#     permission_classes = (AllowAny,)
+#     serializer_class = InnerFormPqrsMaintSerializer
+#     queryset = PqrsMain.objects.all()
 
+class In_Form_pqrs(APIView):
+    def get_object(self, pk):
+        try:
+            return PqrsMain.objects.get(id=pk)
+        except PqrsMain.DoesNotExist:
+            raise Http404
+
+    def put(self, request, pk, format=None):
+        PqrsById = self.get_object(pk)
+
+        serializer = InnerFormPqrsMaintSerializer(PqrsById, data=request.data)
+        if serializer.is_valid():
+            print("erase", request.data["file_res"])
+
+            get_file = FileResNum.objects.all()
+
+            if get_file.exists():
+                last_file = FileResNum.objects.all().order_by('-id').first()
+                upId = last_file.id
+
+                newFile_res_num = FileResNum.objects.get(id=upId)
+                newFile_res_num.name = request.data["file_res"]
+                newFile_res_num.save()
+
+            else:
+                print("getIndex is None")
+                file_num = 1
+                d = "RR-" + "%04d" % (file_num,) + "-2023"
+                FileResNum.objects.create(name=d)
+                print(d)
+
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
 
 
 
@@ -52,13 +88,6 @@ class get_post_pqrs(APIView):
 
     def get(self, request, format=None):
         queryset = PqrsMain.objects.all()
-        user = self.request.user
-        # print("user", user)
-        if user.is_organisor:
-            queryset = PqrsMain.objects.all()
-        else:
-            queryset = PqrsMain.objects.filter(responsible_for_the_response__user=user)
-
         serializerPqrs = AllPqrsSerializer(queryset, many=True)
         # serializerPqrs = PqrsMainSerializer(queryset, many=True)
         return Response( serializerPqrs.data)
@@ -105,69 +134,61 @@ class CurrentFileNumView(APIView):
 
         if get_file.exists():
             print("Has Data")
-            # last_file = File.objects.filter(organisation=2).order_by('-id')[0]
             last_file = PqrsMain.objects.all().order_by('-id')[0]
-            file_num = int(last_file.file_num) + 1
-            d = "%04d" % ( file_num, )
+            # file_num = int(last_file.file_num) + 1
+
+            # string = "0001-2023"
+            string = last_file.file_num
+            parts = string.split("-")
+            number = parts[0]
+            print(number)
+            file_num = int(number) + 1
+            d = "%04d" % ( file_num, ) + "-2023"
+
+            # d = "%04d" % ( file_num, )
             print(d)
         else:
             print("Empty")
             file_num = 1
-            d = "%04d" % ( file_num, )
+            d = "%04d" % ( file_num, ) + "-2023"
+
+            # d = "%04d" % ( file_num, )
             print(d)
 
         return Response(d)
 
-# class FileResNumView(APIView):
-#     def get(self, request, format=None):
-#         get_file = PqrsMain.objects.all()
-
-
-#         if get_file.exists():
-#             print("Has Data")
-#             last_file = PqrsMain.objects.all().order_by('-id')[0]
-#             getIndex = last_file.file_res
-#             part = getIndex.split('-')
-#             desired_value = part[1]
-#             file_num = int(desired_value) + 1
-#             d ="RR-" + "%04d" % ( file_num, ) + "-2023"
-#             # RR-0001-2023
-#             print(d)
-#         else:
-#             print("Empty")
-#             file_num = 1
-#             d ="RR-" + "%04d" % ( file_num, ) + "-2023"
-#             print(d)
-
-
-#         return Response(d)
-
-
 class FileResNumView(APIView):
     def get(self, request, format=None):
-        get_file = PqrsMain.objects.all()
+
+        get_file = FileResNum.objects.all()
 
         if get_file.exists():
             print("Has Data")
-            last_file = PqrsMain.objects.all().order_by('-id').first()
-            getIndex = last_file.file_res
-
+            last_file = FileResNum.objects.all().order_by('-id').first()
+            getIndex = last_file.name
+            # print("xcx", getIndex)
+            
+            # do more
             if getIndex:
                 part = getIndex.split('-')
                 desired_value = part[1]
                 file_num = int(desired_value) + 1
                 d = "RR-" + "%04d" % (file_num,) + "-2023"
-                print(d)
+                # print(d)
+                print("new File Num", d)
             else:
                 print("getIndex is None")
                 file_num = 1
                 d = "RR-" + "%04d" % (file_num,) + "-2023"
-                # Handle the case where getIndex is None
+
         else:
-            print("Empty")
-            # file_num = 1
-            # d = "RR-" + "%04d" % (file_num,) + "-2023"
-            d = None
+            print("getIndex is None")
+            file_num = 1
+            d = "RR-" + "%04d" % (file_num,) + "-2023"
+            # FileResNum.objects.create(name=d)
             print(d)
+            
+        
 
         return Response(d)
+

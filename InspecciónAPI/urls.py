@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
-    PoliceCompliantView, PoliceCompliantDetailView, UrbanControlView,
-    UrbanControlDetailView, PoliceSubmissionLGGSView, PoliceSubmissionLGGSDetailView,
+    PoliceCompliantView, PoliceCompliantDetailView, PoliceCompliantPrivateView, UrbanControlView,
+    UrbanControlDetailView, UrbanControlPrivateView, PoliceSubmissionLGGSView, PoliceSubmissionLGGSDetailView,
     TrafficViolationComparedView, TrafficViolationComparedDetailView,
     TrafficViolationComparedMyColissionView, TrafficViolationComparedMyColissionDetailView,
     ComplaintAndOfficeToAttendView, ComplaintAndOfficeToAttendDetailView,
@@ -11,9 +11,11 @@ from .views import (
 urlpatterns = [
     path('police_compliant', PoliceCompliantView.as_view()),
     path('police_compliant/<pk>/', PoliceCompliantDetailView.as_view()),
+    path('police_compliant/private/<pk>/', PoliceCompliantPrivateView.as_view()),
 
     path('urban_control', UrbanControlView.as_view()),
     path('urban_control/<pk>/', UrbanControlDetailView.as_view()),
+    path('urban_control/private/<pk>/', UrbanControlPrivateView.as_view()),
 
     path('police_submission', PoliceSubmissionLGGSView.as_view()),
     path('police_submission/<pk>/', PoliceSubmissionLGGSDetailView.as_view()),

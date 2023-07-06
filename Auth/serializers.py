@@ -8,6 +8,13 @@ class UserSerializer(serializers.ModelSerializer):
         fields=['id', 'username', 'email', 'is_organisor', 'is_team', 'is_agent']
 
 
+class UserProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ['id', 'image']
+
+
 class SignupSerializer(serializers.ModelSerializer):
     password2=serializers.CharField(style={"input_type":"password"}, write_only=True)
     class Meta:
@@ -35,6 +42,31 @@ class SignupSerializer(serializers.ModelSerializer):
         return user
 
 
+class OperatorSignUpSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=User
+        fields=['username','email','password', 'is_agent', 'is_team']
+        extra_kwargs={
+            'password':{'write_only':True}
+        }
+    
+    def save(self, **kwargs):
+        user = User(
+            username=self.validated_data['username'],
+            email=self.validated_data['email']
+        )
+        password=self.validated_data['password']
+
+        user.set_password(password)
+        user.is_agent= self.validated_data['is_agent']
+        user.is_team= self.validated_data['is_team']
+        user.is_organisor = False
+        # user.is_active = False
+
+        user.save()
+        return user
+
+
 class TeamSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
 
@@ -45,8 +77,7 @@ class TeamSerializer(serializers.ModelSerializer):
     def get_user(self, obj):
         return UserSerializer(obj.user).data
 
-class ClientSerializer(serializers.ModelSerializer):
+class AgentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Agent
         fields = '__all__'
-

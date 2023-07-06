@@ -4,7 +4,7 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 django.setup()
 
-from pqrsAPI.models import EntityType, NameType, MediumResType
+from pqrsAPI.models import EntityType, NameType, MediumResType, StatusType
 from contratacionAPI.models import processType, acroymsType, typologyType, resSecType, StateType
 
 EntityData = [
@@ -233,6 +233,11 @@ mediumResData = [
   {"name": "viaticos"}
 ]
 
+StatusData = [
+    {"name": "In Progress"},
+    {"name": "Expire Soon"},
+    {"name": "Completed"}
+]
 
 for item in EntityData:
 
@@ -254,6 +259,13 @@ for item in mediumResData:
         name=item['name']
     )
     print("MediumResType completed")
+
+for item in StatusData:
+
+    StatusType.objects.create(
+        name=item['name']
+    )
+    print("StatusType completed")
 
 
 # ===================================  ======================================

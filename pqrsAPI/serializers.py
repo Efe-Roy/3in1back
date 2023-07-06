@@ -39,7 +39,7 @@ class AllPqrsSerializer(serializers.ModelSerializer):
     entity_or_position = serializers.SerializerMethodField()
     status_of_the_response = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
-    # responsible_for_the_response = serializers.SerializerMethodField()
+    # team = serializers.SerializerMethodField()
 
     class Meta:
         model = PqrsMain
@@ -60,8 +60,8 @@ class AllPqrsSerializer(serializers.ModelSerializer):
     def get_name(self, obj):
         return NameTypeSerializer(obj.name).data
     
-    # def get_responsible_for_the_response(self, obj):
-    #     return NameTypeSerializer(obj.responsible_for_the_response).data
+    # def get_team(self, obj):
+    #     return NameTypeSerializer(obj.team).data
 
 
 class RestrictedPqrsMaintSerializer(serializers.ModelSerializer):
@@ -69,9 +69,9 @@ class RestrictedPqrsMaintSerializer(serializers.ModelSerializer):
     class Meta:
         model = PqrsMain
         fields = ('id', 'date_of_entry', 'sender', 'entity_or_position', 'subject',
-                  'file_num', 'responsible_for_the_response', 'name', 'days_of_the_response', 'expiration_date'
-                # 'status_of_the_response', 'medium_of_the_response', 
-                #   'date_of_response', 'file_res'
+                  'file_num', 'responsible_for_the_response', 'name', 'days_of_the_response', 'expiration_date',
+                  'status_of_the_response'
+                    # 'medium_of_the_response', 'date_of_response', 'file_res'
                   )
 
 class InnerFormPqrsMaintSerializer(serializers.ModelSerializer):
