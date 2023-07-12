@@ -3,7 +3,7 @@ from django.urls import path, include
 from .views import (
     CustomAuthToken, UserListView, UserDetail, 
     get_all_team, UserProfileUpdate, UserProfileDetail,
-    CreateOperatorView
+    CreateOperatorView, get_all_agent
 )
 
 urlpatterns = [
@@ -19,5 +19,6 @@ urlpatterns = [
     path('api/users/update/', UserProfileUpdate.as_view()), #still under testing
 
     path('api/teams', get_all_team.as_view()),
+    path('api/agent', get_all_agent.as_view()),
 ]
 

@@ -123,3 +123,8 @@ class get_all_team(ListAPIView):
     permission_classes = (AllowAny,)
     serializer_class = TeamSerializer
     queryset = Team.objects.all()
+
+class get_all_agent(ListAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = AgentSerializer
+    queryset = Agent.objects.all()

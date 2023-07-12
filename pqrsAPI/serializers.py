@@ -48,7 +48,7 @@ class AllPqrsSerializer(serializers.ModelSerializer):
             'subject', 'file_num', 'responsible_for_the_response', 
             'name', 'days_of_the_response', 'expiration_date', 
             'status_of_the_response', 'medium_of_the_response', 
-            'date_of_response', 'file_res'
+            'date_of_response', 'file_res', 'comment', 'pdf'
         )
 
     def get_entity_or_position(self, obj):
@@ -78,4 +78,4 @@ class InnerFormPqrsMaintSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PqrsMain
-        fields = ( 'id', 'medium_of_the_response', 'comment', 'file_res' )
+        fields = ( 'id', 'medium_of_the_response', 'comment', 'file_res', 'pdf' )

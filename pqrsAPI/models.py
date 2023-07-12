@@ -5,7 +5,8 @@ from Auth.models import UserProfile, Agent, Team, User
 
 class PqrsMain(models.Model):
     date_of_entry = models.DateTimeField()
-    sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    # sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    sender = models.CharField(max_length=300, null=True, blank=True)
     entity_or_position = models.ForeignKey("EntityType", null=True, blank=True, on_delete=models.SET_NULL)
     subject = models.CharField(max_length=300, null=True, blank=True)
     file_num = models.CharField(max_length=300, null=True, blank=True)
@@ -16,8 +17,10 @@ class PqrsMain(models.Model):
     status_of_the_response = models.ForeignKey("StatusType", null=True, blank=True, on_delete=models.SET_NULL)
     medium_of_the_response = models.ForeignKey("MediumResType", null=True, blank=True, on_delete=models.SET_NULL)
     date_of_response = models.DateTimeField(auto_now_add=True)
+    
     file_res = models.CharField(max_length=300, null=True, blank=True)
     comment = models.CharField(max_length=300, null=True, blank=True)
+    pdf = models.FileField(null=True, blank=True, upload_to='pdfs/pqrs/')
     
 
 class FileResNum(models.Model):

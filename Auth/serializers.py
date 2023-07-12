@@ -78,6 +78,11 @@ class TeamSerializer(serializers.ModelSerializer):
         return UserSerializer(obj.user).data
 
 class AgentSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+
     class Meta:
         model = Agent
-        fields = '__all__'
+        fields = ('id', 'user')
+
+    def get_user(self, obj):
+        return UserSerializer(obj.user).data
