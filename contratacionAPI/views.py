@@ -18,7 +18,14 @@ from rest_framework.status import (
 )
 from rest_framework.authentication import TokenAuthentication
 
+from django.http import JsonResponse
+import json
 # Create your views here.
+
+def jsonRoy(request):
+    data= list(ContratacionMain.objects.values())
+    return JsonResponse(data, safe=False)
+
 class get_all_processType(ListAPIView):
     permission_classes = (AllowAny,)
     serializer_class = ProcessTypeSerializer
@@ -52,7 +59,7 @@ class get_post_contratacion(APIView):
         queryset = ContratacionMain.objects.all()
         serializerPqrs = ContratacionMainSerializer(queryset, many=True)
         return Response( serializerPqrs.data)
-
+    
     def post(self, request, format=None):
         serializer = AllContratacionMainSerializer(data=request.data)
         if serializer.is_valid():
