@@ -85,27 +85,27 @@ WSGI_APPLICATION = 'core.wsgi.application'
 #     }
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'admindb', 
-        'USER': 'postgres',
-        'PASSWORD': 'admin',
-        'HOST': 'localhost', 
-        'PORT': '5432',
-    }
-}
-
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'roydb2',
-#         'USER': 'royuser',
-#         'PASSWORD': 'roy12345',
-#         'HOST': 'localhost',
+#         'NAME': 'admindb', 
+#         'USER': 'postgres',
+#         'PASSWORD': 'admin',
+#         'HOST': 'localhost', 
 #         'PORT': '5432',
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'roydb2',
+        'USER': 'royuser',
+        'PASSWORD': 'roy12345',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
 
 AUTH_USER_MODEL = 'Auth.User'
 
