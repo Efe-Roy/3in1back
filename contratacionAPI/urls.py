@@ -14,6 +14,7 @@ urlpatterns = [
     path('get_post_contratacion', get_post_contratacion.as_view()),
     path('get_detail_contratacion/<pk>/', get_details_contratacion.as_view()),
 
+
     path('json', jsonRoy, name='json')
 
 ]

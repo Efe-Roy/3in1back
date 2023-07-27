@@ -20,6 +20,7 @@ from rest_framework.authentication import TokenAuthentication
 
 from django.http import JsonResponse
 import json
+from rest_framework import status
 # Create your views here.
 
 def jsonRoy(request):
@@ -94,4 +95,3 @@ class get_details_contratacion(APIView):
         PqrsById = self.get_object(pk)
         PqrsById.delete()
         return Response(status= HTTP_204_NO_CONTENT)
-

@@ -2,8 +2,45 @@ from django.db import models
 from Auth.models import UserProfile, Agent, Team, User
 
 # Create your models here.
+class ValueAdded(models.Model):
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name or ''
+
+class BpinProjectCode(models.Model):
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name or ''
+
+class ValueAffectedBpinProjCDP(models.Model):
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name or ''
+
+class BudgetItems(models.Model):
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name or ''
+
+class ArticleName(models.Model):
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name or ''
+
+class ItemValue(models.Model):
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name or ''
+    
 class ContratacionMain(models.Model):
     process = models.ForeignKey("processType", null=True, blank=True, on_delete=models.SET_NULL)
+    process_num = models.CharField(max_length=2300, null=True, blank=True)
     acroyms_of_contract = models.ForeignKey("acroymsType", null=True, blank=True, on_delete=models.SET_NULL)
     typology = models.ForeignKey("typologyType", null=True, blank=True, on_delete=models.SET_NULL)
     contact_no = models.CharField(max_length=2300, null=True, blank=True)
@@ -29,13 +66,26 @@ class ContratacionMain(models.Model):
     settlement_report = models.CharField(max_length=2310, null=True, blank=True)
     close_record_and_report_date = models.CharField(max_length=2310, null=True, blank=True)
     addition = models.CharField(max_length=2310, null=True, blank=True)
-    value_added = models.CharField(max_length=2310, null=True, blank=True)
+
+    # value_added = models.CharField(max_length=2310, null=True, blank=True)
+    value_added = models.ManyToManyField(ValueAdded)
+
     extra_time = models.CharField(max_length=2310, null=True, blank=True)
-    bpin_project_code = models.CharField(max_length=2310, null=True, blank=True)
-    value_affected_bpin_proj_cdp = models.CharField(max_length=2310, null=True, blank=True)
-    budget_items = models.CharField(max_length=2310, null=True, blank=True)
-    article_name = models.CharField(max_length=2310, null=True, blank=True)
-    item_value = models.CharField(max_length=2310, null=True, blank=True)
+    # bpin_project_code = models.CharField(max_length=2310, null=True, blank=True)
+    bpin_project_code = models.ManyToManyField(BpinProjectCode)
+
+    # value_affected_bpin_proj_cdp = models.CharField(max_length=2310, null=True, blank=True)
+    value_affected_bpin_proj_cdp = models.ManyToManyField(ValueAffectedBpinProjCDP)
+
+    # budget_items = models.CharField(max_length=2310, null=True, blank=True)
+    budget_items = models.ManyToManyField(BudgetItems)
+
+    # article_name = models.CharField(max_length=2310, null=True, blank=True)
+    article_name = models.ManyToManyField(ArticleName)
+
+    # item_value = models.CharField(max_length=2310, null=True, blank=True)
+    item_value = models.ManyToManyField(ItemValue)
+
     state = models.ForeignKey("StateType", null=True, blank=True, on_delete=models.SET_NULL)
     responsible_secretary = models.ForeignKey("resSecType", null=True, blank=True, on_delete=models.SET_NULL)
     name_supervisor_or_controller = models.CharField(max_length=2310, null=True, blank=True)
