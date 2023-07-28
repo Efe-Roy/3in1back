@@ -67,6 +67,8 @@ class ContratacionMain(models.Model):
     close_record = models.DateField(null=True, blank=True)
     report_date = models.DateField(null=True, blank=True)
     addition = models.CharField(max_length=2310, null=True, blank=True)
+    url_1 = models.CharField(max_length=2310, null=True, blank=True)
+    url_2 = models.CharField(max_length=2310, null=True, blank=True)
 
     # value_added = models.CharField(max_length=2310, null=True, blank=True)
     value_added = models.ManyToManyField(ValueAdded)

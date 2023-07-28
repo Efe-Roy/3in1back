@@ -84,9 +84,9 @@ class AllContratacionMainSerializer(serializers.ModelSerializer):
           'contract_date', 'start_date', 'finish_date', 'advance', 'report_secop_begins',
           'secop_contract_report', 'report_honest_antioquia', 'report_institute_web',
           'sia_observe_report', 'act_liquidation', 'settlement_report', 'close_record', 'report_date',
-          'addition', 'value_added', 'extra_time', 'bpin_project_code', 'value_affected_bpin_proj_cdp',
-          'budget_items', 'article_name', 'item_value', 'state', 'responsible_secretary',
-          'name_supervisor_or_controller', 'observations', 'contract_value_plus',
+          'addition', 'url_1', 'url_2', 'value_added', 'extra_time', 'bpin_project_code', 
+          'value_affected_bpin_proj_cdp','budget_items', 'article_name', 'item_value', 'state', 
+          'responsible_secretary', 'name_supervisor_or_controller', 'observations', 'contract_value_plus',
           'real_executed_value_according_to_settlement', 'file_status'
         )
 
@@ -151,7 +151,7 @@ class ContratacionMainSerializer(serializers.ModelSerializer):
           'contract_date', 'start_date', 'finish_date', 'advance', 'report_secop_begins',
           'secop_contract_report', 'report_honest_antioquia', 'report_institute_web',
           'sia_observe_report', 'act_liquidation', 'settlement_report', 'close_record', 'report_date',
-          'addition', 'value_added', 'extra_time', 'bpin_project_code', 'value_affected_bpin_proj_cdp',
+          'addition', 'url_1', 'url_2', 'value_added', 'extra_time', 'bpin_project_code', 'value_affected_bpin_proj_cdp',
           'budget_items', 'article_name', 'item_value', 'state', 'responsible_secretary',
           'name_supervisor_or_controller', 'observations', 'contract_value_plus',
           'real_executed_value_according_to_settlement', 'file_status'
