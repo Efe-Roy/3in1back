@@ -63,8 +63,9 @@ class ContratacionMain(models.Model):
     report_institute_web = models.DateField(null=True, blank=True)
     sia_observe_report = models.DateField(null=True, blank=True)
     act_liquidation = models.DateField(null=True, blank=True)
-    settlement_report = models.CharField(max_length=2310, null=True, blank=True)
-    close_record_and_report_date = models.CharField(max_length=2310, null=True, blank=True)
+    settlement_report = models.DateField(null=True, blank=True)
+    close_record = models.DateField(null=True, blank=True)
+    report_date = models.DateField(null=True, blank=True)
     addition = models.CharField(max_length=2310, null=True, blank=True)
 
     # value_added = models.CharField(max_length=2310, null=True, blank=True)
