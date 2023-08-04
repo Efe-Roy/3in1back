@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import PqrsMain, EntityType, NameType, MediumResType, StatusType
 
+from Auth.serializers import TeamSerializer
 from Auth.models import Team
 
 
@@ -39,7 +40,8 @@ class AllPqrsSerializer(serializers.ModelSerializer):
     entity_or_position = serializers.SerializerMethodField()
     status_of_the_response = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
-    # team = serializers.SerializerMethodField()
+    medium_of_the_response = serializers.SerializerMethodField()
+    responsible_for_the_response = serializers.SerializerMethodField()
 
     class Meta:
         model = PqrsMain
@@ -60,8 +62,11 @@ class AllPqrsSerializer(serializers.ModelSerializer):
     def get_name(self, obj):
         return NameTypeSerializer(obj.name).data
     
-    # def get_team(self, obj):
-    #     return NameTypeSerializer(obj.team).data
+    def get_medium_of_the_response(self, obj):
+        return MediumResTypeSerializer(obj.medium_of_the_response).data
+    
+    def get_responsible_for_the_response(self, obj):
+        return TeamSerializer(obj.responsible_for_the_response).data
 
 
 class RestrictedPqrsMaintSerializer(serializers.ModelSerializer):

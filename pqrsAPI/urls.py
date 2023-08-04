@@ -2,14 +2,16 @@ from django.urls import path
 from .views import (
 get_all_entityType, get_all_nameType, 
 get_post_pqrs, get_details_pqrs, get_all_pqrs2, CurrentFileNumView,
-FileResNumView, get_all_mediumRes, In_Form_pqrs
+FileResNumView, get_all_mediumRes, In_Form_pqrs, get_pqrs, get_all_statuType
 )
 
 urlpatterns = [
     path('all_nameType', get_all_nameType.as_view()),
     path('all_entityType', get_all_entityType.as_view()),
     path('all_mediumRes', get_all_mediumRes.as_view()),
+    path('all_statuType', get_all_statuType.as_view()),
     path('all_pqrs', get_post_pqrs.as_view()),
+    path('get_pqrs/', get_pqrs.as_view()),
     path('all_pqrs2', get_all_pqrs2.as_view()),
     path('pqrs_ById/<pk>/', get_details_pqrs.as_view()),
 

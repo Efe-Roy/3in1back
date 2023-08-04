@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.generics import (
     ListAPIView, RetrieveAPIView, CreateAPIView,
-    UpdateAPIView, DestroyAPIView
+    UpdateAPIView, DestroyAPIView, ListCreateAPIView
 )
 from .serializers import (
     ContratacionMainSerializer, ProcessTypeSerializer, AcroymsTypeSerializer,
@@ -21,6 +21,7 @@ from rest_framework.authentication import TokenAuthentication
 from django.http import JsonResponse
 import json
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 # Create your views here.
 
 def jsonRoy(request):
@@ -70,7 +71,56 @@ class get_post_contratacion(APIView):
         
 
 
+class CustomPagination(PageNumberPagination):
+    page_size_query_param = 'PageSize'
+    # max_page_size = 100
+
+class get_contratacion(ListCreateAPIView):
+    authentication_classes = [TokenAuthentication]
+    serializer_class = ContratacionMainSerializer
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+        queryset = ContratacionMain.objects.all()
+
+        # Filter based on request parameters
+        state_id = self.request.query_params.get('state_id', None)
+        if state_id:
+            queryset = queryset.filter(state_id=state_id)
+        
+        process_id = self.request.query_params.get('process_id', None)
+        if process_id:
+            queryset = queryset.filter(process_id=process_id)
+        
+        acroyms_of_contract_id = self.request.query_params.get('acroyms_of_contract_id', None)
+        if acroyms_of_contract_id:
+            queryset = queryset.filter(acroyms_of_contract_id=acroyms_of_contract_id)
+        
+        responsible_secretary_id = self.request.query_params.get('responsible_secretary_id', None)
+        if responsible_secretary_id:
+            queryset = queryset.filter(responsible_secretary_id=responsible_secretary_id)
+
+        contractor_identification = self.request.query_params.get('contractor_identification', None)
+        if contractor_identification:
+            queryset = queryset.filter(contractor_identification__icontains=contractor_identification)
+
+        contractor = self.request.query_params.get('contractor', None)
+        if contractor:
+            queryset = queryset.filter(contractor__icontains=contractor)
+       
+        sex = self.request.query_params.get('sex', None)
+        if sex:
+            queryset = queryset.filter(sex__icontains=sex)
+
+        bpin_project_code_names = self.request.query_params.getlist('bpin_project_code', None)
+        if bpin_project_code_names:
+            queryset = queryset.filter(bpin_project_code__name__in=bpin_project_code_names)
+
+        return queryset
+
 class get_details_contratacion(APIView):
+    authentication_classes = [TokenAuthentication]
+    
     def get_object(self, pk):
         try:
             return ContratacionMain.objects.get(id=pk)
@@ -85,7 +135,7 @@ class get_details_contratacion(APIView):
 
     def put(self, request, pk, format=None):
         ContratacionById = self.get_object(pk)
-        serializer = ContratacionMainSerializer(ContratacionById, data=request.data)
+        serializer = AllContratacionMainSerializer(ContratacionById, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

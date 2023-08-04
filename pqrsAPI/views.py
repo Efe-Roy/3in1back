@@ -2,13 +2,13 @@ from django.shortcuts import render
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.generics import (
     ListAPIView, RetrieveAPIView, CreateAPIView,
-    UpdateAPIView, DestroyAPIView
+    UpdateAPIView, DestroyAPIView, ListCreateAPIView
 )
 from .serializers import (PqrsMainSerializer, EntityTypeSerializer, 
                           NameTypeSerializer, AllPqrsSerializer, RestrictedPqrsMaintSerializer,
-                          MediumResTypeSerializer, InnerFormPqrsMaintSerializer
+                          MediumResTypeSerializer, InnerFormPqrsMaintSerializer, StatusTypeSerializer
                           )
-from .models import PqrsMain, EntityType, NameType, MediumResType, FileResNum
+from .models import PqrsMain, EntityType, NameType, MediumResType, FileResNum, StatusType
 from Auth.models import Agent, Team
 
 from rest_framework.views import APIView
@@ -19,6 +19,7 @@ from rest_framework.status import (
     HTTP_204_NO_CONTENT
 )
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.pagination import PageNumberPagination
 
 # Create your views here.
 class get_all_entityType(ListAPIView):
@@ -35,6 +36,11 @@ class get_all_mediumRes(ListAPIView):
     permission_classes = (AllowAny,)
     serializer_class = MediumResTypeSerializer
     queryset = MediumResType.objects.all()
+
+class get_all_statuType(ListAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = StatusTypeSerializer
+    queryset = StatusType.objects.all()
 
 class get_all_pqrs2(ListAPIView):
     permission_classes = (AllowAny,)
@@ -89,7 +95,6 @@ class get_post_pqrs(APIView):
     def get(self, request, format=None):
         queryset = PqrsMain.objects.all()
         serializerPqrs = AllPqrsSerializer(queryset, many=True)
-        # serializerPqrs = PqrsMainSerializer(queryset, many=True)
         return Response( serializerPqrs.data)
 
     def post(self, request, format=None):
@@ -99,6 +104,42 @@ class get_post_pqrs(APIView):
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
 
+class CustomPagination(PageNumberPagination):
+    page_size_query_param = 'PageSize'
+    # max_page_size = 100
+
+class get_pqrs(ListCreateAPIView):
+    authentication_classes = [TokenAuthentication]
+    serializer_class = AllPqrsSerializer
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+        queryset = PqrsMain.objects.all()
+
+        # Filter based on request parameters
+        name_id = self.request.query_params.get('name_id', None)
+        if name_id:
+            queryset = queryset.filter(name_id=name_id)
+        
+        entity_or_position_id = self.request.query_params.get('entity_or_position_id', None)
+        if entity_or_position_id:
+            queryset = queryset.filter(entity_or_position_id=entity_or_position_id)
+   
+        date_of_entry = self.request.query_params.get('date_of_entry', None)
+        if date_of_entry:
+            queryset = queryset.filter(date_of_entry__icontains=date_of_entry)
+   
+        file_num = self.request.query_params.get('file_num', None)
+        if file_num:
+            queryset = queryset.filter(file_num__icontains=file_num)
+   
+        responsible_user_id = self.request.query_params.get('responsible_user_id', None)
+        if responsible_user_id:
+            # Filter based on the 'user' field within the 'responsible_for_the_response' Team object
+            queryset = queryset.filter(responsible_for_the_response__user_id=responsible_user_id)
+        
+   
+        return queryset
 
 class get_details_pqrs(APIView):
     def get_object(self, pk):

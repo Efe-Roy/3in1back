@@ -21,6 +21,8 @@ from rest_framework.status import (
 from rest_framework.views import APIView
 from django.http import Http404
 
+from rest_framework.pagination import PageNumberPagination
+
 
 class SignupView(generics.GenericAPIView):
     serializer_class = SignupSerializer
@@ -71,6 +73,8 @@ class CustomAuthToken(ObtainAuthToken):
             "is_organisor": user.is_organisor,
             "is_team": user.is_team,
             "is_agent": user.is_agent,
+            "is_pqrs": user.is_pqrs,
+            "is_hiring": user.is_hiring,
             "username": user.username,
             "email": user.email,
         })
@@ -109,10 +113,21 @@ class UserProfileDetail(APIView):
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
 
 
+# class UserListView(generics.ListAPIView):
+#     permission_classes = (AllowAny,)
+#     serializer_class = UserSerializer
+#     queryset = User.objects.all()
+
+class CustomPageNumberPagination(PageNumberPagination):
+    page_size_query_param = 'PageSize'
+    # max_page_size = 100  # Set the maximum page size if needed
+
 class UserListView(generics.ListAPIView):
     permission_classes = (AllowAny,)
     serializer_class = UserSerializer
-    queryset = User.objects.all()
+    # queryset = User.objects.all()
+    queryset = User.objects.all().order_by('-date_joined')
+    pagination_class = CustomPageNumberPagination
 
 class UserDetail(generics.RetrieveAPIView):
     permission_classes = (AllowAny,)

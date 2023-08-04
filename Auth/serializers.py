@@ -5,7 +5,7 @@ from .models import User, UserProfile, Team, Agent
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model=User
-        fields=['id', 'username', 'email', 'is_organisor', 'is_team', 'is_agent']
+        fields=['id', 'username', 'email', 'is_organisor', 'is_team', 'is_agent', 'is_pqrs', 'is_hiring']
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -42,27 +42,58 @@ class SignupSerializer(serializers.ModelSerializer):
         return user
 
 
+# class OperatorSignUpSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model=User
+#         fields=['username','email','password', 'is_agent', 'is_team']
+#         extra_kwargs={
+#             'password':{'write_only':True}
+#         }
+    
+#     def save(self, **kwargs):
+#         user = User(
+#             username=self.validated_data['username'],
+#             email=self.validated_data['email']
+#         )
+#         password=self.validated_data['password']
+
+#         user.set_password(password)
+#         user.is_agent= self.validated_data['is_agent']
+#         user.is_team= self.validated_data['is_team']
+#         user.is_organisor = False
+#         # user.is_active = False
+
+#         user.save()
+#         return user
+
+
 class OperatorSignUpSerializer(serializers.ModelSerializer):
     class Meta:
-        model=User
-        fields=['username','email','password', 'is_agent', 'is_team']
-        extra_kwargs={
-            'password':{'write_only':True}
+        model = User
+        fields = ['username', 'email', 'password', 'is_agent', 'is_team', 'is_pqrs', 'is_hiring']
+        extra_kwargs = {
+            'password': {'write_only': True}
         }
     
     def save(self, **kwargs):
+        email = self.validated_data['email']
+
+        # Check if a user with the provided email already exists
+        if User.objects.filter(email=email).exists():
+            raise serializers.ValidationError("A user with this email already exists.")
+
         user = User(
             username=self.validated_data['username'],
-            email=self.validated_data['email']
+            email=email,
+            is_agent=self.validated_data['is_agent'],
+            is_team=self.validated_data['is_team'],
+            is_pqrs=self.validated_data['is_pqrs'],
+            is_hiring=self.validated_data['is_hiring'],
+            is_organisor=False,
         )
-        password=self.validated_data['password']
 
+        password = self.validated_data['password']
         user.set_password(password)
-        user.is_agent= self.validated_data['is_agent']
-        user.is_team= self.validated_data['is_team']
-        user.is_organisor = False
-        # user.is_active = False
-
         user.save()
         return user
 

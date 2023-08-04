@@ -234,9 +234,9 @@ mediumResData = [
 ]
 
 StatusData = [
-    {"name": "In Progress"},
-    {"name": "Expire Soon"},
-    {"name": "Completed"}
+    {"name": "EN PROGRESO"},
+    {"name": "CADUCARA PRONTO"},
+    {"name": "CERRADO"}
 ]
 
 for item in EntityData:

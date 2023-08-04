@@ -10,8 +10,13 @@ def upload_to(instance, filename):
 class User(AbstractUser):
     image = models.ImageField(_("Image"), upload_to=upload_to, default='profile/default.jpg')
     is_organisor = models.BooleanField(default=True)
+
     is_team = models.BooleanField(default=False)
+    is_pqrs = models.BooleanField(default=False)
+    
     is_agent = models.BooleanField(default=False)
+
+    is_hiring = models.BooleanField(default=False)
 
 class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
