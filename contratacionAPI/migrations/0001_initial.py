@@ -112,7 +112,7 @@ class Migration(migrations.Migration):
                 ('secop_contract_report', models.DateField(blank=True, null=True)),
                 ('report_honest_antioquia', models.DateField(blank=True, null=True)),
                 ('report_institute_web', models.DateField(blank=True, null=True)),
-                ('transparent_management_report', models.DateField(blank=True, null=True)),
+                ('sia_observe_report', models.DateField(blank=True, null=True)),
                 ('act_liquidation', models.DateField(blank=True, null=True)),
                 ('settlement_report', models.CharField(blank=True, max_length=2310, null=True)),
                 ('close_record_and_report_date', models.CharField(blank=True, max_length=2310, null=True)),

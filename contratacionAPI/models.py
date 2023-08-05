@@ -61,7 +61,7 @@ class ContratacionMain(models.Model):
     secop_contract_report = models.DateField(null=True, blank=True)
     report_honest_antioquia = models.DateField(null=True, blank=True)
     report_institute_web = models.DateField(null=True, blank=True)
-    transparent_management_report = models.DateField(null=True, blank=True) 
+    sia_observe_report = models.DateField(null=True, blank=True) #transparent_management_report
     act_liquidation = models.DateField(null=True, blank=True)
     settlement_report = models.DateField(null=True, blank=True)
     close_record = models.DateField(null=True, blank=True)

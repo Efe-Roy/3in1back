@@ -83,7 +83,7 @@ class AllContratacionMainSerializer(serializers.ModelSerializer):
           'birthday_date', 'blood_type', 'sex', 'object', 'worth', 'duration',
           'contract_date', 'start_date', 'finish_date', 'advance', 'report_secop_begins',
           'secop_contract_report', 'report_honest_antioquia', 'report_institute_web',
-          'transparent_management_report', 'act_liquidation', 'settlement_report', 'close_record', 'report_date',
+          'sia_observe_report', 'act_liquidation', 'settlement_report', 'close_record', 'report_date',
           'addition', 'url_1', 'url_2', 'value_added', 'extra_time', 'bpin_project_code', 
           'value_affected_bpin_proj_cdp','budget_items', 'article_name', 'item_value', 'state', 
           'responsible_secretary', 'name_supervisor_or_controller', 'observations', 'contract_value_plus',
@@ -150,7 +150,7 @@ class AllContratacionMainSerializer(serializers.ModelSerializer):
         instance.secop_contract_report = validated_data.get('secop_contract_report', instance.secop_contract_report)
         instance.report_honest_antioquia = validated_data.get('report_honest_antioquia', instance.report_honest_antioquia)
         instance.report_institute_web = validated_data.get('report_institute_web', instance.report_institute_web)
-        instance.transparent_management_report = validated_data.get('transparent_management_report', instance.transparent_management_report)
+        instance.sia_observe_report = validated_data.get('sia_observe_report', instance.sia_observe_report)
         instance.act_liquidation = validated_data.get('act_liquidation', instance.act_liquidation)
         instance.settlement_report = validated_data.get('settlement_report', instance.settlement_report)
         instance.close_record = validated_data.get('close_record', instance.close_record)
@@ -238,7 +238,7 @@ class ContratacionMainSerializer(serializers.ModelSerializer):
           'birthday_date', 'blood_type', 'sex', 'object', 'worth', 'duration',
           'contract_date', 'start_date', 'finish_date', 'advance', 'report_secop_begins',
           'secop_contract_report', 'report_honest_antioquia', 'report_institute_web',
-          'transparent_management_report', 'act_liquidation', 'settlement_report', 'close_record', 'report_date',
+          'sia_observe_report', 'act_liquidation', 'settlement_report', 'close_record', 'report_date',
           'addition', 'url_1', 'url_2', 'value_added', 'extra_time', 'bpin_project_code', 'value_affected_bpin_proj_cdp',
           'budget_items', 'article_name', 'item_value', 'state', 'responsible_secretary',
           'name_supervisor_or_controller', 'observations', 'contract_value_plus',

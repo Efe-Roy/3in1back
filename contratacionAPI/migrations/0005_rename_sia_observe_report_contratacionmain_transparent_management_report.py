@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.RenameField(
             model_name='contratacionmain',
             old_name='sia_observe_report',
-            new_name='transparent_management_report',
+            new_name='sia_observe_report',
         ),
     ]
