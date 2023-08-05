@@ -24,9 +24,31 @@ admin.site.register(resSecType)
 admin.site.register(StateType)
 
 
-admin.site.register(ValueAdded)
-admin.site.register(BpinProjectCode)
-admin.site.register(ValueAffectedBpinProjCDP)
-admin.site.register(BudgetItems)
-admin.site.register(ArticleName)
-admin.site.register(ItemValue)
+class ValueAddedAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+        ...
+admin.site.register(ValueAdded, ValueAddedAdmin)
+
+
+class BpinProjectCodeAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+        ...
+admin.site.register(BpinProjectCode, BpinProjectCodeAdmin)
+
+
+class ValueAffectedBpinProjCDPAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+        ...
+admin.site.register(ValueAffectedBpinProjCDP, ValueAffectedBpinProjCDPAdmin)
+
+
+class BudgetItemsAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+        ...
+admin.site.register(BudgetItems, BudgetItemsAdmin)
+
+
+class ArticleNameAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+        ...
+admin.site.register(ArticleName, ArticleNameAdmin)
+
+
+class ItemValueAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+        ...
+admin.site.register(ItemValue, ItemValueAdmin)

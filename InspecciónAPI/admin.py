@@ -4,9 +4,14 @@ from .models import (
     TrafficViolationCompared, TrafficViolationComparedMyColission,
     ComplaintAndOfficeToAttend, File2Return2dOffice
 )
+from import_export.admin import ImportExportModelAdmin
 
 # Register your models here.
-admin.site.register(PoliceCompliant)
+class PoliceCompliantAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+        ...
+admin.site.register(PoliceCompliant, PoliceCompliantAdmin)
+
+
 admin.site.register(PoliceSubmissionLGGS)
 admin.site.register(UrbanControl)
 admin.site.register(TrafficViolationCompared)

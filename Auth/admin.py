@@ -1,14 +1,28 @@
 from django.contrib import admin
 from .models import UserProfile, User, Agent, Team, Organisation
+from import_export.admin import ImportExportModelAdmin
+
+# Register your models here.
+class UserProfileAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+        ...
+admin.site.register(UserProfile, UserProfileAdmin)
 
 
-# @admin.register(UserProfile)
-# class ProfileAdmin(admin.ModelAdmin):
-#     list_display = ['user', 'date_of_birth', 'image']
+class UserAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+        ...
+admin.site.register(User, UserAdmin)
 
 
-admin.site.register(UserProfile)
-admin.site.register(User)
+class OrganisationAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+        ...
 admin.site.register(Organisation)
-admin.site.register(Agent)
-admin.site.register(Team)
+
+
+class AgentAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+        ...
+admin.site.register(Agent, AgentAdmin)
+
+
+class TeamAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+        ...
+admin.site.register(Team, TeamAdmin)
