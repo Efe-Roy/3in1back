@@ -88,7 +88,7 @@ class OTPVerificationView(APIView):
         user = User.objects.get(username=username)
         
         if user.otp_code == otp_code:
-            user.active = True
+            user.is_active = True
             user.otp_code = None
             user.save()
 
@@ -110,7 +110,7 @@ class CustomAuthToken(ObtainAuthToken):
         serializer.is_valid(raise_exception=True)
         user= serializer.validated_data['user']
 
-        if not user.active:
+        if not user.is_active:
             return Response({'message': 'Account is not active.'}, status=status.HTTP_401_UNAUTHORIZED)
 
         token, created = Token.objects.get_or_create(user=user)

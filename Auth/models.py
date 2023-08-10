@@ -8,9 +8,7 @@ def upload_to(instance, filename):
     return 'profile/{filename}'.format(filename=filename)
 
 class User(AbstractUser):
-    active = models.BooleanField(default=False)
     otp_code = models.CharField(max_length=6, null=True, blank=True)
-    email = models.EmailField(unique=True)
     
     image = models.ImageField(_("Image"), upload_to=upload_to, null=True, blank=True)
     is_organisor = models.BooleanField(default=True)

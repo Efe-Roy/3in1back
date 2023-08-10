@@ -30,10 +30,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     #Third Party App
+    'Auth',
     'pqrsAPI',
     'contratacionAPI',
     'InspecciónAPI',
-    'Auth',
+    
 
     # API SetUp
     'rest_framework',
@@ -90,7 +91,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'admindb', 
+#         'NAME': 'dbtest', 
 #         'USER': 'postgres',
 #         'PASSWORD': 'admin',
 #         'HOST': 'localhost', 
