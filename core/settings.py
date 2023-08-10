@@ -187,6 +187,12 @@ FILE_UPLOAD_HANDLERS = [
     'django.core.files.uploadhandler.TemporaryFileUploadHandler',
 ]
 
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_USE_SSL = True
+EMAIL_HOST = "smtp.hostinger.com"
+EMAIL_HOST_USER = "info@licenciasurbanisticas.com"
+EMAIL_HOST_PASSWORD = "Email10.CD"
+EMAIL_PORT = 465
 
 LOGGING = {
     'version': 1,
