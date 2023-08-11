@@ -61,7 +61,7 @@ class OperatorSignUpSerializer(serializers.ModelSerializer):
     
     def save(self, **kwargs):
         email = self.validated_data['email']
-
+# Auth_user
         # Check if a user with the provided email already exists
         if User.objects.filter(email=email).exists():
             raise serializers.ValidationError("A user with this email already exists.")
@@ -74,10 +74,12 @@ class OperatorSignUpSerializer(serializers.ModelSerializer):
             is_pqrs=self.validated_data['is_pqrs'],
             is_hiring=self.validated_data['is_hiring'],
             is_organisor=False,
+            is_active = False,
         )
 
         password = self.validated_data['password']
         user.set_password(password)
+        # user.is_active = False
         user.save()
         return user
 

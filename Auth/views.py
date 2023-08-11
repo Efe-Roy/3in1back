@@ -58,13 +58,13 @@ class CreateOperatorView(generics.GenericAPIView):
         user.save()
         
         # Send activation email
-        subject = 'Activate Your Account'
-        message = f'Welcome to our site! Your credentils Password: {crPass} and Username: {crName}.  To activate your account, use this OTP code: {otp_code}'
-        from_email = settings.EMAIL_HOST_USER
-        recipient_list = [user.email]
+        absurl = 'https://procesosadministrativos.com/user/otp'
+        email_body = f'Hello, \n Your credentils Password: {crPass} and Username: {crName} to login.\n  To activate your account, use this OTP code: {otp_code}, Use link below to reset your password  \n' + \
+            absurl
+        data = {'email_body': email_body, 'to_email': user.email,
+                'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Activate Your Account'}
+        send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
         
-        send_mail(subject, message, from_email, recipient_list)
-
         if user.is_team == True:
             Team.objects.create(
                 user=user,
@@ -197,7 +197,7 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
             user = User.objects.get(email=email)
             uidb64 = urlsafe_base64_encode(smart_bytes(user.id))
             token = PasswordResetTokenGenerator().make_token(user)
-            absurl2 = 'https://licenciasurbanisticas.com/reset-password/'+ uidb64 + '/' + token
+            absurl2 = 'https://procesosadministrativos.com/reset-password/'+ uidb64 + '/' + token
             email_body = 'Hello, \n Use link below to reset your password  \n' + \
                 absurl2
             data = {'email_body': email_body, 'to_email': user.email,
