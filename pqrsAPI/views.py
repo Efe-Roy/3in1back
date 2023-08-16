@@ -99,6 +99,8 @@ class get_post_pqrs(APIView):
 
     def post(self, request, format=None):
         serializer = RestrictedPqrsMaintSerializer(data=request.data)
+        print("zzzxxxcccvvv", request.data["responsible_for_the_response"])
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status= HTTP_201_CREATED)

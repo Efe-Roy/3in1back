@@ -6,9 +6,10 @@ from rest_framework.generics import (
 )
 from .serializers import (
     ContratacionMainSerializer, ProcessTypeSerializer, AcroymsTypeSerializer,
-    TypologyTypeSerializer, ResSecTypeSerializer, StateTypeSerializer, AllContratacionMainSerializer
+    TypologyTypeSerializer, ResSecTypeSerializer, StateTypeSerializer, AllContratacionMainSerializer,
+    NotificationSerializer
     )
-from .models import ContratacionMain, processType, acroymsType, typologyType, resSecType, StateType
+from .models import ContratacionMain, processType, acroymsType, typologyType, resSecType, StateType, Notification
 from rest_framework.views import APIView
 from django.http import Http404
 from rest_framework.response import Response
@@ -22,6 +23,7 @@ from django.http import JsonResponse
 import json
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
+from django.db.models import Sum
 # Create your views here.
 
 def jsonRoy(request):
@@ -91,7 +93,11 @@ class get_contratacion(ListCreateAPIView):
         process_id = self.request.query_params.get('process_id', None)
         if process_id:
             queryset = queryset.filter(process_id=process_id)
-        
+
+        process_num = self.request.query_params.get('process_num', None)
+        if process_num:
+            queryset = queryset.filter(process_num__icontains=process_num)
+
         acroyms_of_contract_id = self.request.query_params.get('acroyms_of_contract_id', None)
         if acroyms_of_contract_id:
             queryset = queryset.filter(acroyms_of_contract_id=acroyms_of_contract_id)
@@ -107,6 +113,11 @@ class get_contratacion(ListCreateAPIView):
         contractor = self.request.query_params.get('contractor', None)
         if contractor:
             queryset = queryset.filter(contractor__icontains=contractor)
+
+        contact_no = self.request.query_params.get('contact_no', None)
+        if contact_no:
+            queryset = queryset.filter(contact_no__icontains=contact_no)
+        
        
         sex = self.request.query_params.get('sex', None)
         if sex:
@@ -117,7 +128,7 @@ class get_contratacion(ListCreateAPIView):
             queryset = queryset.filter(bpin_project_code__name__in=bpin_project_code_names)
 
         return queryset
-
+    
 class get_details_contratacion(APIView):
     authentication_classes = [TokenAuthentication]
     
@@ -145,3 +156,9 @@ class get_details_contratacion(APIView):
         PqrsById = self.get_object(pk)
         PqrsById.delete()
         return Response(status= HTTP_204_NO_CONTENT)
+
+
+class NotificationView(ListAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = NotificationSerializer
+    queryset = Notification.objects.all()

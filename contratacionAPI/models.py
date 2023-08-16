@@ -95,6 +95,7 @@ class ContratacionMain(models.Model):
     observations = models.CharField(max_length=2310, null=True, blank=True)
     contract_value_plus = models.CharField(max_length=2310, null=True, blank=True)
     real_executed_value_according_to_settlement = models.CharField(max_length=2310, null=True, blank=True)
+    # real_executed_value_according_to_settlement = models.IntegerField(null=True, blank=True)
     file_status = models.CharField(max_length=2310, null=True, blank=True)
 
     def __str__(self):
@@ -129,3 +130,12 @@ class StateType(models.Model):
 
     def __str__(self):
         return self.name or ''
+
+
+
+class Notification(models.Model):
+    msg = models.CharField(max_length=1000)
+    createdAt = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return self.msg or ''

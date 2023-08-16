@@ -99,6 +99,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 #     }
 # }
 
+# ONLINE LIVE
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
