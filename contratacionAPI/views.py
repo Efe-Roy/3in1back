@@ -118,7 +118,6 @@ class get_contratacion(ListCreateAPIView):
         if contact_no:
             queryset = queryset.filter(contact_no__icontains=contact_no)
         
-       
         sex = self.request.query_params.get('sex', None)
         if sex:
             queryset = queryset.filter(sex__icontains=sex)
@@ -126,6 +125,10 @@ class get_contratacion(ListCreateAPIView):
         bpin_project_code_names = self.request.query_params.getlist('bpin_project_code', None)
         if bpin_project_code_names:
             queryset = queryset.filter(bpin_project_code__name__in=bpin_project_code_names)
+
+        typology_id = self.request.query_params.get('typology_id', None)
+        if typology_id:
+            queryset = queryset.filter(typology_id=typology_id)
 
         return queryset
     
