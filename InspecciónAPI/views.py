@@ -9,13 +9,13 @@ from rest_framework.status import (
 from rest_framework.authentication import TokenAuthentication
 from .models import PoliceCompliant, UrbanControl, PoliceSubmissionLGGS, TrafficViolationCompared, TrafficViolationComparedMyColission, ComplaintAndOfficeToAttend, File2Return2dOffice
 from .serializers import ( 
-    PoliceCompliantSerializer, ByIdPoliceCompliantSerializer, 
-    UrbanControlSerializer,ByIdUrbanControlSerializer, 
-    PoliceSubmissionLGGSSerializer, ByIdPoliceSubmissionLGGSSerializer, 
-    TrafficViolationComparedSerializer, ByIdTrafficViolationComparedSerializer,
-    TrafficViolationComparedMyColissionSerializer, ByIdTrafficViolationComparedMyColissionSerializer,
-    ComplaintAndOfficeToAttendSerializer, ByIdComplaintAndOfficeToAttendSerializer,
-    File2Return2dOfficeSerializer, ByIdFile2Return2dOfficeSerializer
+    PoliceCompliantSerializer, ByIdPoliceCompliantSerializer, PoliceCompliantSerializer2,
+    UrbanControlSerializer,ByIdUrbanControlSerializer, UrbanControlSerializer2,
+    PoliceSubmissionLGGSSerializer, ByIdPoliceSubmissionLGGSSerializer, PoliceSubmissionLGGSSerializer2,
+    TrafficViolationComparedSerializer, ByIdTrafficViolationComparedSerializer, TrafficViolationComparedSerializer2,
+    TrafficViolationComparedMyColissionSerializer, ByIdTrafficViolationComparedMyColissionSerializer,TrafficViolationComparedMyColissionSerializer2,
+    ComplaintAndOfficeToAttendSerializer, ByIdComplaintAndOfficeToAttendSerializer, ComplaintAndOfficeToAttendSerializer2,
+    File2Return2dOfficeSerializer, ByIdFile2Return2dOfficeSerializer, File2Return2dOfficeSerializer2
 )
 from rest_framework.generics import (
     ListAPIView, RetrieveAPIView, CreateAPIView,
@@ -30,7 +30,7 @@ class PoliceCompliantView(APIView):
     authentication_classes = [TokenAuthentication]
     def get(self, request, format=None):
         queryset = PoliceCompliant.objects.all()
-        serializer = PoliceCompliantSerializer(queryset, many=True)
+        serializer = PoliceCompliantSerializer2(queryset, many=True)
         return Response( serializer.data)
 
     def post(self, request, format=None):
@@ -78,7 +78,7 @@ class UrbanControlView(APIView):
 
     def get(self, request, format=None):
         queryset = UrbanControl.objects.all()
-        serializer = UrbanControlSerializer(queryset, many=True)
+        serializer = UrbanControlSerializer2(queryset, many=True)
         return Response( serializer.data)
 
     def post(self, request, format=None):
@@ -127,7 +127,7 @@ class PoliceSubmissionLGGSView(APIView):
 
     def get(self, request, format=None):
         queryset = PoliceSubmissionLGGS.objects.all()
-        serializer = PoliceSubmissionLGGSSerializer(queryset, many=True)
+        serializer = PoliceSubmissionLGGSSerializer2(queryset, many=True)
         return Response( serializer.data)
 
     def post(self, request, format=None):
@@ -177,7 +177,7 @@ class TrafficViolationComparedView(APIView):
 
     def get(self, request, format=None):
         queryset = TrafficViolationCompared.objects.all()
-        serializer = TrafficViolationComparedSerializer(queryset, many=True)
+        serializer = TrafficViolationComparedSerializer2(queryset, many=True)
         return Response( serializer.data)
 
     def post(self, request, format=None):
@@ -226,7 +226,7 @@ class TrafficViolationComparedMyColissionView(APIView):
 
     def get(self, request, format=None):
         queryset = TrafficViolationComparedMyColission.objects.all()
-        serializer = TrafficViolationComparedMyColissionSerializer(queryset, many=True)
+        serializer = TrafficViolationComparedMyColissionSerializer2(queryset, many=True)
         return Response( serializer.data)
 
     def post(self, request, format=None):
@@ -275,7 +275,7 @@ class ComplaintAndOfficeToAttendView(APIView):
 
     def get(self, request, format=None):
         queryset = ComplaintAndOfficeToAttend.objects.all()
-        serializer = ComplaintAndOfficeToAttendSerializer(queryset, many=True)
+        serializer = ComplaintAndOfficeToAttendSerializer2(queryset, many=True)
         return Response( serializer.data)
 
     def post(self, request, format=None):
@@ -323,7 +323,7 @@ class File2Return2dOfficeView(APIView):
 
     def get(self, request, format=None):
         queryset = File2Return2dOffice.objects.all()
-        serializer = File2Return2dOfficeSerializer(queryset, many=True)
+        serializer = File2Return2dOfficeSerializer2(queryset, many=True)
         return Response( serializer.data)
 
     def post(self, request, format=None):
