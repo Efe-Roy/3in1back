@@ -11,4 +11,4 @@ def check_expiration(sender, instance, **kwargs):
 
     if instance.finish_date > today and instance.finish_date <= one_week_later:
         # print(f"NÚMERO DE PROCESO '{instance.process_num}' está a punto de caducar {instance.finish_date - timedelta(days=7)}")
-        Notification.objects.create(msg=f"NÚMERO DE PROCESO '{instance.process_num}' está a punto de caducar {instance.finish_date - timedelta(days=7)}" )
+        Notification.objects.create(msg=f"NÚMERO DE PROCESO '{instance.process_num}' está a punto de caducar en 10 días y date {instance.finish_date - timedelta(days=10)}" )

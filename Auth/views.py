@@ -59,10 +59,10 @@ class CreateOperatorView(generics.GenericAPIView):
         
         # Send activation email
         absurl = 'https://procesosadministrativos.com/user/otp'
-        email_body = f'Hello, \n Your credentils Password: {crPass} and Username: {crName} to login.\n  To activate your account, use this OTP code: {otp_code}, Use link below to reset your password  \n' + \
+        email_body = f'Hola, \n Sus credenciales Contraseña: {crPass} y Nombre de usuario: {crName} para iniciar sesión.\n  Para activar su cuenta, use este código OTP: {otp_code}, use el enlace a continuación para restablecer su contraseña  \n' + \
             absurl
         data = {'email_body': email_body, 'to_email': user.email,
-                'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Activate Your Account'}
+                'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Activa tu cuenta'}
         send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
         
         if user.is_team == True:
@@ -93,8 +93,8 @@ class OTPVerificationView(APIView):
             user.save()
 
             # Send activation email
-            subject = 'Activate Your Account'
-            message = f'Your account has been activated your account, use your credentials given to you in the previous mail to login '
+            subject = 'Activa tu cuenta'
+            message = f'Su cuenta ha sido activada, use las credenciales que se le dieron en el correo anterior para iniciar sesión'
             from_email = settings.EMAIL_HOST_USER
             recipient_list = [user.email]
             
