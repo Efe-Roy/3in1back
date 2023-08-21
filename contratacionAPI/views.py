@@ -23,8 +23,10 @@ from django.http import JsonResponse
 import json
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
-from django.db.models import Sum
-# Create your views here.
+from django.db.models import Sum, F, DecimalField
+from django.db.models.functions import Cast
+from decimal import Decimal
+
 
 def jsonRoy(request):
     data= list(ContratacionMain.objects.values())
@@ -82,6 +84,7 @@ class get_contratacion(ListCreateAPIView):
     serializer_class = ContratacionMainSerializer
     pagination_class = CustomPagination
 
+
     def get_queryset(self):
         queryset = ContratacionMain.objects.all()
 
@@ -132,6 +135,36 @@ class get_contratacion(ListCreateAPIView):
 
         return queryset
     
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+
+        # Calculate the accumulated value of real_executed_value_according_to_settlement
+        accumulated_value = queryset.aggregate(
+            total_accumulated_value=Sum(
+                Cast('real_executed_value_according_to_settlement', output_field=DecimalField(max_digits=15, decimal_places=2))
+            )
+        )['total_accumulated_value'] or Decimal('0.00')  # Default to 0.00 if no valid values are found
+
+        # Paginate the queryset
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            response_data = {
+                'results': serializer.data,
+                'accumulated_value': str(accumulated_value)  # Convert Decimal to string for serialization
+            }
+            return self.get_paginated_response(response_data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        response_data = {
+            'results': serializer.data,
+            'accumulated_value': str(accumulated_value)  # Convert Decimal to string for serialization
+        }
+        return Response(response_data)
+
+
+
 class get_details_contratacion(APIView):
     authentication_classes = [TokenAuthentication]
     

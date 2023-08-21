@@ -77,7 +77,8 @@ class UrbanControlView(APIView):
     authentication_classes = [TokenAuthentication]
 
     def get(self, request, format=None):
-        queryset = UrbanControl.objects.all()
+        # queryset = UrbanControl.objects.all()
+        queryset = UrbanControl.objects.all().order_by('-id')
         serializer = UrbanControlSerializer2(queryset, many=True)
         return Response( serializer.data)
 
