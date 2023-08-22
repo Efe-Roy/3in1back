@@ -127,7 +127,7 @@ class PoliceSubmissionLGGSView(APIView):
     authentication_classes = [TokenAuthentication]
 
     def get(self, request, format=None):
-        queryset = PoliceSubmissionLGGS.objects.all()
+        queryset = PoliceSubmissionLGGS.objects.all().order_by('-id')
         serializer = PoliceSubmissionLGGSSerializer2(queryset, many=True)
         return Response( serializer.data)
 
@@ -177,7 +177,7 @@ class TrafficViolationComparedView(APIView):
     authentication_classes = [TokenAuthentication]
 
     def get(self, request, format=None):
-        queryset = TrafficViolationCompared.objects.all()
+        queryset = TrafficViolationCompared.objects.all().order_by('-id')
         serializer = TrafficViolationComparedSerializer2(queryset, many=True)
         return Response( serializer.data)
 
@@ -226,7 +226,7 @@ class TrafficViolationComparedMyColissionView(APIView):
     authentication_classes = [TokenAuthentication]
 
     def get(self, request, format=None):
-        queryset = TrafficViolationComparedMyColission.objects.all()
+        queryset = TrafficViolationComparedMyColission.objects.all().order_by('-id')
         serializer = TrafficViolationComparedMyColissionSerializer2(queryset, many=True)
         return Response( serializer.data)
 
@@ -275,7 +275,7 @@ class ComplaintAndOfficeToAttendView(APIView):
     authentication_classes = [TokenAuthentication]
 
     def get(self, request, format=None):
-        queryset = ComplaintAndOfficeToAttend.objects.all()
+        queryset = ComplaintAndOfficeToAttend.objects.all().order_by('-id')
         serializer = ComplaintAndOfficeToAttendSerializer2(queryset, many=True)
         return Response( serializer.data)
 
@@ -323,7 +323,7 @@ class File2Return2dOfficeView(APIView):
     authentication_classes = [TokenAuthentication]
 
     def get(self, request, format=None):
-        queryset = File2Return2dOffice.objects.all()
+        queryset = File2Return2dOffice.objects.all().order_by('-id')
         serializer = File2Return2dOfficeSerializer2(queryset, many=True)
         return Response( serializer.data)
 
