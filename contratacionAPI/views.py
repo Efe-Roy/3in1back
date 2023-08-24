@@ -145,37 +145,19 @@ class get_contratacion(ListCreateAPIView):
         # Count instances where state.name is "EJECUCION"
         terminado_count = queryset.filter(state__name="TERMINADO").count()
 
-        # Annotate the queryset with the count of related processType instances
-        querysetProcess = queryset.annotate(process_type_count=Count('process'))
-        
-        # Annotate the queryset with the count of related resSecType instances
-        querysetResponsible_secretary = queryset.annotate(res_sec_type_count=Count('responsible_secretary'))
+        # Count instances of each processType
+        process_counts = queryset.values('process__name').annotate(process_count=Count('process'))
 
-        # Annotate the queryset with the count of related stateType instances
-        querysetState = queryset.annotate(state_type_count=Count('state'))
-        
-        # Annotate the queryset with the count of related typologyType instances
-        querysetTypology = queryset.annotate(typology_type_count=Count('typology'))
+        # Count instances of each resSecType
+        responsible_secretary_counts = queryset.values('responsible_secretary__name').annotate(responsible_secretary_count=Count('responsible_secretary'))
 
-        # Calculate the total count of all processType instances
-        total_process_count = querysetProcess.aggregate(
-            total_process_count=Sum('process_type_count')
-        )['total_process_count'] or 0
+        # Count instances of each stateType
+        state_counts = queryset.values('state__name').annotate(state_count=Count('state'))
+       
+        # Count instances of each typologyType
+        typology_counts = queryset.values('typology__name').annotate(typology_count=Count('typology'))
 
-        # Calculate the total count of all resSecType instances
-        total_responsible_secretary_count = querysetResponsible_secretary.aggregate(
-            total_responsible_secretary_count=Sum('res_sec_type_count')
-        )['total_responsible_secretary_count'] or 0
 
-        # Calculate the total count of all stateType instances
-        total_state_count = querysetState.aggregate(
-            total_state_count=Sum('state_type_count')
-        )['total_state_count'] or 0
-
-        # Calculate the total count of all typologyType instances
-        total_typology_count = querysetTypology.aggregate(
-            total_typology_count=Sum('typology_type_count')
-        )['total_typology_count'] or 0
 
         # Calculate the accumulated value of real_executed_value_according_to_settlement
         accumulated_value = queryset.aggregate(
@@ -193,10 +175,11 @@ class get_contratacion(ListCreateAPIView):
                 'accumulated_value': str(accumulated_value),  # Convert Decimal to string for serialization
                 'ejecucion_count': ejecucion_count,
                 'terminado_count': terminado_count,
-                'total_process_count': total_process_count,
-                'total_responsible_secretary_count': total_responsible_secretary_count,
-                'total_state_count': total_state_count,
-                'total_typology_count': total_typology_count
+                'process_counts': process_counts,
+                'responsible_secretary_counts': responsible_secretary_counts,
+                'state_counts': state_counts,
+                'typology_counts': typology_counts
+
             }
             return self.get_paginated_response(response_data)
 
@@ -206,10 +189,10 @@ class get_contratacion(ListCreateAPIView):
             'accumulated_value': str(accumulated_value),  # Convert Decimal to string for serialization
             'ejecucion_count': ejecucion_count,
             'terminado_count': terminado_count,
-            'total_process_count': total_process_count,
-            'total_responsible_secretary_count': total_responsible_secretary_count,
-            'total_state_count': total_state_count,
-            'total_typology_count': total_typology_count
+            'process_counts': process_counts,
+            'responsible_secretary_counts': responsible_secretary_counts,
+            'state_counts': state_counts,
+            'typology_counts': typology_counts
 
         }
         return Response(response_data)

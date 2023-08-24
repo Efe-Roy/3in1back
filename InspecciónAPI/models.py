@@ -47,6 +47,7 @@ class TrafficViolationCompared(models.Model):
     id_card = models.CharField(max_length=2300, null=True)
     violation_code = models.CharField(max_length=2300, null=True)
     res_procedure = models.CharField(max_length=2300, null=True)
+    compare_number = models.CharField(max_length=2300, null=True) #new....
 
     comment = models.CharField(max_length=2300, blank=True, null=True)
     file_res = models.CharField(max_length=2300, blank=True, null=True)
