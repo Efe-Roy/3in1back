@@ -157,7 +157,11 @@ class get_contratacion(ListCreateAPIView):
         # Count instances of each typologyType
         typology_counts = queryset.values('typology__name').annotate(typology_count=Count('typology'))
 
+        # Count instances where sex is "Masculino"
+        male_count = queryset.filter(sex="Masculino").count()
 
+        # Count instances where sex is "Femenino"
+        female_count = queryset.filter(sex="Femenino").count()
 
         # Calculate the accumulated value of real_executed_value_according_to_settlement
         accumulated_value = queryset.aggregate(
@@ -178,7 +182,9 @@ class get_contratacion(ListCreateAPIView):
                 'process_counts': process_counts,
                 'responsible_secretary_counts': responsible_secretary_counts,
                 'state_counts': state_counts,
-                'typology_counts': typology_counts
+                'typology_counts': typology_counts,
+                'male_count': male_count,
+                'female_count': female_count
 
             }
             return self.get_paginated_response(response_data)
@@ -192,7 +198,9 @@ class get_contratacion(ListCreateAPIView):
             'process_counts': process_counts,
             'responsible_secretary_counts': responsible_secretary_counts,
             'state_counts': state_counts,
-            'typology_counts': typology_counts
+            'typology_counts': typology_counts,
+            'male_count': male_count,
+            'female_count': female_count
 
         }
         return Response(response_data)

@@ -20,6 +20,9 @@ from rest_framework.status import (
 )
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.pagination import PageNumberPagination
+from Auth.models import Team
+from django.core.mail import send_mail
+from django.conf import settings
 
 # Create your views here.
 class get_all_entityType(ListAPIView):
@@ -99,10 +102,21 @@ class get_post_pqrs(APIView):
 
     def post(self, request, format=None):
         serializer = RestrictedPqrsMaintSerializer(data=request.data)
-        print("zzzxxxcccvvv", request.data["responsible_for_the_response"])
+        # print("zzzxxxcccvvv", request.data["responsible_for_the_response"])
 
         if serializer.is_valid():
             serializer.save()
+           
+            team_id = request.data['responsible_for_the_response']
+            team = Team.objects.get(id=team_id)
+            print("email", team.user.email)
+
+            # Send activation email
+            email_body = f'Hola {team.user.username}, \n the file number {request.data["file_num"]} has been assigned to you'
+            data = {'email_body': email_body, 'to_email': team.user.email,
+                    'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
+            send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
+            
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
 

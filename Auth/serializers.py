@@ -12,7 +12,7 @@ from django.core.mail import send_mail
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model=User
-        fields=['id', 'username', 'email', 'is_organisor', 'is_team', 'is_agent', 'is_pqrs', 'is_hiring']
+        fields=['id', 'username', 'first_name', 'last_name', 'email', 'is_organisor', 'is_team', 'is_agent', 'is_pqrs', 'is_hiring']
 
 
 class UserProfileSerializer(serializers.ModelSerializer):

@@ -23,6 +23,10 @@ from rest_framework.generics import (
     ListCreateAPIView
 )
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from Auth.models import Agent
+from django.core.mail import send_mail
+from django.conf import settings
+
 
 # Create your views here.
 # PoliceSubmissionLGGSSerializer 
@@ -37,6 +41,17 @@ class PoliceCompliantView(APIView):
         serializer = PoliceCompliantSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+
+            agent_id = request.data['assign_team']
+            agent = Agent.objects.get(id=agent_id)
+            print("email", agent.user.email)
+
+            # Send activation email
+            email_body = f'Hola {agent.user.username}, \n Se te ha asignado un nuevo fichero en QUERELLA DE POLICIA'
+            data = {'email_body': email_body, 'to_email': agent.user.email,
+                    'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
+            send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
+            
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
 
@@ -86,6 +101,18 @@ class UrbanControlView(APIView):
         serializer = UrbanControlSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+           
+            agent_id = request.data['assign_team']
+            agent = Agent.objects.get(id=agent_id)
+            print("email", agent.user.email)
+
+            # Send activation email
+            email_body = f'Hola {agent.user.username}, \n Se te ha asignado un nuevo fichero en CONTROL URBAN'
+            data = {'email_body': email_body, 'to_email': agent.user.email,
+                    'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
+            send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
+            
+
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
 
@@ -135,6 +162,17 @@ class PoliceSubmissionLGGSView(APIView):
         serializer = PoliceSubmissionLGGSSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+
+            agent_id = request.data['assign_team']
+            agent = Agent.objects.get(id=agent_id)
+            print("email", agent.user.email)
+
+            # Send activation email
+            email_body = f'Hola {agent.user.username}, \n Se te ha asignado un nuevo fichero en COMPARENDOS POLICIVOS RADICADOS EN LA SECRETARIA GENERAL Y DE GOIERNO'
+            data = {'email_body': email_body, 'to_email': agent.user.email,
+                    'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
+            send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
+            
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
 
@@ -185,6 +223,17 @@ class TrafficViolationComparedView(APIView):
         serializer = TrafficViolationComparedSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+
+            agent_id = request.data['assign_team']
+            agent = Agent.objects.get(id=agent_id)
+            print("email", agent.user.email)
+
+            # Send activation email
+            email_body = f'Hola {agent.user.username}, \n Se te ha asignado un nuevo fichero en CONTRAVENCIONES DE TRANSITO POR COMPARENDO'
+            data = {'email_body': email_body, 'to_email': agent.user.email,
+                    'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
+            send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
+            
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
 
@@ -234,6 +283,17 @@ class TrafficViolationComparedMyColissionView(APIView):
         serializer = TrafficViolationComparedMyColissionSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+
+            agent_id = request.data['assign_team']
+            agent = Agent.objects.get(id=agent_id)
+            print("email", agent.user.email)
+
+            # Send activation email
+            email_body = f'Hola {agent.user.username}, \n Se te ha asignado un nuevo fichero en CONTRAVENCIONES DE TRANSITO POR COLISION'
+            data = {'email_body': email_body, 'to_email': agent.user.email,
+                    'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
+            send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
+            
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
 
@@ -283,6 +343,17 @@ class ComplaintAndOfficeToAttendView(APIView):
         serializer = ComplaintAndOfficeToAttendSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+
+            agent_id = request.data['assign_team']
+            agent = Agent.objects.get(id=agent_id)
+            print("email", agent.user.email)
+
+            # Send activation email
+            email_body = f'Hola {agent.user.username}, \n Se te ha asignado un nuevo fichero en QUEJAS Y OFICIOS POR ATENDER'
+            data = {'email_body': email_body, 'to_email': agent.user.email,
+                    'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
+            send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
+            
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
 
@@ -331,6 +402,17 @@ class File2Return2dOfficeView(APIView):
         serializer = File2Return2dOfficeSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+
+            agent_id = request.data['assign_team']
+            agent = Agent.objects.get(id=agent_id)
+            print("email", agent.user.email)
+
+            # Send activation email
+            email_body = f'Hola {agent.user.username}, \n Se te ha asignado un nuevo fichero en EXPEDIENTE PARA DEVOLVER AL DESPACHO DE PRIMERA INSTANCIA'
+            data = {'email_body': email_body, 'to_email': agent.user.email,
+                    'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
+            send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
+            
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
 
