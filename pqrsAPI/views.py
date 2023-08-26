@@ -112,7 +112,7 @@ class get_post_pqrs(APIView):
             print("email", team.user.email)
 
             # Send activation email
-            email_body = f'Hola {team.user.username}, \n the file number {request.data["file_num"]} has been assigned to you'
+            email_body = f'Hola {team.user.username}, \n Se le ha asignado el número de expediente {request.data["file_num"]}.'
             data = {'email_body': email_body, 'to_email': team.user.email,
                     'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
             send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
