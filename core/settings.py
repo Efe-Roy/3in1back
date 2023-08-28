@@ -30,10 +30,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     #Third Party App
+    'Auth',
     'pqrsAPI',
     'contratacionAPI',
     'InspecciónAPI',
-    'Auth',
+    
 
     # API SetUp
     'rest_framework',
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
     "corsheaders",
     
     'import_export',
+
 ]
 
 MIDDLEWARE = [
@@ -90,7 +92,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'admindb', 
+#         'NAME': 'dbtest', 
 #         'USER': 'postgres',
 #         'PASSWORD': 'admin',
 #         'HOST': 'localhost', 
@@ -98,10 +100,11 @@ WSGI_APPLICATION = 'core.wsgi.application'
 #     }
 # }
 
+# ONLINE LIVE
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'roydb1',
+        'NAME': 'roydb',
         'USER': 'royuser1',
         'PASSWORD': 'roy12345',
         'HOST': 'localhost',
@@ -187,6 +190,12 @@ FILE_UPLOAD_HANDLERS = [
     'django.core.files.uploadhandler.TemporaryFileUploadHandler',
 ]
 
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_USE_SSL = True
+EMAIL_HOST = "smtp.hostinger.com"
+EMAIL_HOST_USER = "info@licenciasurbanisticas.com"
+EMAIL_HOST_PASSWORD = "Email10.CD"
+EMAIL_PORT = 465
 
 LOGGING = {
     'version': 1,

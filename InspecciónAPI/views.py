@@ -9,13 +9,13 @@ from rest_framework.status import (
 from rest_framework.authentication import TokenAuthentication
 from .models import PoliceCompliant, UrbanControl, PoliceSubmissionLGGS, TrafficViolationCompared, TrafficViolationComparedMyColission, ComplaintAndOfficeToAttend, File2Return2dOffice
 from .serializers import ( 
-    PoliceCompliantSerializer, ByIdPoliceCompliantSerializer, 
-    UrbanControlSerializer,ByIdUrbanControlSerializer, 
-    PoliceSubmissionLGGSSerializer, ByIdPoliceSubmissionLGGSSerializer, 
-    TrafficViolationComparedSerializer, ByIdTrafficViolationComparedSerializer,
-    TrafficViolationComparedMyColissionSerializer, ByIdTrafficViolationComparedMyColissionSerializer,
-    ComplaintAndOfficeToAttendSerializer, ByIdComplaintAndOfficeToAttendSerializer,
-    File2Return2dOfficeSerializer, ByIdFile2Return2dOfficeSerializer
+    PoliceCompliantSerializer, ByIdPoliceCompliantSerializer, PoliceCompliantSerializer2,
+    UrbanControlSerializer,ByIdUrbanControlSerializer, UrbanControlSerializer2,
+    PoliceSubmissionLGGSSerializer, ByIdPoliceSubmissionLGGSSerializer, PoliceSubmissionLGGSSerializer2,
+    TrafficViolationComparedSerializer, ByIdTrafficViolationComparedSerializer, TrafficViolationComparedSerializer2,
+    TrafficViolationComparedMyColissionSerializer, ByIdTrafficViolationComparedMyColissionSerializer,TrafficViolationComparedMyColissionSerializer2,
+    ComplaintAndOfficeToAttendSerializer, ByIdComplaintAndOfficeToAttendSerializer, ComplaintAndOfficeToAttendSerializer2,
+    File2Return2dOfficeSerializer, ByIdFile2Return2dOfficeSerializer, File2Return2dOfficeSerializer2
 )
 from rest_framework.generics import (
     ListAPIView, RetrieveAPIView, CreateAPIView,
@@ -23,6 +23,10 @@ from rest_framework.generics import (
     ListCreateAPIView
 )
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from Auth.models import Agent
+from django.core.mail import send_mail
+from django.conf import settings
+
 
 # Create your views here.
 # PoliceSubmissionLGGSSerializer 
@@ -30,13 +34,24 @@ class PoliceCompliantView(APIView):
     authentication_classes = [TokenAuthentication]
     def get(self, request, format=None):
         queryset = PoliceCompliant.objects.all()
-        serializer = PoliceCompliantSerializer(queryset, many=True)
+        serializer = PoliceCompliantSerializer2(queryset, many=True)
         return Response( serializer.data)
 
     def post(self, request, format=None):
         serializer = PoliceCompliantSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+
+            agent_id = request.data['assign_team']
+            agent = Agent.objects.get(id=agent_id)
+            print("email", agent.user.email)
+
+            # Send activation email
+            email_body = f'Hola {agent.user.username}, \n Se te ha asignado un nuevo fichero en QUERELLA DE POLICIA'
+            data = {'email_body': email_body, 'to_email': agent.user.email,
+                    'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
+            send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
+            
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
 
@@ -77,14 +92,27 @@ class UrbanControlView(APIView):
     authentication_classes = [TokenAuthentication]
 
     def get(self, request, format=None):
-        queryset = UrbanControl.objects.all()
-        serializer = UrbanControlSerializer(queryset, many=True)
+        # queryset = UrbanControl.objects.all()
+        queryset = UrbanControl.objects.all().order_by('-id')
+        serializer = UrbanControlSerializer2(queryset, many=True)
         return Response( serializer.data)
 
     def post(self, request, format=None):
         serializer = UrbanControlSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+           
+            agent_id = request.data['assign_team']
+            agent = Agent.objects.get(id=agent_id)
+            print("email", agent.user.email)
+
+            # Send activation email
+            email_body = f'Hola {agent.user.username}, \n Se te ha asignado un nuevo fichero en CONTROL URBAN'
+            data = {'email_body': email_body, 'to_email': agent.user.email,
+                    'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
+            send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
+            
+
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
 
@@ -126,14 +154,25 @@ class PoliceSubmissionLGGSView(APIView):
     authentication_classes = [TokenAuthentication]
 
     def get(self, request, format=None):
-        queryset = PoliceSubmissionLGGS.objects.all()
-        serializer = PoliceSubmissionLGGSSerializer(queryset, many=True)
+        queryset = PoliceSubmissionLGGS.objects.all().order_by('-id')
+        serializer = PoliceSubmissionLGGSSerializer2(queryset, many=True)
         return Response( serializer.data)
 
     def post(self, request, format=None):
         serializer = PoliceSubmissionLGGSSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+
+            agent_id = request.data['assign_team']
+            agent = Agent.objects.get(id=agent_id)
+            print("email", agent.user.email)
+
+            # Send activation email
+            email_body = f'Hola {agent.user.username}, \n Se te ha asignado un nuevo fichero en COMPARENDOS POLICIVOS RADICADOS EN LA SECRETARIA GENERAL Y DE GOIERNO'
+            data = {'email_body': email_body, 'to_email': agent.user.email,
+                    'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
+            send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
+            
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
 
@@ -176,14 +215,25 @@ class TrafficViolationComparedView(APIView):
     authentication_classes = [TokenAuthentication]
 
     def get(self, request, format=None):
-        queryset = TrafficViolationCompared.objects.all()
-        serializer = TrafficViolationComparedSerializer(queryset, many=True)
+        queryset = TrafficViolationCompared.objects.all().order_by('-id')
+        serializer = TrafficViolationComparedSerializer2(queryset, many=True)
         return Response( serializer.data)
 
     def post(self, request, format=None):
         serializer = TrafficViolationComparedSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+
+            agent_id = request.data['assign_team']
+            agent = Agent.objects.get(id=agent_id)
+            print("email", agent.user.email)
+
+            # Send activation email
+            email_body = f'Hola {agent.user.username}, \n Se te ha asignado un nuevo fichero en CONTRAVENCIONES DE TRANSITO POR COMPARENDO'
+            data = {'email_body': email_body, 'to_email': agent.user.email,
+                    'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
+            send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
+            
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
 
@@ -225,14 +275,25 @@ class TrafficViolationComparedMyColissionView(APIView):
     authentication_classes = [TokenAuthentication]
 
     def get(self, request, format=None):
-        queryset = TrafficViolationComparedMyColission.objects.all()
-        serializer = TrafficViolationComparedMyColissionSerializer(queryset, many=True)
+        queryset = TrafficViolationComparedMyColission.objects.all().order_by('-id')
+        serializer = TrafficViolationComparedMyColissionSerializer2(queryset, many=True)
         return Response( serializer.data)
 
     def post(self, request, format=None):
         serializer = TrafficViolationComparedMyColissionSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+
+            agent_id = request.data['assign_team']
+            agent = Agent.objects.get(id=agent_id)
+            print("email", agent.user.email)
+
+            # Send activation email
+            email_body = f'Hola {agent.user.username}, \n Se te ha asignado un nuevo fichero en CONTRAVENCIONES DE TRANSITO POR COLISION'
+            data = {'email_body': email_body, 'to_email': agent.user.email,
+                    'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
+            send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
+            
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
 
@@ -274,14 +335,25 @@ class ComplaintAndOfficeToAttendView(APIView):
     authentication_classes = [TokenAuthentication]
 
     def get(self, request, format=None):
-        queryset = ComplaintAndOfficeToAttend.objects.all()
-        serializer = ComplaintAndOfficeToAttendSerializer(queryset, many=True)
+        queryset = ComplaintAndOfficeToAttend.objects.all().order_by('-id')
+        serializer = ComplaintAndOfficeToAttendSerializer2(queryset, many=True)
         return Response( serializer.data)
 
     def post(self, request, format=None):
         serializer = ComplaintAndOfficeToAttendSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+
+            agent_id = request.data['assign_team']
+            agent = Agent.objects.get(id=agent_id)
+            print("email", agent.user.email)
+
+            # Send activation email
+            email_body = f'Hola {agent.user.username}, \n Se te ha asignado un nuevo fichero en QUEJAS Y OFICIOS POR ATENDER'
+            data = {'email_body': email_body, 'to_email': agent.user.email,
+                    'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
+            send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
+            
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
 
@@ -322,14 +394,25 @@ class File2Return2dOfficeView(APIView):
     authentication_classes = [TokenAuthentication]
 
     def get(self, request, format=None):
-        queryset = File2Return2dOffice.objects.all()
-        serializer = File2Return2dOfficeSerializer(queryset, many=True)
+        queryset = File2Return2dOffice.objects.all().order_by('-id')
+        serializer = File2Return2dOfficeSerializer2(queryset, many=True)
         return Response( serializer.data)
 
     def post(self, request, format=None):
         serializer = File2Return2dOfficeSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+
+            agent_id = request.data['assign_team']
+            agent = Agent.objects.get(id=agent_id)
+            print("email", agent.user.email)
+
+            # Send activation email
+            email_body = f'Hola {agent.user.username}, \n Se te ha asignado un nuevo fichero en EXPEDIENTE PARA DEVOLVER AL DESPACHO DE PRIMERA INSTANCIA'
+            data = {'email_body': email_body, 'to_email': agent.user.email,
+                    'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
+            send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
+            
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
 
