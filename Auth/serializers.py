@@ -16,7 +16,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = ['id', 'username', 'first_name', 'last_name', 'email', 'phone_num', 'image']
@@ -54,20 +53,21 @@ class SignupSerializer(serializers.ModelSerializer):
 class OperatorSignUpSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'is_agent', 'is_team', 'is_pqrs', 'is_hiring']
+        fields = ['username', 'email', 'password', 'is_agent', 'is_team', 'is_pqrs', 'is_hiring', 'responsible_secretary']
         extra_kwargs = {
             'password': {'write_only': True}
         }
     
     def save(self, **kwargs):
         email = self.validated_data['email']
-# Auth_user
+        # Auth_user
         # Check if a user with the provided email already exists
         if User.objects.filter(email=email).exists():
             raise serializers.ValidationError("A user with this email already exists.")
 
         user = User(
             username=self.validated_data['username'],
+            responsible_secretary=self.validated_data['responsible_secretary'],
             email=email,
             is_agent=self.validated_data['is_agent'],
             is_team=self.validated_data['is_team'],

@@ -19,7 +19,7 @@ from rest_framework.status import (
 )
 from rest_framework.authentication import TokenAuthentication
 
-from django.http import JsonResponse
+# from django.http import JsonResponse
 import json
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
@@ -28,9 +28,9 @@ from django.db.models.functions import Cast
 from decimal import Decimal
 
 
-def jsonRoy(request):
-    data= list(ContratacionMain.objects.values())
-    return JsonResponse(data, safe=False)
+# def jsonRoy(request):
+#     data= list(ContratacionMain.objects.values())
+#     return JsonResponse(data, safe=False)
 
 class get_all_processType(ListAPIView):
     permission_classes = (AllowAny,)
@@ -86,7 +86,19 @@ class get_contratacion(ListCreateAPIView):
 
 
     def get_queryset(self):
-        queryset = ContratacionMain.objects.all()
+        # queryset = ContratacionMain.objects.all()
+
+        user = self.request.user
+        # print("qaws", user.is_organisor)
+        if user.is_organisor:
+            queryset = ContratacionMain.objects.all()
+            # print("user detail", user.email)
+        elif user.is_hiring:
+            # print("None Org", user.responsible_secretary_id)
+            queryset = ContratacionMain.objects.filter(responsible_secretary_id=user.responsible_secretary_id)
+        else:
+            queryset = None
+
 
         # Filter based on request parameters
         state_id = self.request.query_params.get('state_id', None)
@@ -203,8 +215,8 @@ class get_contratacion(ListCreateAPIView):
             'female_count': female_count
 
         }
-        return Response(response_data)
 
+        return Response(response_data)
 
 
 class get_details_contratacion(APIView):
@@ -234,7 +246,7 @@ class get_details_contratacion(APIView):
         PqrsById = self.get_object(pk)
         PqrsById.delete()
         return Response(status= HTTP_204_NO_CONTENT)
-
+    
 
 class NotificationView(ListAPIView):
     permission_classes = (AllowAny,)

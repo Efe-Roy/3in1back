@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
+from contratacionAPI.models import resSecType
 
 
 def upload_to(instance, filename):
@@ -13,6 +14,7 @@ class User(AbstractUser):
     image = models.ImageField(_("Image"), upload_to=upload_to, null=True, blank=True)
     is_organisor = models.BooleanField(default=True)
     phone_num = models.CharField(max_length=300, null=True, blank=True)
+    responsible_secretary = models.ForeignKey(resSecType, null=True, blank=True, on_delete=models.SET_NULL)
 
     is_team = models.BooleanField(default=False)
     is_pqrs = models.BooleanField(default=False)

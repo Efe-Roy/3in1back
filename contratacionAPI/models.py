@@ -1,5 +1,5 @@
 from django.db import models
-from Auth.models import UserProfile, Agent, Team, User
+# from Auth.models import UserProfile, Agent, Team, User
 
 # Create your models here.
 class ValueAdded(models.Model):

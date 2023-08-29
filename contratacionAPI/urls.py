@@ -2,8 +2,9 @@ from django.urls import path
 from .views import (
     get_all_processType, get_all_acroymsType, get_all_typologyType, 
     get_all_resSecType, get_all_StateType, get_post_contratacion, 
-    get_details_contratacion, get_contratacion, NotificationView,
-    jsonRoy
+    get_details_contratacion, get_contratacion, NotificationView
+    # ,
+    # jsonRoy
 )
 
 urlpatterns = [
@@ -20,7 +21,7 @@ urlpatterns = [
 
     path('notifications', NotificationView.as_view()),
 
-    path('json', jsonRoy, name='json')
+    # path('json', jsonRoy, name='json')
 
 ]
 

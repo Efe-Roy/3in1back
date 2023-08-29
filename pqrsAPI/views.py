@@ -130,7 +130,24 @@ class get_pqrs(ListCreateAPIView):
     pagination_class = CustomPagination
 
     def get_queryset(self):
-        queryset = PqrsMain.objects.all()
+        # queryset = PqrsMain.objects.all()
+
+        user = self.request.user
+        if user.is_organisor:
+            queryset = PqrsMain.objects.all()
+            # print("User is_organisor", user.id)
+        elif user.is_pqrs:
+            queryset = PqrsMain.objects.all()
+            # print("User is_pqrs", user.username)
+        elif user.is_team:
+            foundObject = Team.objects.get(user_id=user.id)
+            team_id = foundObject.id
+            # print("User is_team", team_id)
+            queryset = PqrsMain.objects.filter(responsible_for_the_response_id=team_id)
+        else:
+            print("User Unauthorise")
+            queryset = None
+
 
         # Filter based on request parameters
         name_id = self.request.query_params.get('name_id', None)

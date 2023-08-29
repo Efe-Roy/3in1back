@@ -33,7 +33,21 @@ from django.conf import settings
 class PoliceCompliantView(APIView):
     authentication_classes = [TokenAuthentication]
     def get(self, request, format=None):
-        queryset = PoliceCompliant.objects.all()
+        # queryset = PoliceCompliant.objects.all()
+
+        user = self.request.user
+        if user.is_organisor:
+            queryset = PoliceCompliant.objects.all().order_by('-id')
+            # print("User is_organisor", user.id)
+        elif user.is_agent:
+            foundObject = Agent.objects.get(user_id=user.id)
+            agent_id = foundObject.id
+            # print("User is_team", agent_id)
+            queryset = PoliceCompliant.objects.filter(assign_team_id=agent_id)
+        else:
+            print("User Unauthorise")
+            queryset = None
+
         serializer = PoliceCompliantSerializer2(queryset, many=True)
         return Response( serializer.data)
 
@@ -93,7 +107,21 @@ class UrbanControlView(APIView):
 
     def get(self, request, format=None):
         # queryset = UrbanControl.objects.all()
-        queryset = UrbanControl.objects.all().order_by('-id')
+        # queryset = UrbanControl.objects.all().order_by('-id')
+
+        user = self.request.user
+        if user.is_organisor:
+            queryset = UrbanControl.objects.all().order_by('-id')
+            # print("User is_organisor", user.id)
+        elif user.is_agent:
+            foundObject = Agent.objects.get(user_id=user.id)
+            agent_id = foundObject.id
+            # print("User is_team", agent_id)
+            queryset = UrbanControl.objects.filter(assign_team_id=agent_id)
+        else:
+            print("User Unauthorise")
+            queryset = None
+
         serializer = UrbanControlSerializer2(queryset, many=True)
         return Response( serializer.data)
 
@@ -154,7 +182,21 @@ class PoliceSubmissionLGGSView(APIView):
     authentication_classes = [TokenAuthentication]
 
     def get(self, request, format=None):
-        queryset = PoliceSubmissionLGGS.objects.all().order_by('-id')
+        # queryset = PoliceSubmissionLGGS.objects.all().order_by('-id')
+
+        user = self.request.user
+        if user.is_organisor:
+            queryset = PoliceSubmissionLGGS.objects.all().order_by('-id')
+            # print("User is_organisor", user.id)
+        elif user.is_agent:
+            foundObject = Agent.objects.get(user_id=user.id)
+            agent_id = foundObject.id
+            # print("User is_team", agent_id)
+            queryset = PoliceSubmissionLGGS.objects.filter(assign_team_id=agent_id)
+        else:
+            print("User Unauthorise")
+            queryset = None
+
         serializer = PoliceSubmissionLGGSSerializer2(queryset, many=True)
         return Response( serializer.data)
 
@@ -215,7 +257,21 @@ class TrafficViolationComparedView(APIView):
     authentication_classes = [TokenAuthentication]
 
     def get(self, request, format=None):
-        queryset = TrafficViolationCompared.objects.all().order_by('-id')
+        # queryset = TrafficViolationCompared.objects.all().order_by('-id')
+
+        user = self.request.user
+        if user.is_organisor:
+            queryset = TrafficViolationCompared.objects.all().order_by('-id')
+            # print("User is_organisor", user.id)
+        elif user.is_agent:
+            foundObject = Agent.objects.get(user_id=user.id)
+            agent_id = foundObject.id
+            # print("User is_team", agent_id)
+            queryset = TrafficViolationCompared.objects.filter(assign_team_id=agent_id)
+        else:
+            print("User Unauthorise")
+            queryset = None
+
         serializer = TrafficViolationComparedSerializer2(queryset, many=True)
         return Response( serializer.data)
 
@@ -275,7 +331,22 @@ class TrafficViolationComparedMyColissionView(APIView):
     authentication_classes = [TokenAuthentication]
 
     def get(self, request, format=None):
-        queryset = TrafficViolationComparedMyColission.objects.all().order_by('-id')
+        # queryset = TrafficViolationComparedMyColission.objects.all().order_by('-id')
+
+        user = self.request.user
+        if user.is_organisor:
+            queryset = TrafficViolationComparedMyColission.objects.all().order_by('-id')
+            # print("User is_organisor", user.id)
+        elif user.is_agent:
+            foundObject = Agent.objects.get(user_id=user.id)
+            agent_id = foundObject.id
+            # print("User is_team", agent_id)
+            queryset = TrafficViolationComparedMyColission.objects.filter(assign_team_id=agent_id)
+        else:
+            print("User Unauthorise")
+            queryset = None
+
+
         serializer = TrafficViolationComparedMyColissionSerializer2(queryset, many=True)
         return Response( serializer.data)
 
@@ -335,7 +406,22 @@ class ComplaintAndOfficeToAttendView(APIView):
     authentication_classes = [TokenAuthentication]
 
     def get(self, request, format=None):
-        queryset = ComplaintAndOfficeToAttend.objects.all().order_by('-id')
+        # queryset = ComplaintAndOfficeToAttend.objects.all().order_by('-id')
+
+        user = self.request.user
+        if user.is_organisor:
+            queryset = ComplaintAndOfficeToAttend.objects.all().order_by('-id')
+            # print("User is_organisor", user.id)
+        elif user.is_agent:
+            foundObject = Agent.objects.get(user_id=user.id)
+            agent_id = foundObject.id
+            # print("User is_team", agent_id)
+            queryset = ComplaintAndOfficeToAttend.objects.filter(assign_team_id=agent_id)
+        else:
+            print("User Unauthorise")
+            queryset = None
+
+
         serializer = ComplaintAndOfficeToAttendSerializer2(queryset, many=True)
         return Response( serializer.data)
 
@@ -394,7 +480,22 @@ class File2Return2dOfficeView(APIView):
     authentication_classes = [TokenAuthentication]
 
     def get(self, request, format=None):
-        queryset = File2Return2dOffice.objects.all().order_by('-id')
+        # queryset = File2Return2dOffice.objects.all().order_by('-id')
+
+        user = self.request.user
+        if user.is_organisor:
+            queryset = File2Return2dOffice.objects.all().order_by('-id')
+            # print("User is_organisor", user.id)
+        elif user.is_agent:
+            foundObject = Agent.objects.get(user_id=user.id)
+            agent_id = foundObject.id
+            # print("User is_team", agent_id)
+            queryset = File2Return2dOffice.objects.filter(assign_team_id=agent_id)
+        else:
+            print("User Unauthorise")
+            queryset = None
+
+
         serializer = File2Return2dOfficeSerializer2(queryset, many=True)
         return Response( serializer.data)
 
