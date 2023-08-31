@@ -61,7 +61,7 @@ class PoliceCompliantView(APIView):
             print("email", agent.user.email)
 
             # Send activation email
-            email_body = f'Hola {agent.user.username}, \n Se te ha asignado un nuevo fichero en QUERELLA DE POLICIA'
+            email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en QUERELLA DE POLICIA'
             data = {'email_body': email_body, 'to_email': agent.user.email,
                     'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
             send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
@@ -135,7 +135,7 @@ class UrbanControlView(APIView):
             print("email", agent.user.email)
 
             # Send activation email
-            email_body = f'Hola {agent.user.username}, \n Se te ha asignado un nuevo fichero en CONTROL URBAN'
+            email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en CONTROL URBAN'
             data = {'email_body': email_body, 'to_email': agent.user.email,
                     'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
             send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
@@ -210,7 +210,7 @@ class PoliceSubmissionLGGSView(APIView):
             print("email", agent.user.email)
 
             # Send activation email
-            email_body = f'Hola {agent.user.username}, \n Se te ha asignado un nuevo fichero en COMPARENDOS POLICIVOS RADICADOS EN LA SECRETARIA GENERAL Y DE GOIERNO'
+            email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en COMPARENDOS POLICIVOS RADICADOS EN LA SECRETARIA GENERAL Y DE GOIERNO'
             data = {'email_body': email_body, 'to_email': agent.user.email,
                     'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
             send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
@@ -285,7 +285,7 @@ class TrafficViolationComparedView(APIView):
             print("email", agent.user.email)
 
             # Send activation email
-            email_body = f'Hola {agent.user.username}, \n Se te ha asignado un nuevo fichero en CONTRAVENCIONES DE TRANSITO POR COMPARENDO'
+            email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en CONTRAVENCIONES DE TRANSITO POR COMPARENDO'
             data = {'email_body': email_body, 'to_email': agent.user.email,
                     'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
             send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
@@ -360,7 +360,7 @@ class TrafficViolationComparedMyColissionView(APIView):
             print("email", agent.user.email)
 
             # Send activation email
-            email_body = f'Hola {agent.user.username}, \n Se te ha asignado un nuevo fichero en CONTRAVENCIONES DE TRANSITO POR COLISION'
+            email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en CONTRAVENCIONES DE TRANSITO POR COLISION'
             data = {'email_body': email_body, 'to_email': agent.user.email,
                     'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
             send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
@@ -435,7 +435,7 @@ class ComplaintAndOfficeToAttendView(APIView):
             print("email", agent.user.email)
 
             # Send activation email
-            email_body = f'Hola {agent.user.username}, \n Se te ha asignado un nuevo fichero en QUEJAS Y OFICIOS POR ATENDER'
+            email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en QUEJAS Y OFICIOS POR ATENDER'
             data = {'email_body': email_body, 'to_email': agent.user.email,
                     'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
             send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
@@ -509,7 +509,7 @@ class File2Return2dOfficeView(APIView):
             print("email", agent.user.email)
 
             # Send activation email
-            email_body = f'Hola {agent.user.username}, \n Se te ha asignado un nuevo fichero en EXPEDIENTE PARA DEVOLVER AL DESPACHO DE PRIMERA INSTANCIA'
+            email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en EXPEDIENTE PARA DEVOLVER AL DESPACHO DE PRIMERA INSTANCIA'
             data = {'email_body': email_body, 'to_email': agent.user.email,
                     'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
             send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])

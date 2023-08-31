@@ -77,7 +77,7 @@ class TrafficViolationComparedSerializer2(serializers.ModelSerializer):
     assign_team = serializers.SerializerMethodField()
     class Meta:
         model = TrafficViolationCompared
-        fields = ['id', 'creator', 'assign_team', 'date_events', 'date_received', 'involved', 'id_card', 'violation_code', 'res_procedure', 'comment', 'file_res', 'pdf']
+        fields = ['id', 'creator', 'assign_team', 'date_events', 'date_received', 'compare_number', 'involved', 'id_card', 'violation_code', 'res_procedure', 'comment', 'file_res', 'pdf']
 
     def get_creator(self, obj):
         return UserSerializer(obj.creator).data

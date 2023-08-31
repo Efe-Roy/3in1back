@@ -141,7 +141,7 @@ class UserProfileDetail(APIView):
     
     def put(self, request, pk, format=None):
         UserById = self.get_object(pk)
-        print(request.FILES)  # Print the uploaded files for debugging
+        # print(request.FILES) \
         
         # Get the image data using the correct field name 'image[]'
         image_files = request.FILES.getlist('image[]')
@@ -157,7 +157,13 @@ class UserProfileDetail(APIView):
                 
                 return Response(serializer.data)
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
-        return Response({'error': 'Image data not found in the request.'}, status=HTTP_400_BAD_REQUEST)
+        else:
+            serializer = UserProfileSerializer(UserById, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+        # return Response({'error': 'Image data not found in the request.'}, status=HTTP_400_BAD_REQUEST)
 
 
 class CustomPageNumberPagination(PageNumberPagination):
