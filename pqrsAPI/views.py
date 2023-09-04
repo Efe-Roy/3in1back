@@ -4,11 +4,11 @@ from rest_framework.generics import (
     ListAPIView, RetrieveAPIView, CreateAPIView,
     UpdateAPIView, DestroyAPIView, ListCreateAPIView
 )
-from .serializers import (PqrsMainSerializer, EntityTypeSerializer, 
+from .serializers import (PqrsMainSerializer, EntityTypeSerializer, PqrsNotifySerializer,
                           NameTypeSerializer, AllPqrsSerializer, RestrictedPqrsMaintSerializer,
                           MediumResTypeSerializer, InnerFormPqrsMaintSerializer, StatusTypeSerializer
                           )
-from .models import PqrsMain, EntityType, NameType, MediumResType, FileResNum, StatusType
+from .models import PqrsMain, EntityType, NameType, MediumResType, FileResNum, StatusType, PqrsNotifify
 from Auth.models import Agent, Team
 
 from rest_framework.views import APIView
@@ -67,16 +67,23 @@ class In_Form_pqrs(APIView):
 
         serializer = InnerFormPqrsMaintSerializer(PqrsById, data=request.data)
         if serializer.is_valid():
-            print("erase", request.data["file_res"])
+            # print("status", PqrsById.status_of_the_response.id)
 
             get_file = FileResNum.objects.all()
 
             if get_file.exists():
                 last_file = FileResNum.objects.all().order_by('-id').first()
                 upId = last_file.id
+                getIndex = last_file.name
+                part = getIndex.split('-')
+                desired_value = part[1]
+                file_num = int(desired_value) + 1
+                d = "RR-" + "%04d" % (file_num,) + "-2023"
+                # print("Men Like Roy", d)
 
                 newFile_res_num = FileResNum.objects.get(id=upId)
-                newFile_res_num.name = request.data["file_res"]
+                # newFile_res_num.name = request.data["file_res"]
+                newFile_res_num.name = d
                 newFile_res_num.save()
 
             else:
@@ -84,7 +91,7 @@ class In_Form_pqrs(APIView):
                 file_num = 1
                 d = "RR-" + "%04d" % (file_num,) + "-2023"
                 FileResNum.objects.create(name=d)
-                print(d)
+                # print(d)
 
             serializer.save()
             return Response(serializer.data)
@@ -261,8 +268,12 @@ class FileResNumView(APIView):
             d = "RR-" + "%04d" % (file_num,) + "-2023"
             # FileResNum.objects.create(name=d)
             print(d)
-            
         
-
         return Response(d)
 
+    
+
+class PqrsNotifyView(ListAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = PqrsNotifySerializer
+    queryset = PqrsNotifify.objects.all()

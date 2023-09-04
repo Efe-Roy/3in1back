@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (
 get_all_entityType, get_all_nameType, 
 get_post_pqrs, get_details_pqrs, get_all_pqrs2, CurrentFileNumView,
-FileResNumView, get_all_mediumRes, In_Form_pqrs, get_pqrs, get_all_statuType
+FileResNumView, get_all_mediumRes, In_Form_pqrs, get_pqrs, get_all_statuType, PqrsNotifyView
 )
 
 urlpatterns = [
@@ -17,5 +17,8 @@ urlpatterns = [
 
     path('get_filenum', CurrentFileNumView.as_view()),
     path('get_fileRes', FileResNumView.as_view()),
-    path('post_inpqrs/<pk>/', In_Form_pqrs.as_view())
+    path('post_inpqrs/<pk>/', In_Form_pqrs.as_view()),
+
+
+    path('pqrs_notify', PqrsNotifyView.as_view()),
 ]

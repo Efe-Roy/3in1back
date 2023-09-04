@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import (
     PoliceCompliant, PoliceSubmissionLGGS, UrbanControl,
     TrafficViolationCompared, TrafficViolationComparedMyColission,
-    ComplaintAndOfficeToAttend, File2Return2dOffice
+    ComplaintAndOfficeToAttend, File2Return2dOffice, InspNotifify
 )
 from import_export.admin import ImportExportModelAdmin
 
@@ -18,3 +18,4 @@ admin.site.register(TrafficViolationCompared)
 admin.site.register(TrafficViolationComparedMyColission)
 admin.site.register(ComplaintAndOfficeToAttend)
 admin.site.register(File2Return2dOffice)
+admin.site.register(InspNotifify)

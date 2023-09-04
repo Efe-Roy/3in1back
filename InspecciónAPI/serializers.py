@@ -1,5 +1,8 @@
 from rest_framework import serializers
-from .models import PoliceCompliant, UrbanControl, PoliceSubmissionLGGS, TrafficViolationCompared, TrafficViolationComparedMyColission, ComplaintAndOfficeToAttend, File2Return2dOffice
+from .models import ( PoliceCompliant, UrbanControl, PoliceSubmissionLGGS, TrafficViolationCompared, 
+                     TrafficViolationComparedMyColission, ComplaintAndOfficeToAttend, File2Return2dOffice,
+                     InspNotifify
+                     )
 from Auth.serializers import AgentSerializer, UserSerializer
 
 class PoliceCompliantSerializer(serializers.ModelSerializer):
@@ -154,3 +157,16 @@ class ByIdFile2Return2dOfficeSerializer(serializers.ModelSerializer):
     class Meta:
         model = File2Return2dOffice
         fields = ['comment', 'file_res', 'pdf']
+
+
+
+class InspNotifySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = InspNotifify
+        fields = (
+            'id',
+            'msg',
+            'createdAt',
+            'assign_team'
+        )

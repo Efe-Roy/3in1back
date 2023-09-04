@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import PqrsMain, EntityType, NameType, MediumResType, StatusType
+from .models import PqrsMain, EntityType, NameType, MediumResType, StatusType, PqrsNotifify
 
 from Auth.serializers import TeamSerializer
 from Auth.models import Team
@@ -83,4 +83,15 @@ class InnerFormPqrsMaintSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PqrsMain
-        fields = ( 'id', 'medium_of_the_response', 'comment', 'file_res', 'pdf' )
+        fields = ( 'id', 'medium_of_the_response', 'status_of_the_response', 'comment', 'file_res', 'pdf' )
+    
+
+class PqrsNotifySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PqrsNotifify
+        fields = (
+            'id',
+            'msg',
+            'createdAt'
+        )

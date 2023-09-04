@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import PqrsMain, EntityType, NameType, MediumResType, StatusType, FileResNum
+from .models import PqrsMain, EntityType, NameType, MediumResType, StatusType, FileResNum, PqrsNotifify
 from import_export.admin import ImportExportModelAdmin
 
 # Register your models here.
@@ -14,3 +14,4 @@ admin.site.register(EntityType)
 admin.site.register(NameType)
 admin.site.register(MediumResType)
 admin.site.register(StatusType)
+admin.site.register(PqrsNotifify)

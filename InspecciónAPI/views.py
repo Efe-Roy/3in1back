@@ -1,13 +1,16 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
 from django.http import Http404
 from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.status import (
     HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_201_CREATED,
     HTTP_204_NO_CONTENT
 )
 from rest_framework.authentication import TokenAuthentication
-from .models import PoliceCompliant, UrbanControl, PoliceSubmissionLGGS, TrafficViolationCompared, TrafficViolationComparedMyColission, ComplaintAndOfficeToAttend, File2Return2dOffice
+from .models import ( PoliceCompliant, UrbanControl, PoliceSubmissionLGGS, TrafficViolationCompared, 
+                     TrafficViolationComparedMyColission, ComplaintAndOfficeToAttend, File2Return2dOffice,
+                     InspNotifify
+                     )
 from .serializers import ( 
     PoliceCompliantSerializer, ByIdPoliceCompliantSerializer, PoliceCompliantSerializer2,
     UrbanControlSerializer,ByIdUrbanControlSerializer, UrbanControlSerializer2,
@@ -15,17 +18,16 @@ from .serializers import (
     TrafficViolationComparedSerializer, ByIdTrafficViolationComparedSerializer, TrafficViolationComparedSerializer2,
     TrafficViolationComparedMyColissionSerializer, ByIdTrafficViolationComparedMyColissionSerializer,TrafficViolationComparedMyColissionSerializer2,
     ComplaintAndOfficeToAttendSerializer, ByIdComplaintAndOfficeToAttendSerializer, ComplaintAndOfficeToAttendSerializer2,
-    File2Return2dOfficeSerializer, ByIdFile2Return2dOfficeSerializer, File2Return2dOfficeSerializer2
+    File2Return2dOfficeSerializer, ByIdFile2Return2dOfficeSerializer, File2Return2dOfficeSerializer2, InspNotifySerializer
 )
 from rest_framework.generics import (
-    ListAPIView, RetrieveAPIView, CreateAPIView,
-    UpdateAPIView, DestroyAPIView, GenericAPIView,
-    ListCreateAPIView
+    ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView, GenericAPIView,ListCreateAPIView
 )
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from Auth.models import Agent
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 from django.conf import settings
+import os
 
 
 # Create your views here.
@@ -132,7 +134,10 @@ class UrbanControlView(APIView):
            
             agent_id = request.data['assign_team']
             agent = Agent.objects.get(id=agent_id)
-            print("email", agent.user.email)
+            # print("email", agent.user.email)
+
+            notification_msg = "Se te ha asignado un nuevo fichero en CONTROL URBAN"
+            InspNotifify.objects.create(msg=notification_msg, assign_team=agent)
 
             # Send activation email
             email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en CONTROL URBAN'
@@ -209,6 +214,9 @@ class PoliceSubmissionLGGSView(APIView):
             agent = Agent.objects.get(id=agent_id)
             print("email", agent.user.email)
 
+            notification_msg = "Se te ha asignado un nuevo fichero en COMPARENDOS POLICIVOS RADICADOS EN LA SECRETARIA GENERAL Y DE GOIERNO"
+            InspNotifify.objects.create(msg=notification_msg, assign_team=agent)
+
             # Send activation email
             email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en COMPARENDOS POLICIVOS RADICADOS EN LA SECRETARIA GENERAL Y DE GOIERNO'
             data = {'email_body': email_body, 'to_email': agent.user.email,
@@ -282,7 +290,10 @@ class TrafficViolationComparedView(APIView):
 
             agent_id = request.data['assign_team']
             agent = Agent.objects.get(id=agent_id)
-            print("email", agent.user.email)
+            # print("email", agent.user.email)
+
+            notification_msg = "Se te ha asignado un nuevo fichero en CONTRAVENCIONES DE TRANSITO POR COMPARENDO"
+            InspNotifify.objects.create(msg=notification_msg, assign_team=agent)
 
             # Send activation email
             email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en CONTRAVENCIONES DE TRANSITO POR COMPARENDO'
@@ -357,7 +368,10 @@ class TrafficViolationComparedMyColissionView(APIView):
 
             agent_id = request.data['assign_team']
             agent = Agent.objects.get(id=agent_id)
-            print("email", agent.user.email)
+            # print("email", agent.user.email)
+
+            notification_msg = "Se te ha asignado un nuevo fichero en CONTRAVENCIONES DE TRANSITO POR COLISION"
+            InspNotifify.objects.create(msg=notification_msg, assign_team=agent)
 
             # Send activation email
             email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en CONTRAVENCIONES DE TRANSITO POR COLISION'
@@ -432,7 +446,10 @@ class ComplaintAndOfficeToAttendView(APIView):
 
             agent_id = request.data['assign_team']
             agent = Agent.objects.get(id=agent_id)
-            print("email", agent.user.email)
+            # print("email", agent.user.email)
+
+            notification_msg = "Se te ha asignado un nuevo fichero en QUEJAS Y OFICIOS POR ATENDER"
+            InspNotifify.objects.create(msg=notification_msg, assign_team=agent)
 
             # Send activation email
             email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en QUEJAS Y OFICIOS POR ATENDER'
@@ -506,7 +523,11 @@ class File2Return2dOfficeView(APIView):
 
             agent_id = request.data['assign_team']
             agent = Agent.objects.get(id=agent_id)
-            print("email", agent.user.email)
+            # print("email", agent.user.email)
+
+            notification_msg = "Se te ha asignado un nuevo fichero en EXPEDIENTE PARA DEVOLVER AL DESPACHO DE PRIMERA INSTANCIA"
+            InspNotifify.objects.create(msg=notification_msg, assign_team=agent)
+
 
             # Send activation email
             email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en EXPEDIENTE PARA DEVOLVER AL DESPACHO DE PRIMERA INSTANCIA'
@@ -547,3 +568,70 @@ class File2Return2dOfficePrivateView(UpdateAPIView):
     # permission_classes = (IsAuthenticated, )
     serializer_class = ByIdFile2Return2dOfficeSerializer
     queryset = File2Return2dOffice.objects.all()
+
+
+
+
+class InspNotifyView(APIView):
+    authentication_classes = [TokenAuthentication]
+
+    def get(self, request, format=None):
+        # queryset = InspNotifify.objects.all()
+
+        user = self.request.user
+        if user.is_organisor:
+            queryset = InspNotifify.objects.all().order_by('-id')
+            # print("User is_organisor", user.id)
+        elif user.is_agent:
+            foundObject = Agent.objects.get(user_id=user.id)
+            agent_id = foundObject.id
+            # print("User is_team", agent_id)
+            queryset = InspNotifify.objects.filter(assign_team_id=agent_id)
+        else:
+            print("User Unauthorise")
+            queryset = None
+
+        serializer = InspNotifySerializer(queryset, many=True)
+        return Response( serializer.data)
+    
+
+
+class UploadPDFView(APIView):
+    def post(self, request):
+        # Get the uploaded PDF files from the request
+        pdf1 = request.FILES.get('pdf1')
+        pdf2 = request.FILES.get('pdf2')
+
+        if pdf1 and pdf2:
+            # Save the PDF files to temporary locations
+            pdf1_path = os.path.join(settings.MEDIA_ROOT, 'temp1.pdf')
+            pdf2_path = os.path.join(settings.MEDIA_ROOT, 'temp2.pdf')
+
+            with open(pdf1_path, 'wb') as destination:
+                for chunk in pdf1.chunks():
+                    destination.write(chunk)
+            with open(pdf2_path, 'wb') as destination:
+                for chunk in pdf2.chunks():
+                    destination.write(chunk)
+
+            # Send the PDFs via email
+            subject = 'PDF Attachments'
+            message = 'Here are the attached PDF files.'
+            from_email = settings.EMAIL_HOST_USER
+            recipient_list = ['dakaraefe3@gmail.com']
+
+            email = EmailMessage(subject, message, from_email, recipient_list)
+            email.attach_file(pdf1_path)
+            email.attach_file(pdf2_path)
+            email.send()
+
+            # Clean up the temporary files
+            os.remove(pdf1_path)
+            os.remove(pdf2_path)
+
+            return Response({'message': 'PDFs sent via email.'}, status=status.HTTP_200_OK)
+
+        return Response({'message': 'Both PDFs are required for upload.'}, status=status.HTTP_400_BAD_REQUEST)
+    
+
+

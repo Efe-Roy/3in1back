@@ -85,3 +85,12 @@ class File2Return2dOffice(models.Model):
     comment = models.CharField(max_length=2300, blank=True, null=True)
     file_res = models.CharField(max_length=2300, blank=True, null=True)
     pdf = models.FileField(null=True, blank=True, upload_to='pdfs/File2Return2dOffice/')
+
+
+class InspNotifify(models.Model):
+    msg = models.CharField(max_length=1000)
+    createdAt = models.DateField(auto_now_add=True)
+    assign_team = models.ForeignKey(Agent, null=True, blank=True, on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return self.msg or ''
