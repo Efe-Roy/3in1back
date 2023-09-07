@@ -92,7 +92,7 @@ class get_contratacion(ListCreateAPIView):
         # print("qaws", user.is_organisor)
         if user.is_organisor:
             queryset = ContratacionMain.objects.all()
-        elif user.is_hiring and user.name == "43420510":
+        elif user.is_hiring and user.username == "43420510":
             queryset = ContratacionMain.objects.all()
         elif user.is_hiring:
             # print("None Org", user.responsible_secretary_id)
