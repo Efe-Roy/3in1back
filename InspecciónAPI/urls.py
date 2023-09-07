@@ -6,7 +6,8 @@ from .views import (
     TrafficViolationComparedView, TrafficViolationComparedDetailView, TrafficViolationComparedPrivateView,
     TrafficViolationComparedMyColissionView, TrafficViolationComparedMyColissionDetailView, TrafficViolationComparedMyColissionPrivateView,
     ComplaintAndOfficeToAttendView, ComplaintAndOfficeToAttendDetailView, ComplaintAndOfficeToAttendPrivateView,
-    File2Return2dOfficeView, File2Return2dOfficeDetailView, File2Return2dOfficePrivateView, InspNotifyView
+    File2Return2dOfficeView, File2Return2dOfficeDetailView, File2Return2dOfficePrivateView, InspNotifyView,
+    UploadPDFView, UltimateView, InspUserListView
 )
 
 urlpatterns = [
@@ -42,5 +43,8 @@ urlpatterns = [
 
 
     path('insp_notify', InspNotifyView.as_view()),
+    path('ultimate/<int:pk>/', UltimateView.as_view(), name='ultimate-view'),
 
+    path('upload/', UploadPDFView.as_view(), name='upload-pdf'),
+    path('insp_userlist/', InspUserListView.as_view()),
 ]

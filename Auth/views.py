@@ -177,6 +177,7 @@ class UserListView(generics.ListAPIView):
     queryset = User.objects.all().order_by('-date_joined')
     pagination_class = CustomPageNumberPagination
 
+
 class UserDetail(generics.RetrieveAPIView):
     permission_classes = (AllowAny,)
     queryset = User.objects.all()

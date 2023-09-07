@@ -20,6 +20,7 @@ from .serializers import (
     ComplaintAndOfficeToAttendSerializer, ByIdComplaintAndOfficeToAttendSerializer, ComplaintAndOfficeToAttendSerializer2,
     File2Return2dOfficeSerializer, ByIdFile2Return2dOfficeSerializer, File2Return2dOfficeSerializer2, InspNotifySerializer
 )
+from Auth.serializers import AgentSerializer
 from rest_framework.generics import (
     ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView, GenericAPIView,ListCreateAPIView
 )
@@ -27,7 +28,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from Auth.models import Agent
 from django.core.mail import send_mail, EmailMessage
 from django.conf import settings
-import os
+from rest_framework.pagination import PageNumberPagination
 
 
 # Create your views here.
@@ -598,40 +599,75 @@ class InspNotifyView(APIView):
 
 class UploadPDFView(APIView):
     def post(self, request):
-        # Get the uploaded PDF files from the request
+        # Get the uploaded PDF file from the request
         pdf1 = request.FILES.get('pdf1')
-        pdf2 = request.FILES.get('pdf2')
+        agentId = request.data['agentId']
+        # print("vbg", agentId)
+        agent = Agent.objects.get(id=agentId)
 
-        if pdf1 and pdf2:
-            # Save the PDF files to temporary locations
-            pdf1_path = os.path.join(settings.MEDIA_ROOT, 'temp1.pdf')
-            pdf2_path = os.path.join(settings.MEDIA_ROOT, 'temp2.pdf')
-
-            with open(pdf1_path, 'wb') as destination:
-                for chunk in pdf1.chunks():
-                    destination.write(chunk)
-            with open(pdf2_path, 'wb') as destination:
-                for chunk in pdf2.chunks():
-                    destination.write(chunk)
-
-            # Send the PDFs via email
-            subject = 'PDF Attachments'
-            message = 'Here are the attached PDF files.'
+        if pdf1:
+            # Send the PDF via email
+            subject = 'PDF Attachment'
+            message = 'Here is the attached PDF file.'
             from_email = settings.EMAIL_HOST_USER
-            recipient_list = ['dakaraefe3@gmail.com']
+            # recipient_list = ['dakaraefe3@gmail.com']
+            recipient_list = [agent.user.email]
 
             email = EmailMessage(subject, message, from_email, recipient_list)
-            email.attach_file(pdf1_path)
-            email.attach_file(pdf2_path)
+            email.attach(pdf1.name, pdf1.read(), pdf1.content_type)
+            # email.attach(pdf2.name, pdf2.read(), pdf2.content_type)
             email.send()
 
-            # Clean up the temporary files
-            os.remove(pdf1_path)
-            os.remove(pdf2_path)
+            return Response({'message': 'PDF sent via email.'}, status=status.HTTP_200_OK)
 
-            return Response({'message': 'PDFs sent via email.'}, status=status.HTTP_200_OK)
-
-        return Response({'message': 'Both PDFs are required for upload.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'message': 'A PDF file is required for upload.'}, status=status.HTTP_400_BAD_REQUEST)
     
 
+class CustomPageNumberPagination(PageNumberPagination):
+    page_size_query_param = 'PageSize'
 
+class InspUserListView(ListCreateAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = AgentSerializer
+    pagination_class = CustomPageNumberPagination
+
+    def get_queryset(self):
+        queryset = Agent.objects.all().order_by('-id')
+        return queryset
+
+class UltimateView(APIView):
+    def get(self, request, pk, format=None):
+        # Filter and serialize each queryset separately
+        queryset1 = UrbanControl.objects.filter(assign_team_id=pk)
+        serializer1 = UrbanControlSerializer2(queryset1, many=True)
+
+        queryset2 = PoliceCompliant.objects.filter(assign_team_id=pk)
+        serializer2 = PoliceCompliantSerializer2(queryset2, many=True)
+
+        queryset3 = PoliceSubmissionLGGS.objects.filter(assign_team_id=pk)
+        serializer3 = PoliceSubmissionLGGSSerializer2(queryset3, many=True)
+
+        queryset4 = TrafficViolationCompared.objects.filter(assign_team_id=pk)
+        serializer4 = TrafficViolationComparedSerializer2(queryset4, many=True)
+
+        queryset5 = TrafficViolationComparedMyColission.objects.filter(assign_team_id=pk)
+        serializer5 = TrafficViolationComparedMyColissionSerializer2(queryset5, many=True)
+
+        queryset6 = ComplaintAndOfficeToAttend.objects.filter(assign_team_id=pk)
+        serializer6 = ComplaintAndOfficeToAttendSerializer2(queryset6, many=True)
+
+        queryset7 = File2Return2dOffice.objects.filter(assign_team_id=pk)
+        serializer7 = File2Return2dOfficeSerializer2(queryset7, many=True)
+
+        # Combine the serialized data from all querysets
+        serialized_data = {
+            'urban_control': serializer1.data,
+            'police_compliant': serializer2.data,
+            'police_submission_lggs': serializer3.data,
+            'traffic_violation_compared': serializer4.data,
+            'traffic_violation_compared_my_colission': serializer5.data,
+            'complaint_and_office_to_attend': serializer6.data,
+            'file_2_return_2d_office': serializer7.data,
+        }
+
+        return Response(serialized_data)
