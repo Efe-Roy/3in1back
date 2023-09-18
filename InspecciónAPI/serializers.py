@@ -58,7 +58,7 @@ class PoliceSubmissionLGGSSerializer2(serializers.ModelSerializer):
     assign_team = serializers.SerializerMethodField()
     class Meta:
         model = PoliceSubmissionLGGS
-        fields = ['id', 'creator', 'assign_team', 'name', 'Id_card', 'appearance_num', 'act_num', 'comment', 'file_res', 'pdf']
+        fields = ['id', 'creator', 'assign_team', 'name', 'Id_card', 'appearance_num', 'act_num', 'type_of_identification', 'comment', 'file_res', 'pdf']
 
     def get_creator(self, obj):
         return UserSerializer(obj.creator).data

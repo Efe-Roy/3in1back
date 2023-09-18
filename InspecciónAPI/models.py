@@ -9,6 +9,7 @@ class PoliceSubmissionLGGS(models.Model):
     Id_card = models.CharField(max_length=2300, null=True)
     appearance_num = models.CharField(max_length=2300, null=True)
     act_num = models.CharField(max_length=2300, null=True)
+    type_of_identification = models.CharField(max_length=2300, null=True)
 
     comment = models.CharField(max_length=2300, blank=True, null=True)
     file_res = models.CharField(max_length=2300, blank=True, null=True)
@@ -94,3 +95,20 @@ class InspNotifify(models.Model):
 
     def __str__(self):
         return self.msg or ''
+
+
+class CarNumber(models.Model):
+    name = models.CharField(max_length=310)
+
+    def __str__(self):
+        return self.name
+
+
+class UploadSignedPDF(models.Model):
+    car_num = models.CharField(max_length=310)
+    assign_team = models.ForeignKey(Agent, null=True, blank=True, on_delete=models.SET_NULL)
+    pdf = models.FileField(null=True, blank=True, upload_to='pdfs/SignedPDF/')
+    createdAt = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name

@@ -172,9 +172,9 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "http://167.71.19.13",
+    # "http://167.71.19.13",
     "https://procesosadministrativos.com",
-    "https://rainbow-monstera-17aaac.netlify.app"
+    # "https://rainbow-monstera-17aaac.netlify.app"
 ]
 
 AUTHENTICATION_BACKENDS = [

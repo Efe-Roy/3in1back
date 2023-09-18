@@ -9,7 +9,7 @@ from rest_framework.status import (
 from rest_framework.authentication import TokenAuthentication
 from .models import ( PoliceCompliant, UrbanControl, PoliceSubmissionLGGS, TrafficViolationCompared, 
                      TrafficViolationComparedMyColission, ComplaintAndOfficeToAttend, File2Return2dOffice,
-                     InspNotifify
+                     InspNotifify, CarNumber, UploadSignedPDF
                      )
 from .serializers import ( 
     PoliceCompliantSerializer, ByIdPoliceCompliantSerializer, PoliceCompliantSerializer2,
@@ -29,6 +29,7 @@ from Auth.models import Agent
 from django.core.mail import send_mail, EmailMessage
 from django.conf import settings
 from rest_framework.pagination import PageNumberPagination
+
 
 
 # Create your views here.
@@ -604,19 +605,36 @@ class UploadPDFView(APIView):
         agentId = request.data['agentId']
         # print("vbg", agentId)
         agent = Agent.objects.get(id=agentId)
-
+ 
         if pdf1:
             # Send the PDF via email
             subject = 'PDF Attachment'
             message = 'Here is the attached PDF file.'
             from_email = settings.EMAIL_HOST_USER
-            # recipient_list = ['dakaraefe3@gmail.com']
-            recipient_list = [agent.user.email]
+            recipient_list = ['dakaraefe3@gmail.com']
+            # recipient_list = [agent.user.email]
 
             email = EmailMessage(subject, message, from_email, recipient_list)
             email.attach(pdf1.name, pdf1.read(), pdf1.content_type)
             # email.attach(pdf2.name, pdf2.read(), pdf2.content_type)
             email.send()
+
+
+            get_file = CarNumber.objects.all()
+            if get_file.exists():
+                last_file = CarNumber.objects.all().order_by('-id').first()
+                # print(last_file)
+                upId = last_file.id
+                getIndex = last_file.name
+                file_num = int(getIndex) + 1
+                d = "%03d" % (file_num) 
+                print("Men Like Roy", d)
+
+                newCar_num = CarNumber.objects.get(id=upId)
+                newCar_num.name = d
+                newCar_num.save()
+
+                UploadSignedPDF.objects.create(car_num=d, assign_team=agent)
 
             return Response({'message': 'PDF sent via email.'}, status=status.HTTP_200_OK)
 
@@ -671,3 +689,23 @@ class UltimateView(APIView):
         }
 
         return Response(serialized_data)
+    
+
+class CarNum(APIView):
+    def get(self, request):
+        get_file = CarNumber.objects.all()
+        if get_file.exists():
+            last_file = CarNumber.objects.all().order_by('-id').first()
+            # print(last_file)
+            upId = last_file.id
+            getIndex = last_file.name
+            file_num = int(getIndex) + 1
+            d = "%03d" % (file_num) 
+            print("Men Like Roy", d)
+
+            # newCar_num = CarNumber.objects.get(id=upId)
+            # newCar_num.name = d
+            # newCar_num.save()
+
+            return Response(d)
+        

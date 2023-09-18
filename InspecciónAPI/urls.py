@@ -7,7 +7,7 @@ from .views import (
     TrafficViolationComparedMyColissionView, TrafficViolationComparedMyColissionDetailView, TrafficViolationComparedMyColissionPrivateView,
     ComplaintAndOfficeToAttendView, ComplaintAndOfficeToAttendDetailView, ComplaintAndOfficeToAttendPrivateView,
     File2Return2dOfficeView, File2Return2dOfficeDetailView, File2Return2dOfficePrivateView, InspNotifyView,
-    UploadPDFView, UltimateView, InspUserListView
+    UploadPDFView, UltimateView, InspUserListView, CarNum
 )
 
 urlpatterns = [
@@ -47,4 +47,6 @@ urlpatterns = [
 
     path('upload/', UploadPDFView.as_view(), name='upload-pdf'),
     path('insp_userlist/', InspUserListView.as_view()),
+
+    path('carnum/', CarNum.as_view()),
 ]
