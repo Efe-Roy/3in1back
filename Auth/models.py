@@ -8,6 +8,9 @@ from contratacionAPI.models import resSecType
 def upload_to(instance, filename):
     return 'profile/{filename}'.format(filename=filename)
 
+def uploadSignature_to(instance, filename):
+    return 'signature/{filename}'.format(filename=filename)
+
 class User(AbstractUser):
     otp_code = models.CharField(max_length=6, null=True, blank=True)
     
@@ -17,11 +20,11 @@ class User(AbstractUser):
     position = models.CharField(max_length=300, null=True, blank=True)
     responsible_secretary = models.ForeignKey(resSecType, null=True, blank=True, on_delete=models.SET_NULL)
 
+    signature = models.ImageField(_("Signature"), upload_to=uploadSignature_to, null=True, blank=True)
+
     is_team = models.BooleanField(default=False)
     is_pqrs = models.BooleanField(default=False)
-    
     is_agent = models.BooleanField(default=False)
-
     is_hiring = models.BooleanField(default=False)
 
 class UserProfile(models.Model):
