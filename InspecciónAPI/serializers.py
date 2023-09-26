@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import ( PoliceCompliant, UrbanControl, PoliceSubmissionLGGS, TrafficViolationCompared, 
                      TrafficViolationComparedMyColission, ComplaintAndOfficeToAttend, File2Return2dOffice,
-                     InspNotifify
+                     InspNotifify, UploadSignedPDF
                      )
 from Auth.serializers import AgentSerializer, UserSerializer
 
@@ -170,3 +170,22 @@ class InspNotifySerializer(serializers.ModelSerializer):
             'createdAt',
             'assign_team'
         )
+
+class UploadSignedPDFSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UploadSignedPDF
+        fields = ['pdf_file1', 'pdf_file2']
+        
+
+class ListUploadSignedPDFSerializer(serializers.ModelSerializer):
+    creator = serializers.SerializerMethodField()
+    assign_team = serializers.SerializerMethodField()
+    class Meta:
+        model = UploadSignedPDF
+        fields = ['car_num', 'assign_team', 'creator', 'pdf_file1', 'pdf_file2', 'createdAt']
+        
+    def get_creator(self, obj):
+        return UserSerializer(obj.creator).data
+    
+    def get_assign_team(self, obj):
+        return AgentSerializer(obj.assign_team).data

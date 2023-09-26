@@ -18,17 +18,19 @@ from .serializers import (
     TrafficViolationComparedSerializer, ByIdTrafficViolationComparedSerializer, TrafficViolationComparedSerializer2,
     TrafficViolationComparedMyColissionSerializer, ByIdTrafficViolationComparedMyColissionSerializer,TrafficViolationComparedMyColissionSerializer2,
     ComplaintAndOfficeToAttendSerializer, ByIdComplaintAndOfficeToAttendSerializer, ComplaintAndOfficeToAttendSerializer2,
-    File2Return2dOfficeSerializer, ByIdFile2Return2dOfficeSerializer, File2Return2dOfficeSerializer2, InspNotifySerializer
+    File2Return2dOfficeSerializer, ByIdFile2Return2dOfficeSerializer, File2Return2dOfficeSerializer2, InspNotifySerializer,
+    UploadSignedPDFSerializer, ListUploadSignedPDFSerializer
 )
 from Auth.serializers import AgentSerializer
 from rest_framework.generics import (
     ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView, GenericAPIView,ListCreateAPIView
 )
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from Auth.models import Agent
+from Auth.models import Agent, User
 from django.core.mail import send_mail, EmailMessage
 from django.conf import settings
 from rest_framework.pagination import PageNumberPagination
+import os
 
 
 
@@ -65,10 +67,10 @@ class PoliceCompliantView(APIView):
             print("email", agent.user.email)
 
             # Send activation email
-            email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en QUERELLA DE POLICIA'
-            data = {'email_body': email_body, 'to_email': agent.user.email,
-                    'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
-            send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
+            # email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en QUERELLA DE POLICIA'
+            # data = {'email_body': email_body, 'to_email': agent.user.email,
+            #         'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
+            # send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
             
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
@@ -142,10 +144,10 @@ class UrbanControlView(APIView):
             InspNotifify.objects.create(msg=notification_msg, assign_team=agent)
 
             # Send activation email
-            email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en CONTROL URBAN'
-            data = {'email_body': email_body, 'to_email': agent.user.email,
-                    'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
-            send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
+            # email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en CONTROL URBAN'
+            # data = {'email_body': email_body, 'to_email': agent.user.email,
+            #         'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
+            # send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
             
 
             return Response(serializer.data, status= HTTP_201_CREATED)
@@ -220,10 +222,10 @@ class PoliceSubmissionLGGSView(APIView):
             InspNotifify.objects.create(msg=notification_msg, assign_team=agent)
 
             # Send activation email
-            email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en COMPARENDOS POLICIVOS RADICADOS EN LA SECRETARIA GENERAL Y DE GOIERNO'
-            data = {'email_body': email_body, 'to_email': agent.user.email,
-                    'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
-            send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
+            # email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en COMPARENDOS POLICIVOS RADICADOS EN LA SECRETARIA GENERAL Y DE GOIERNO'
+            # data = {'email_body': email_body, 'to_email': agent.user.email,
+            #         'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
+            # send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
             
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
@@ -298,10 +300,10 @@ class TrafficViolationComparedView(APIView):
             InspNotifify.objects.create(msg=notification_msg, assign_team=agent)
 
             # Send activation email
-            email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en CONTRAVENCIONES DE TRANSITO POR COMPARENDO'
-            data = {'email_body': email_body, 'to_email': agent.user.email,
-                    'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
-            send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
+            # email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en CONTRAVENCIONES DE TRANSITO POR COMPARENDO'
+            # data = {'email_body': email_body, 'to_email': agent.user.email,
+            #         'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
+            # send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
             
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
@@ -376,10 +378,10 @@ class TrafficViolationComparedMyColissionView(APIView):
             InspNotifify.objects.create(msg=notification_msg, assign_team=agent)
 
             # Send activation email
-            email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en CONTRAVENCIONES DE TRANSITO POR COLISION'
-            data = {'email_body': email_body, 'to_email': agent.user.email,
-                    'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
-            send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
+            # email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en CONTRAVENCIONES DE TRANSITO POR COLISION'
+            # data = {'email_body': email_body, 'to_email': agent.user.email,
+            #         'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
+            # send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
             
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
@@ -454,10 +456,10 @@ class ComplaintAndOfficeToAttendView(APIView):
             InspNotifify.objects.create(msg=notification_msg, assign_team=agent)
 
             # Send activation email
-            email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en QUEJAS Y OFICIOS POR ATENDER'
-            data = {'email_body': email_body, 'to_email': agent.user.email,
-                    'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
-            send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
+            # email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en QUEJAS Y OFICIOS POR ATENDER'
+            # data = {'email_body': email_body, 'to_email': agent.user.email,
+            #         'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
+            # send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
             
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
@@ -532,10 +534,10 @@ class File2Return2dOfficeView(APIView):
 
 
             # Send activation email
-            email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en EXPEDIENTE PARA DEVOLVER AL DESPACHO DE PRIMERA INSTANCIA'
-            data = {'email_body': email_body, 'to_email': agent.user.email,
-                    'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
-            send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
+            # email_body = f'Hola {agent.user.first_name} {agent.user.last_name}, \n Se te ha asignado un nuevo fichero en EXPEDIENTE PARA DEVOLVER AL DESPACHO DE PRIMERA INSTANCIA'
+            # data = {'email_body': email_body, 'to_email': agent.user.email,
+            #         'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
+            # send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
             
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
@@ -641,6 +643,41 @@ class UploadPDFView(APIView):
         return Response({'message': 'A PDF file is required for upload.'}, status=status.HTTP_400_BAD_REQUEST)
     
 
+class UpdateAndEmailPDFView(APIView):
+    def put(self, request, pk):
+        try:
+            signed_pdf = UploadSignedPDF.objects.get(pk=pk)
+        except UploadSignedPDF.DoesNotExist:
+            return Response({'message': 'Record not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UploadSignedPDFSerializer(signed_pdf, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            # instance = serializer.save()
+
+            # Send emails with both PDF attachments
+            # self.send_email_with_attachments(instance.pdf_file1, instance.pdf_file2)
+
+            return Response({'message': 'Record updated and emails sent successfully'})
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    # def send_email_with_attachments(self, pdf_file1, pdf_file2):
+    #     # Send an email with both PDF attachments
+    #     subject = 'PDF Attachments'
+    #     message = 'Please find attached PDFs.'
+    #     from_email = settings.EMAIL_HOST_USER
+    #     recipient_list = ['dakaraefe3@gmail.com']
+
+    #     # Attach both PDF files
+    #     attachments = [(pdf_file1.name, pdf_file1.read(), 'application/pdf'),
+    #                    (pdf_file2.name, pdf_file2.read(), 'application/pdf')]
+
+    #     send_mail(subject, message, from_email, recipient_list, fail_silently=False, attachments=attachments)
+
+
 class CustomPageNumberPagination(PageNumberPagination):
     page_size_query_param = 'PageSize'
 
@@ -653,28 +690,37 @@ class InspUserListView(ListCreateAPIView):
         queryset = Agent.objects.all().order_by('-id')
         return queryset
 
+class ListUpdateAndEmailPDFView(ListCreateAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = ListUploadSignedPDFSerializer
+    pagination_class = CustomPageNumberPagination
+
+    def get_queryset(self):
+        queryset = UploadSignedPDF.objects.all().order_by('-id')
+        return queryset
+
 class UltimateView(APIView):
     def get(self, request, pk, format=None):
         # Filter and serialize each queryset separately
-        queryset1 = UrbanControl.objects.filter(assign_team_id=pk)
+        queryset1 = UrbanControl.objects.filter(assign_team_id=pk, status_track=False)
         serializer1 = UrbanControlSerializer2(queryset1, many=True)
 
-        queryset2 = PoliceCompliant.objects.filter(assign_team_id=pk)
+        queryset2 = PoliceCompliant.objects.filter(assign_team_id=pk, status_track=False)
         serializer2 = PoliceCompliantSerializer2(queryset2, many=True)
 
-        queryset3 = PoliceSubmissionLGGS.objects.filter(assign_team_id=pk)
+        queryset3 = PoliceSubmissionLGGS.objects.filter(assign_team_id=pk, status_track=False)
         serializer3 = PoliceSubmissionLGGSSerializer2(queryset3, many=True)
 
-        queryset4 = TrafficViolationCompared.objects.filter(assign_team_id=pk)
+        queryset4 = TrafficViolationCompared.objects.filter(assign_team_id=pk, status_track=False)
         serializer4 = TrafficViolationComparedSerializer2(queryset4, many=True)
 
-        queryset5 = TrafficViolationComparedMyColission.objects.filter(assign_team_id=pk)
+        queryset5 = TrafficViolationComparedMyColission.objects.filter(assign_team_id=pk, status_track=False)
         serializer5 = TrafficViolationComparedMyColissionSerializer2(queryset5, many=True)
 
-        queryset6 = ComplaintAndOfficeToAttend.objects.filter(assign_team_id=pk)
+        queryset6 = ComplaintAndOfficeToAttend.objects.filter(assign_team_id=pk, status_track=False)
         serializer6 = ComplaintAndOfficeToAttendSerializer2(queryset6, many=True)
 
-        queryset7 = File2Return2dOffice.objects.filter(assign_team_id=pk)
+        queryset7 = File2Return2dOffice.objects.filter(assign_team_id=pk, status_track=False)
         serializer7 = File2Return2dOfficeSerializer2(queryset7, many=True)
 
         # Combine the serialized data from all querysets
@@ -689,6 +735,57 @@ class UltimateView(APIView):
         }
 
         return Response(serialized_data)
+    
+    def put(self, request, pk, format=None):
+        # Update the complete field to True for objects with status_track=False in each queryset
+        creatorId = request.data['creatorId']
+
+        # print("sdsd", creatorId)
+        agent = Agent.objects.get(id=pk)
+        CreatorIntance = User.objects.get(id=creatorId)
+
+        queryset1 = UrbanControl.objects.filter(assign_team_id=pk, status_track=False)
+        queryset1.update(status_track=True)
+
+        queryset2 = PoliceCompliant.objects.filter(assign_team_id=pk, status_track=False)
+        queryset2.update(status_track=True)
+
+        queryset3 = PoliceSubmissionLGGS.objects.filter(assign_team_id=pk, status_track=False)
+        queryset3.update(status_track=True)
+
+        queryset4 = TrafficViolationCompared.objects.filter(assign_team_id=pk, status_track=False)
+        queryset4.update(status_track=True)
+
+        queryset5 = TrafficViolationComparedMyColission.objects.filter(assign_team_id=pk, status_track=False)
+        queryset5.update(status_track=True)
+
+        queryset6 = ComplaintAndOfficeToAttend.objects.filter(assign_team_id=pk, status_track=False)
+        queryset6.update(status_track=True)
+
+        queryset7 = File2Return2dOffice.objects.filter(assign_team_id=pk, status_track=False)
+        queryset7.update(status_track=True)
+
+
+
+    
+        get_file = CarNumber.objects.all()
+        if get_file.exists():
+            last_file = CarNumber.objects.all().order_by('-id').first()
+            # print(last_file)
+            upId = last_file.id
+            getIndex = last_file.name
+            file_num = int(getIndex) + 1
+            d = "%03d" % (file_num) 
+            print("Men Like Roy", d)
+
+            newCar_num = CarNumber.objects.get(id=upId)
+            newCar_num.name = d
+            newCar_num.save()
+
+            UploadSignedPDF.objects.create(car_num=d, assign_team=agent, creator=CreatorIntance)
+
+            
+        return Response(status=status.HTTP_204_NO_CONTENT)
     
 
 class CarNum(APIView):
@@ -709,3 +806,17 @@ class CarNum(APIView):
 
             return Response(d)
         
+
+class ToggleSignature(APIView):
+    def post(self, request):
+        new_value = request.data.get("approve_signature", False)
+        userId = request.data['userId']
+        instance = User.objects.get(id=userId)
+        
+        instance.approve_signature = new_value
+        instance.save()
+        return Response({
+            "success": "Field updated successfully",
+            "status": new_value
+            })
+    

@@ -21,6 +21,7 @@ class User(AbstractUser):
     responsible_secretary = models.ForeignKey(resSecType, null=True, blank=True, on_delete=models.SET_NULL)
 
     signature = models.ImageField(_("Signature"), upload_to=uploadSignature_to, null=True, blank=True)
+    approve_signature = models.BooleanField(default=False)
 
     is_team = models.BooleanField(default=False)
     is_pqrs = models.BooleanField(default=False)
