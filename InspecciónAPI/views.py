@@ -744,25 +744,25 @@ class UltimateView(APIView):
         agent = Agent.objects.get(id=pk)
         CreatorIntance = User.objects.get(id=creatorId)
 
-        queryset1 = UrbanControl.objects.filter(assign_team_id=pk, status_track=False)
+        queryset1 = UrbanControl.objects.filter(assign_team_id=pk, status_track=True)
         queryset1.update(status_track=False)
 
-        queryset2 = PoliceCompliant.objects.filter(assign_team_id=pk, status_track=False)
+        queryset2 = PoliceCompliant.objects.filter(assign_team_id=pk, status_track=True)
         queryset2.update(status_track=False)
 
-        queryset3 = PoliceSubmissionLGGS.objects.filter(assign_team_id=pk, status_track=False)
+        queryset3 = PoliceSubmissionLGGS.objects.filter(assign_team_id=pk, status_track=True)
         queryset3.update(status_track=False)
 
-        queryset4 = TrafficViolationCompared.objects.filter(assign_team_id=pk, status_track=False)
+        queryset4 = TrafficViolationCompared.objects.filter(assign_team_id=pk, status_track=True)
         queryset4.update(status_track=False)
 
-        queryset5 = TrafficViolationComparedMyColission.objects.filter(assign_team_id=pk, status_track=False)
+        queryset5 = TrafficViolationComparedMyColission.objects.filter(assign_team_id=pk, status_track=True)
         queryset5.update(status_track=False)
 
-        queryset6 = ComplaintAndOfficeToAttend.objects.filter(assign_team_id=pk, status_track=False)
+        queryset6 = ComplaintAndOfficeToAttend.objects.filter(assign_team_id=pk, status_track=True)
         queryset6.update(status_track=False)
 
-        queryset7 = File2Return2dOffice.objects.filter(assign_team_id=pk, status_track=False)
+        queryset7 = File2Return2dOffice.objects.filter(assign_team_id=pk, status_track=True)
         queryset7.update(status_track=False)
 
 
