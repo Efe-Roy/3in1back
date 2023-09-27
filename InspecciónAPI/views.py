@@ -702,25 +702,25 @@ class ListUpdateAndEmailPDFView(ListCreateAPIView):
 class UltimateView(APIView):
     def get(self, request, pk, format=None):
         # Filter and serialize each queryset separately
-        queryset1 = UrbanControl.objects.filter(assign_team_id=pk, status_track=False)
+        queryset1 = UrbanControl.objects.filter(assign_team_id=pk, status_track=True)
         serializer1 = UrbanControlSerializer2(queryset1, many=True)
 
-        queryset2 = PoliceCompliant.objects.filter(assign_team_id=pk, status_track=False)
+        queryset2 = PoliceCompliant.objects.filter(assign_team_id=pk, status_track=True)
         serializer2 = PoliceCompliantSerializer2(queryset2, many=True)
 
-        queryset3 = PoliceSubmissionLGGS.objects.filter(assign_team_id=pk, status_track=False)
+        queryset3 = PoliceSubmissionLGGS.objects.filter(assign_team_id=pk, status_track=True)
         serializer3 = PoliceSubmissionLGGSSerializer2(queryset3, many=True)
 
-        queryset4 = TrafficViolationCompared.objects.filter(assign_team_id=pk, status_track=False)
+        queryset4 = TrafficViolationCompared.objects.filter(assign_team_id=pk, status_track=True)
         serializer4 = TrafficViolationComparedSerializer2(queryset4, many=True)
 
-        queryset5 = TrafficViolationComparedMyColission.objects.filter(assign_team_id=pk, status_track=False)
+        queryset5 = TrafficViolationComparedMyColission.objects.filter(assign_team_id=pk, status_track=True)
         serializer5 = TrafficViolationComparedMyColissionSerializer2(queryset5, many=True)
 
-        queryset6 = ComplaintAndOfficeToAttend.objects.filter(assign_team_id=pk, status_track=False)
+        queryset6 = ComplaintAndOfficeToAttend.objects.filter(assign_team_id=pk, status_track=True)
         serializer6 = ComplaintAndOfficeToAttendSerializer2(queryset6, many=True)
 
-        queryset7 = File2Return2dOffice.objects.filter(assign_team_id=pk, status_track=False)
+        queryset7 = File2Return2dOffice.objects.filter(assign_team_id=pk, status_track=True)
         serializer7 = File2Return2dOfficeSerializer2(queryset7, many=True)
 
         # Combine the serialized data from all querysets
