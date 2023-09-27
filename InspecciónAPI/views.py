@@ -745,44 +745,44 @@ class UltimateView(APIView):
         CreatorIntance = User.objects.get(id=creatorId)
 
         queryset1 = UrbanControl.objects.filter(assign_team_id=pk, status_track=False)
-        queryset1.update(status_track=True)
+        queryset1.update(status_track=False)
 
         queryset2 = PoliceCompliant.objects.filter(assign_team_id=pk, status_track=False)
-        queryset2.update(status_track=True)
+        queryset2.update(status_track=False)
 
         queryset3 = PoliceSubmissionLGGS.objects.filter(assign_team_id=pk, status_track=False)
-        queryset3.update(status_track=True)
+        queryset3.update(status_track=False)
 
         queryset4 = TrafficViolationCompared.objects.filter(assign_team_id=pk, status_track=False)
-        queryset4.update(status_track=True)
+        queryset4.update(status_track=False)
 
         queryset5 = TrafficViolationComparedMyColission.objects.filter(assign_team_id=pk, status_track=False)
-        queryset5.update(status_track=True)
+        queryset5.update(status_track=False)
 
         queryset6 = ComplaintAndOfficeToAttend.objects.filter(assign_team_id=pk, status_track=False)
-        queryset6.update(status_track=True)
+        queryset6.update(status_track=False)
 
         queryset7 = File2Return2dOffice.objects.filter(assign_team_id=pk, status_track=False)
-        queryset7.update(status_track=True)
+        queryset7.update(status_track=False)
 
 
 
     
-        get_file = CarNumber.objects.all()
-        if get_file.exists():
-            last_file = CarNumber.objects.all().order_by('-id').first()
-            # print(last_file)
-            upId = last_file.id
-            getIndex = last_file.name
-            file_num = int(getIndex) + 1
-            d = "%03d" % (file_num) 
-            print("Men Like Roy", d)
+        # get_file = CarNumber.objects.all()
+        # if get_file.exists():
+        #     last_file = CarNumber.objects.all().order_by('-id').first()
+        #     # print(last_file)
+        #     upId = last_file.id
+        #     getIndex = last_file.name
+        #     file_num = int(getIndex) + 1
+        #     d = "%03d" % (file_num) 
+        #     print("Men Like Roy", d)
 
-            newCar_num = CarNumber.objects.get(id=upId)
-            newCar_num.name = d
-            newCar_num.save()
+        #     newCar_num = CarNumber.objects.get(id=upId)
+        #     newCar_num.name = d
+        #     newCar_num.save()
 
-            UploadSignedPDF.objects.create(car_num=d, assign_team=agent, creator=CreatorIntance)
+        #     UploadSignedPDF.objects.create(car_num=d, assign_team=agent, creator=CreatorIntance)
 
             
         return Response(status=status.HTTP_204_NO_CONTENT)
