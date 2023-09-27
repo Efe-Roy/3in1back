@@ -182,7 +182,7 @@ class ListUploadSignedPDFSerializer(serializers.ModelSerializer):
     assign_team = serializers.SerializerMethodField()
     class Meta:
         model = UploadSignedPDF
-        fields = ['car_num', 'assign_team', 'creator', 'pdf_file1', 'pdf_file2', 'createdAt']
+        fields = ['id', 'car_num', 'assign_team', 'creator', 'pdf_file1', 'pdf_file2', 'createdAt']
         
     def get_creator(self, obj):
         return UserSerializer(obj.creator).data
