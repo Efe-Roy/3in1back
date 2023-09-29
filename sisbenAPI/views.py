@@ -1,12 +1,12 @@
 from django.shortcuts import render
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.generics import (
-    ListAPIView, RetrieveAPIView, CreateAPIView,
-    UpdateAPIView, DestroyAPIView, ListCreateAPIView
-)
+from rest_framework.generics import ( ListCreateAPIView )
 from .serializers import SisbenMainSerializer
 from .models import SisbenMain
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 # Create your views here.
 class CustomPagination(PageNumberPagination):
@@ -28,3 +28,13 @@ class get_sisben(ListCreateAPIView):
             queryset = queryset.filter(full_name__icontains=full_name)
    
         return queryset
+
+
+@api_view(['POST'])
+def delete_data(request):
+    try:
+        # Delete all records from the table
+        SisbenMain.objects.all().delete()
+        return Response({'message': 'All data deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
