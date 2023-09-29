@@ -10,6 +10,7 @@ urlpatterns = [
     path('api/', include('pqrsAPI.urls')),
     path('api/contratacion/', include('contratacionAPI.urls')),
     path('api/inspección/', include('InspecciónAPI.urls')),
+    path('api/sisben/', include('sisbenAPI.urls')),
 
 ]
 

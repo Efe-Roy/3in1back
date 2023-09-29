@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'pqrsAPI',
     'contratacionAPI',
     'InspecciónAPI',
+    'sisbenAPI',
     
 
     # API SetUp
