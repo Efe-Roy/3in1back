@@ -1,12 +1,17 @@
 from django.shortcuts import render
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.generics import ( ListCreateAPIView )
-from .serializers import SisbenMainSerializer
-from .models import SisbenMain
+from rest_framework.generics import ( ListCreateAPIView, ListAPIView )
+from .serializers import SisbenMainSerializer, LocationTypeSerializer, SisbenMainSerializer2
+from .models import SisbenMain, LocationType
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.status import (
+    HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_201_CREATED,
+    HTTP_204_NO_CONTENT
+)
+from rest_framework.views import APIView
 
 # Create your views here.
 class CustomPagination(PageNumberPagination):
@@ -27,8 +32,27 @@ class get_sisben(ListCreateAPIView):
         if full_name:
             queryset = queryset.filter(full_name__icontains=full_name)
    
+        citizenship_card = self.request.query_params.get('citizenship_card', None)
+        if citizenship_card:
+            queryset = queryset.filter(citizenship_card__icontains=citizenship_card)
+   
         return queryset
 
+
+class post_sisben(APIView):
+    def post(self, request, format=None):
+        serializer = SisbenMainSerializer2(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+           
+            return Response(serializer.data, status= HTTP_201_CREATED)
+        return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
+    
+
+class get_all_location(ListAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = LocationTypeSerializer
+    queryset = LocationType.objects.all()
 
 @api_view(['POST'])
 def delete_data(request):
