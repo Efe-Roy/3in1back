@@ -17,7 +17,7 @@ class SisbenMainSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SisbenMain
-        fields = ('id', 'citizenship_card', 'full_name', 'cell_phone', 'location')
+        fields = ('id', 'citizenship_card', 'full_name', 'cell_phone', 'location', 'email', 'doc_type', 'sex')
 
     def get_location(self, obj):
         return LocationTypeSerializer(obj.location).data
