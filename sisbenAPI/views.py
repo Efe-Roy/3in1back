@@ -11,6 +11,7 @@ from rest_framework.status import (
     HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_201_CREATED,
     HTTP_204_NO_CONTENT
 )
+from django.http import Http404
 from rest_framework.views import APIView
 
 # Create your views here.
@@ -24,8 +25,7 @@ class get_sisben(ListCreateAPIView):
     pagination_class = CustomPagination
 
     def get_queryset(self):
-        queryset = SisbenMain.objects.all()
-
+        queryset = SisbenMain.objects.all().order_by("-id")
 
         # Filter based on request parameters
         full_name = self.request.query_params.get('full_name', None)
@@ -47,7 +47,31 @@ class post_sisben(APIView):
            
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
-    
+
+class detail_update_sisben(APIView):
+    def get_object(self, pk):
+        try:
+            return SisbenMain.objects.get(id=pk)
+        except SisbenMain.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        SisbenById = self.get_object(pk)
+        serializer = SisbenMainSerializer(SisbenById)
+        return Response( serializer.data)
+
+    def put(self, request, pk, format=None):
+        SisbenById = self.get_object(pk)
+        serializer = SisbenMainSerializer2(SisbenById, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
+
+    # def delete(self, request, pk, format=None):
+    #     PqrsById = self.get_object(pk)
+    #     PqrsById.delete()
+    #     return Response(status= HTTP_204_NO_CONTENT)
 
 class get_all_location(ListAPIView):
     permission_classes = (AllowAny,)
