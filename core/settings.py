@@ -221,3 +221,10 @@ LOGGING = {
         },
     },
 }
+
+# settings.py
+
+TWILIO_ACCOUNT_SID = 'ACa5df16262abbbd8f40e59febeb07ee07'
+TWILIO_AUTH_TOKEN = '8355eb35ae9fc4c34d61c3a51ffb7441'
+TWILIO_WHATSAPP_NUMBER = 'whatsapp:+14155238886'
+
