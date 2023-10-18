@@ -797,7 +797,8 @@ class FilterDataView(APIView):
         assign_agent_id = request.data.get('assign_agent_id', None)
         agent = Agent.objects.get(id=assign_agent_id)
         # user = User.objects.get(id=request.user)
-        # print("assign_agent_id", assign_agent_id)
+        print("assign_agent bbb", agent.id)
+        print("assign_agent xxx", assign_agent_id)
 
 
         urbanControl_ids = request.data.get('urbanControl_IDs', [])
