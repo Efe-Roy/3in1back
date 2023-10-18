@@ -7,7 +7,9 @@ from .views import (
     TrafficViolationComparedMyColissionView, TrafficViolationComparedMyColissionDetailView, TrafficViolationComparedMyColissionPrivateView,
     ComplaintAndOfficeToAttendView, ComplaintAndOfficeToAttendDetailView, ComplaintAndOfficeToAttendPrivateView,
     File2Return2dOfficeView, File2Return2dOfficeDetailView, File2Return2dOfficePrivateView, InspNotifyView,
-    UploadPDFView, UltimateView, InspUserListView, CarNum, ToggleSignature, UpdateAndEmailPDFView, ListUpdateAndEmailPDFView
+    UploadPDFView, UltimateView, InspUserListView, CarNum, ToggleSignature, UpdateAndEmailPDFView, ListUpdateAndEmailPDFView,
+
+    GeneratePDFAndSendEmail, FilterDataView
 )
 
 urlpatterns = [
@@ -52,4 +54,8 @@ urlpatterns = [
     path('toggle_signature/', ToggleSignature.as_view()),
     path('update-and-email-pdf/<int:pk>/', UpdateAndEmailPDFView.as_view()),
     path('list-pdf/', ListUpdateAndEmailPDFView.as_view()),
+
+    # New
+    path('generate-pdf-and-send-email/', GeneratePDFAndSendEmail.as_view(), name='generate_pdf_and_send_email'),
+    path('filter_test/', FilterDataView.as_view()),
 ]

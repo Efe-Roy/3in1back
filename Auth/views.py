@@ -123,6 +123,8 @@ class CustomAuthToken(ObtainAuthToken):
             "is_agent": user.is_agent,
             "is_pqrs": user.is_pqrs,
             "is_hiring": user.is_hiring,
+            "is_hiring_org": user.is_hiring_org,
+            "is_sisben": user.is_sisben,
             "username": user.username,
             "email": user.email,
         })

@@ -54,9 +54,6 @@ class MediumResType(models.Model):
         return self.name
     
 
-
-
-
 class PqrsNotifify(models.Model):
     msg = models.CharField(max_length=1000)
     createdAt = models.DateField(auto_now_add=True)

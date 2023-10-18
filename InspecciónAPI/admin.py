@@ -3,7 +3,7 @@ from .models import (
     PoliceCompliant, PoliceSubmissionLGGS, UrbanControl,
     TrafficViolationCompared, TrafficViolationComparedMyColission,
     ComplaintAndOfficeToAttend, File2Return2dOffice, InspNotifify, 
-    CarNumber, UploadSignedPDF
+    CarNumber, UploadSignedPDF, FilterSelection
 )
 from import_export.admin import ImportExportModelAdmin
 
@@ -22,3 +22,4 @@ admin.site.register(File2Return2dOffice)
 admin.site.register(InspNotifify)
 admin.site.register(CarNumber)
 admin.site.register(UploadSignedPDF)
+admin.site.register(FilterSelection)

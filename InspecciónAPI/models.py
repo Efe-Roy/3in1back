@@ -108,6 +108,19 @@ class File2Return2dOffice(models.Model):
     status_track = models.BooleanField(default=False)
 
 
+class FilterSelection(models.Model):
+    car_num = models.CharField(max_length=310)
+    assign_team = models.ForeignKey(Agent, null=True, blank=True, on_delete=models.SET_NULL)
+    creator = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    selected_urban_control_ids = models.TextField()
+    selected_police_compliant_ids = models.TextField()
+    selected_policeSubmissionLGGS_ids = models.TextField()
+    selected_trafficViolationCompared_ids = models.TextField()
+    selected_trafficViolationComparedMyColission_ids = models.TextField()
+    selected_complaintAndOfficeToAttend_ids = models.TextField()
+    selected_file2Return2dOffice_ids = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
 
 class InspNotifify(models.Model):
     msg = models.CharField(max_length=1000)

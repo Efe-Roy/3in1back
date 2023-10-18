@@ -7,10 +7,11 @@ from rest_framework.status import (
     HTTP_204_NO_CONTENT
 )
 from rest_framework.authentication import TokenAuthentication
-from .models import ( PoliceCompliant, UrbanControl, PoliceSubmissionLGGS, TrafficViolationCompared, 
-                     TrafficViolationComparedMyColission, ComplaintAndOfficeToAttend, File2Return2dOffice,
-                     InspNotifify, CarNumber, UploadSignedPDF
-                     )
+from .models import ( 
+    PoliceCompliant, UrbanControl, PoliceSubmissionLGGS, TrafficViolationCompared, 
+    TrafficViolationComparedMyColission, ComplaintAndOfficeToAttend, File2Return2dOffice,
+    InspNotifify, CarNumber, UploadSignedPDF, FilterSelection
+    )
 from .serializers import ( 
     PoliceCompliantSerializer, ByIdPoliceCompliantSerializer, PoliceCompliantSerializer2,
     UrbanControlSerializer,ByIdUrbanControlSerializer, UrbanControlSerializer2,
@@ -31,11 +32,13 @@ from django.core.mail import send_mail, EmailMessage
 from django.conf import settings
 from rest_framework.pagination import PageNumberPagination
 import os
-
+from xhtml2pdf import pisa
+import io
+from django.template.loader import get_template
+from django.utils import timezone
 
 
 # Create your views here.
-# PoliceSubmissionLGGSSerializer 
 class PoliceCompliantView(APIView):
     authentication_classes = [TokenAuthentication]
     def get(self, request, format=None):
@@ -702,25 +705,25 @@ class ListUpdateAndEmailPDFView(ListCreateAPIView):
 class UltimateView(APIView):
     def get(self, request, pk, format=None):
         # Filter and serialize each queryset separately
-        queryset1 = UrbanControl.objects.filter(assign_team_id=pk, status_track=True)
+        queryset1 = UrbanControl.objects.filter(assign_team_id=pk, status_track=False)
         serializer1 = UrbanControlSerializer2(queryset1, many=True)
 
-        queryset2 = PoliceCompliant.objects.filter(assign_team_id=pk, status_track=True)
+        queryset2 = PoliceCompliant.objects.filter(assign_team_id=pk, status_track=False)
         serializer2 = PoliceCompliantSerializer2(queryset2, many=True)
 
-        queryset3 = PoliceSubmissionLGGS.objects.filter(assign_team_id=pk, status_track=True)
+        queryset3 = PoliceSubmissionLGGS.objects.filter(assign_team_id=pk, status_track=False)
         serializer3 = PoliceSubmissionLGGSSerializer2(queryset3, many=True)
 
-        queryset4 = TrafficViolationCompared.objects.filter(assign_team_id=pk, status_track=True)
+        queryset4 = TrafficViolationCompared.objects.filter(assign_team_id=pk, status_track=False)
         serializer4 = TrafficViolationComparedSerializer2(queryset4, many=True)
 
-        queryset5 = TrafficViolationComparedMyColission.objects.filter(assign_team_id=pk, status_track=True)
+        queryset5 = TrafficViolationComparedMyColission.objects.filter(assign_team_id=pk, status_track=False)
         serializer5 = TrafficViolationComparedMyColissionSerializer2(queryset5, many=True)
 
-        queryset6 = ComplaintAndOfficeToAttend.objects.filter(assign_team_id=pk, status_track=True)
+        queryset6 = ComplaintAndOfficeToAttend.objects.filter(assign_team_id=pk, status_track=False)
         serializer6 = ComplaintAndOfficeToAttendSerializer2(queryset6, many=True)
 
-        queryset7 = File2Return2dOffice.objects.filter(assign_team_id=pk, status_track=True)
+        queryset7 = File2Return2dOffice.objects.filter(assign_team_id=pk, status_track=False)
         serializer7 = File2Return2dOfficeSerializer2(queryset7, many=True)
 
         # Combine the serialized data from all querysets
@@ -787,7 +790,132 @@ class UltimateView(APIView):
             
         return Response(status=status.HTTP_204_NO_CONTENT)
     
+class FilterDataView(APIView):
+    def post(self, request, *args, **kwargs):
+        carNum = self.fetch_CarNum(request.data)
+        current_date = timezone.now()
+        assign_agent_id = request.data.get('assign_agent_id', None)
+        agent = Agent.objects.get(id=assign_agent_id)
+        # user = User.objects.get(id=request.user)
+        # print("assign_agent_id", assign_agent_id)
 
+
+        urbanControl_ids = request.data.get('urbanControl_IDs', [])
+        policeCompliant_ids = request.data.get('policeCompliant_IDs', [])
+        policeSubmissionLGGS_ids = request.data.get('policeSubmissionLGGS_IDs', [])
+        trafficViolationCompared_ids = request.data.get('trafficViolationCompared_IDs', [])
+        trafficViolationComparedMyColission_ids = request.data.get('trafficViolationComparedMyColission_IDs', [])
+        complaintAndOfficeToAttend_ids = request.data.get('complaintAndOfficeToAttend_IDs', [])
+        file2Return2dOffice_ids = request.data.get('file2Return2dOffice_IDs', [])
+
+        queryset1 = UrbanControl.objects.filter(id__in=urbanControl_ids)
+        serializer1 = UrbanControlSerializer2(queryset1, many=True)
+
+        queryset2 = PoliceCompliant.objects.filter(id__in=policeCompliant_ids)
+        serializer2 = PoliceCompliantSerializer2(queryset2, many=True)
+
+        queryset3 = PoliceSubmissionLGGS.objects.filter(id__in=policeSubmissionLGGS_ids)
+        serializer3 = PoliceSubmissionLGGSSerializer2(queryset3, many=True)
+
+        queryset4 = TrafficViolationCompared.objects.filter(id__in=trafficViolationCompared_ids)
+        serializer4 = TrafficViolationComparedSerializer2(queryset4, many=True)
+
+        queryset5 = TrafficViolationComparedMyColission.objects.filter(id__in=trafficViolationComparedMyColission_ids)
+        serializer5 = TrafficViolationComparedMyColissionSerializer2(queryset5, many=True)
+
+        queryset6 = ComplaintAndOfficeToAttend.objects.filter(id__in=complaintAndOfficeToAttend_ids)
+        serializer6 = ComplaintAndOfficeToAttendSerializer2(queryset6, many=True)
+
+        queryset7 = File2Return2dOffice.objects.filter(id__in=file2Return2dOffice_ids)
+        serializer7 = File2Return2dOfficeSerializer2(queryset7, many=True)
+
+
+        serialized_data = {
+            'urban_control': serializer1.data,
+            'police_compliant': serializer2.data,
+            'police_submission_lggs': serializer3.data,
+            'traffic_violation_compared': serializer4.data,
+            'traffic_violation_compared_my_colission': serializer5.data,
+            'complaint_and_office_to_attend': serializer6.data,
+            'file_2_return_2d_office': serializer7.data,
+        }
+
+        if queryset1 is None:
+            print({'error': 'Data not available yet'})
+            # return Response({'error': 'Data not available yet'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create an HTML template
+        template = get_template('insp/email.html')
+        context = {
+            'urban_control': queryset1,
+            'police_compliant': queryset2,
+            'police_submission_lggs': queryset3,
+            'traffic_violation_compared': queryset4,
+            'traffic_violation_compared_my_colission': queryset5,
+            'complaint_and_office_to_attend': queryset6,
+            'file_2_return_2d_office': queryset7,
+            'carNum': carNum,
+            'current_date': current_date,
+        }
+        html = template.render(context)
+
+        # Generate the PDF
+        result = io.BytesIO()
+        pdf = pisa.pisaDocument(io.BytesIO(html.encode("UTF-8")), result)
+
+        if not pdf.err:
+            # Generate a dynamic filename
+            pdf_filename = f'AUTO_DE_REPARTO_{carNum}.pdf'
+
+            # Save the PDF to the media directory
+            pdf_file_path = os.path.join(settings.MEDIA_ROOT, 'generated_pdfs', pdf_filename)
+            os.makedirs(os.path.dirname(pdf_file_path), exist_ok=True)
+
+            with open(pdf_file_path, 'wb') as pdf_file:
+                pdf_file.write(result.getvalue())
+
+
+            # Send the PDF via email
+            subject = 'PDF Report'
+            message = 'Please find attached your PDF report.'
+            from_email = settings.EMAIL_HOST_USER
+            # recipient_list = ['dakaraefe3@gmail.com']
+            recipient_list = [agent.user.email]
+
+            email = EmailMessage(subject, message, from_email, recipient_list)
+            email.attach(pdf_filename, result.getvalue(), 'application/pdf')
+            email.send()
+
+            # filter_selection = FilterSelection(
+            #     carNum= carNum,
+            #     assign_team= agent,
+            #     creator=user,  # Set this to the current user
+            #     selected_urban_control_ids=','.join(map(str, urbanControl_ids)),
+            #     selected_police_compliant_ids=','.join(map(str, policeCompliant_ids)),
+            #     selected_policeSubmissionLGGS_ids=','.join(map(str, policeSubmissionLGGS_ids)),
+            #     selected_trafficViolationCompared_ids=','.join(map(str, trafficViolationCompared_ids)),
+            #     selected_trafficViolationComparedMyColission_ids=','.join(map(str, trafficViolationComparedMyColission_ids)),
+            #     selected_complaintAndOfficeToAttend_ids=','.join(map(str, complaintAndOfficeToAttend_ids)),
+            #     selected_file2Return2dOffice_ids =','.join(map(str, file2Return2dOffice_ids)),
+            # )
+            # filter_selection.save()
+
+            return Response(serialized_data, status=status.HTTP_200_OK)
+        return Response(serialized_data, status=status.HTTP_200_OK)
+    
+    def fetch_CarNum(self, post_data):
+        get_file = CarNumber.objects.all()
+        if get_file.exists():
+            last_file = CarNumber.objects.all().order_by('-id').first()
+            # print(last_file)
+            upId = last_file.id
+            getIndex = last_file.name
+            file_num = int(getIndex) + 1
+            d = "%03d" % (file_num) 
+            print("Men Like Roy", d)
+        return d
+    
+    
 class CarNum(APIView):
     def get(self, request):
         get_file = CarNumber.objects.all()
@@ -820,3 +948,42 @@ class ToggleSignature(APIView):
             "status": new_value
             })
     
+
+class GeneratePDFAndSendEmail(APIView):
+    def post(self, request):
+        # Create an HTML template
+        template = get_template('insp/mail.html')
+        context = {'data': 'This is your data'}
+        html = template.render(context)
+
+        # Generate the PDF
+        result = io.BytesIO()
+        pdf = pisa.pisaDocument(io.BytesIO(html.encode("UTF-8")), result)
+
+        if not pdf.err:
+            # Generate a dynamic filename
+            numberstamp = "002"
+            pdf_filename = f'generated_pdf_{numberstamp}.pdf'
+
+            # Save the PDF to the media directory
+            pdf_file_path = os.path.join(settings.MEDIA_ROOT, 'generated_pdfs', pdf_filename)
+            os.makedirs(os.path.dirname(pdf_file_path), exist_ok=True)
+
+            with open(pdf_file_path, 'wb') as pdf_file:
+                pdf_file.write(result.getvalue())
+
+
+            # Send the PDF via email
+            # subject = 'PDF Report'
+            # message = 'Please find attached your PDF report.'
+            # from_email = settings.EMAIL_HOST_USER
+            # recipient_list = ['dakaraefe3@gmail.com']
+
+            # email = EmailMessage(subject, message, from_email, recipient_list)
+            # email.attach('generated_pdf.pdf', result.getvalue(), 'application/pdf')
+            # email.send()
+
+            # Return a success response
+            return Response({'message': 'PDF generated and email sent successfully'}, status=status.HTTP_201_CREATED)
+
+        return Response({'error': 'Error generating the PDF and sending email'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -12,7 +12,10 @@ from django.core.mail import send_mail
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model=User
-        fields=['id', 'username', 'first_name', 'last_name', 'email', 'position', 'image', 'signature', 'approve_signature', 'is_organisor', 'is_team', 'is_agent', 'is_pqrs', 'is_hiring']
+        fields=['id', 'username', 'first_name', 'last_name', 'email', 
+                'position', 'image', 'signature', 'approve_signature', 
+                'is_organisor', 'is_team', 'is_agent', 'is_pqrs', 
+                'is_hiring', 'is_hiring_org', 'is_sisben']
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -53,7 +56,9 @@ class SignupSerializer(serializers.ModelSerializer):
 class OperatorSignUpSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'is_agent', 'is_team', 'is_pqrs', 'is_hiring', 'responsible_secretary']
+        fields = ['username', 'email', 'password', 'is_agent', 
+                  'is_team', 'is_pqrs', 'is_hiring', 
+                  'responsible_secretary', 'is_hiring_org', 'is_sisben']
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -73,6 +78,8 @@ class OperatorSignUpSerializer(serializers.ModelSerializer):
             is_team=self.validated_data['is_team'],
             is_pqrs=self.validated_data['is_pqrs'],
             is_hiring=self.validated_data['is_hiring'],
+            is_hiring_org=self.validated_data['is_hiring_org'],
+            is_sisben=self.validated_data['is_sisben'],
             is_organisor=False,
             is_active = False,
         )
