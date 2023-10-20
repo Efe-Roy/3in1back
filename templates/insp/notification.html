@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <title></title>
+  </head>
+  <body>
+    <div className='p-5'>
+        <img src="media/email/logo1.png" width="139" height="66" alt="" style="float: right" />
+        <p><strong>DILIGENCIA DE NOTIFICACIÓN AUTO No. {{carNum}} DEL {{ current_date|date:"d/m/Y"}}</strong></p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>SAN VICENTE FERRER, {{ current_date|date:"F j, Y"}}</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>Siendo las {{ current_date|time:"h:i A" }} horas se presentó {{agent.user.first_name}} {{agent.user.last_name}}, identificada con cédula {{agent.user.username}}, quien se desempeña como Inspectora de Policía 3 a 6 categoría Uno, con el fin de notificarse del auto antes referenciado <strong>POR MEDIO DEL CUAL SE ESTABLECE EL REPARTO DE PROCESOS COMPETENCIA DE LA INSPECCION DE POLICÍA &nbsp;3 A 6 CATEGORÍA 1 y 2&nbsp; Y LA INSPECCIÓN DE POLICÍA 3 A 6 CATEGORÍA (ÉNFASIS EN CONTROL URBANÍSTICO) DE SAN VICENTE FERRER-ANTIOQUIA</strong></p>
+        <p><strong>&nbsp;</strong></p>
+        <p>Por tratarse de un acto administrativo de trámite, contra el mismo no proceden recursos.</p>
+        <p>&nbsp;</p>
+        {% if agent.user.approve_signature %}
+            
+            {% if agent.user.signature is not null %}
+                <img src="media/{{agent.user.signature}}" alt="..." className="" style="height: 55px; width: 80px" />
+            {% else %}
+                <p>No signature</p>
+            {% endif %}
+
+        {% endif %}    
+        <p><strong>{{agent.user.first_name}} {{agent.user.last_name}}</strong></p>
+        <p>Notificada</p>
+        <p>&nbsp;</p>
+
+        {% if userOrg.approve_signature %}
+
+            {% if userOrg.signature is not null %}
+                <img src="media/{{userOrg.signature}}" alt="..." className="" style="height: 55px; width: 80px" />
+            {% else %}
+                <p>No Signature</p>
+            {% endif %}
+
+        {% endif %}
+
+        <p><strong>{{userOrg.first_name}} {{userOrg.last_name}}</strong></p>
+        <span>{{userOrg.position}}</span>
+        <p>Notificadora</p>
+        <p>&nbsp;</p>
+        <p><strong>&nbsp;</strong></p>
+    </div>
+  </body>
+</html>
+ 

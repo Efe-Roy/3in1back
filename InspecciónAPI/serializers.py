@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import ( PoliceCompliant, UrbanControl, PoliceSubmissionLGGS, TrafficViolationCompared, 
                      TrafficViolationComparedMyColission, ComplaintAndOfficeToAttend, File2Return2dOffice,
-                     InspNotifify, UploadSignedPDF
+                     InspNotifify, UploadSignedPDF, FilterSelection
                      )
 from Auth.serializers import AgentSerializer, UserSerializer
 
@@ -184,6 +184,25 @@ class ListUploadSignedPDFSerializer(serializers.ModelSerializer):
         model = UploadSignedPDF
         fields = ['id', 'car_num', 'assign_team', 'creator', 'pdf_file1', 'pdf_file2', 'createdAt']
         
+    def get_creator(self, obj):
+        return UserSerializer(obj.creator).data
+    
+    def get_assign_team(self, obj):
+        return AgentSerializer(obj.assign_team).data
+    
+
+class FilterSelectionSerializer(serializers.ModelSerializer):
+    creator = serializers.SerializerMethodField()
+    assign_team = serializers.SerializerMethodField()
+    class Meta:
+        model = FilterSelection
+        fields = [
+            'id', 'car_num', 'assign_team', 'creator', 
+            'filename', 'selected_urban_control_ids', 'selected_police_compliant_ids', 
+            'selected_policeSubmissionLGGS_ids', 'selected_trafficViolationCompared_ids', 
+            'selected_trafficViolationComparedMyColission_ids', 'selected_complaintAndOfficeToAttend_ids', 
+            'selected_file2Return2dOffice_ids', 'timestamp'
+            ]
     def get_creator(self, obj):
         return UserSerializer(obj.creator).data
     

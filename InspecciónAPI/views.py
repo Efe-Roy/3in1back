@@ -20,11 +20,11 @@ from .serializers import (
     TrafficViolationComparedMyColissionSerializer, ByIdTrafficViolationComparedMyColissionSerializer,TrafficViolationComparedMyColissionSerializer2,
     ComplaintAndOfficeToAttendSerializer, ByIdComplaintAndOfficeToAttendSerializer, ComplaintAndOfficeToAttendSerializer2,
     File2Return2dOfficeSerializer, ByIdFile2Return2dOfficeSerializer, File2Return2dOfficeSerializer2, InspNotifySerializer,
-    UploadSignedPDFSerializer, ListUploadSignedPDFSerializer
+    UploadSignedPDFSerializer, ListUploadSignedPDFSerializer, FilterSelectionSerializer
 )
 from Auth.serializers import AgentSerializer
 from rest_framework.generics import (
-    ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView, GenericAPIView,ListCreateAPIView
+    ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView, GenericAPIView, ListCreateAPIView
 )
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from Auth.models import Agent, User
@@ -36,7 +36,7 @@ from xhtml2pdf import pisa
 import io
 from django.template.loader import get_template
 from django.utils import timezone
-
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 class PoliceCompliantView(APIView):
@@ -646,41 +646,6 @@ class UploadPDFView(APIView):
         return Response({'message': 'A PDF file is required for upload.'}, status=status.HTTP_400_BAD_REQUEST)
     
 
-class UpdateAndEmailPDFView(APIView):
-    def put(self, request, pk):
-        try:
-            signed_pdf = UploadSignedPDF.objects.get(pk=pk)
-        except UploadSignedPDF.DoesNotExist:
-            return Response({'message': 'Record not found'}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = UploadSignedPDFSerializer(signed_pdf, data=request.data, partial=True)
-
-        if serializer.is_valid():
-            serializer.save()
-            # instance = serializer.save()
-
-            # Send emails with both PDF attachments
-            # self.send_email_with_attachments(instance.pdf_file1, instance.pdf_file2)
-
-            return Response({'message': 'Record updated and emails sent successfully'})
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-    # def send_email_with_attachments(self, pdf_file1, pdf_file2):
-    #     # Send an email with both PDF attachments
-    #     subject = 'PDF Attachments'
-    #     message = 'Please find attached PDFs.'
-    #     from_email = settings.EMAIL_HOST_USER
-    #     recipient_list = ['dakaraefe3@gmail.com']
-
-    #     # Attach both PDF files
-    #     attachments = [(pdf_file1.name, pdf_file1.read(), 'application/pdf'),
-    #                    (pdf_file2.name, pdf_file2.read(), 'application/pdf')]
-
-    #     send_mail(subject, message, from_email, recipient_list, fail_silently=False, attachments=attachments)
-
-
 class CustomPageNumberPagination(PageNumberPagination):
     page_size_query_param = 'PageSize'
 
@@ -702,28 +667,38 @@ class ListUpdateAndEmailPDFView(ListCreateAPIView):
         queryset = UploadSignedPDF.objects.all().order_by('-id')
         return queryset
 
+class ListSelectedFilteredData(ListCreateAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = FilterSelectionSerializer
+    pagination_class = CustomPageNumberPagination
+
+    def get_queryset(self):
+        queryset = FilterSelection.objects.all().order_by('-id')
+        return queryset
+
+
 class UltimateView(APIView):
     def get(self, request, pk, format=None):
         # Filter and serialize each queryset separately
-        queryset1 = UrbanControl.objects.filter(assign_team_id=pk, status_track=False)
+        queryset1 = UrbanControl.objects.filter(assign_team_id=pk)
         serializer1 = UrbanControlSerializer2(queryset1, many=True)
 
-        queryset2 = PoliceCompliant.objects.filter(assign_team_id=pk, status_track=False)
+        queryset2 = PoliceCompliant.objects.filter(assign_team_id=pk)
         serializer2 = PoliceCompliantSerializer2(queryset2, many=True)
 
-        queryset3 = PoliceSubmissionLGGS.objects.filter(assign_team_id=pk, status_track=False)
+        queryset3 = PoliceSubmissionLGGS.objects.filter(assign_team_id=pk)
         serializer3 = PoliceSubmissionLGGSSerializer2(queryset3, many=True)
 
-        queryset4 = TrafficViolationCompared.objects.filter(assign_team_id=pk, status_track=False)
+        queryset4 = TrafficViolationCompared.objects.filter(assign_team_id=pk)
         serializer4 = TrafficViolationComparedSerializer2(queryset4, many=True)
 
-        queryset5 = TrafficViolationComparedMyColission.objects.filter(assign_team_id=pk, status_track=False)
+        queryset5 = TrafficViolationComparedMyColission.objects.filter(assign_team_id=pk)
         serializer5 = TrafficViolationComparedMyColissionSerializer2(queryset5, many=True)
 
-        queryset6 = ComplaintAndOfficeToAttend.objects.filter(assign_team_id=pk, status_track=False)
+        queryset6 = ComplaintAndOfficeToAttend.objects.filter(assign_team_id=pk)
         serializer6 = ComplaintAndOfficeToAttendSerializer2(queryset6, many=True)
 
-        queryset7 = File2Return2dOffice.objects.filter(assign_team_id=pk, status_track=False)
+        queryset7 = File2Return2dOffice.objects.filter(assign_team_id=pk)
         serializer7 = File2Return2dOfficeSerializer2(queryset7, many=True)
 
         # Combine the serialized data from all querysets
@@ -796,9 +771,9 @@ class FilterDataView(APIView):
         current_date = timezone.now()
         assign_agent_id = request.data.get('assign_agent_id', None)
         agent = Agent.objects.get(id=assign_agent_id)
-        # user = User.objects.get(id=request.user)
-        print("assign_agent bbb", agent.id)
-        print("assign_agent xxx", assign_agent_id)
+        userOrg = User.objects.get(id=request.user.id)
+        # print("assign_agent bbb", agent.id)
+        # print("user org xxx", request.user.id)
 
 
         urbanControl_ids = request.data.get('urbanControl_IDs', [])
@@ -843,10 +818,9 @@ class FilterDataView(APIView):
 
         if queryset1 is None:
             print({'error': 'Data not available yet'})
-            # return Response({'error': 'Data not available yet'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Create an HTML template
-        template = get_template('insp/email.html')
+        # Create an HTML template1
+        template = get_template('insp/AUTO_DE_REPARTO.html')
         context = {
             'urban_control': queryset1,
             'police_compliant': queryset2,
@@ -857,49 +831,93 @@ class FilterDataView(APIView):
             'file_2_return_2d_office': queryset7,
             'carNum': carNum,
             'current_date': current_date,
+            'agent': agent,
+            'userOrg': userOrg
         }
         html = template.render(context)
 
-        # Generate the PDF
+        # Generate the PDF1
         result = io.BytesIO()
         pdf = pisa.pisaDocument(io.BytesIO(html.encode("UTF-8")), result)
 
-        if not pdf.err:
-            # Generate a dynamic filename
-            pdf_filename = f'AUTO_DE_REPARTO_{carNum}.pdf'
 
-            # Save the PDF to the media directory
-            pdf_file_path = os.path.join(settings.MEDIA_ROOT, 'generated_pdfs', pdf_filename)
+        # Create an HTML template2
+        template2 = get_template('insp/notification.html')
+        context2 = {
+            'carNum': carNum,
+            'current_date': current_date,
+            'agent': agent,
+            'userOrg': userOrg
+        }
+        html2 = template2.render(context2)
+
+        # Generate the PDF2
+        result2 = io.BytesIO()
+        pdf2 = pisa.pisaDocument(io.BytesIO(html2.encode("UTF-8")), result2)
+
+
+        if not pdf.err and not pdf2.err:
+            # Generate a dynamic filename
+            pdf_filename1 = f'AUTO_DE_REPARTO_{carNum}.pdf'
+            pdf_filename2 = f'NOTIFICACIÓN_{carNum}.pdf'
+
+            # Save the PDF1 to the media directory 1
+            pdf_file_path = os.path.join(settings.MEDIA_ROOT, 'AUTO_DE_REPARTO_pdfs', pdf_filename1)
             os.makedirs(os.path.dirname(pdf_file_path), exist_ok=True)
 
             with open(pdf_file_path, 'wb') as pdf_file:
                 pdf_file.write(result.getvalue())
+
+            # Save the PDF2 to the media directory 2
+            pdf_file_path2 = os.path.join(settings.MEDIA_ROOT, 'NOTIFICACIÓN_pdfs', pdf_filename2)
+            os.makedirs(os.path.dirname(pdf_file_path2), exist_ok=True)
+
+            with open(pdf_file_path2, 'wb') as pdf_file2:
+                pdf_file2.write(result2.getvalue())
 
 
             # Send the PDF via email
             subject = 'PDF Report'
             message = 'Please find attached your PDF report.'
             from_email = settings.EMAIL_HOST_USER
-            # recipient_list = ['dakaraefe3@gmail.com']
-            recipient_list = [agent.user.email]
+            # recipient_list = ['dakaraefe3@gmail.com', 'dakaraefe@gmail.com']
+            recipient_list = [agent.user.email, userOrg.email]
 
             email = EmailMessage(subject, message, from_email, recipient_list)
-            email.attach(pdf_filename, result.getvalue(), 'application/pdf')
+            email.attach(pdf_filename1, result.getvalue(), 'application/pdf')
+            email.attach(pdf_filename2, result2.getvalue(), 'application/pdf')
             email.send()
 
-            # filter_selection = FilterSelection(
-            #     carNum= carNum,
-            #     assign_team= agent,
-            #     creator=user,  # Set this to the current user
-            #     selected_urban_control_ids=','.join(map(str, urbanControl_ids)),
-            #     selected_police_compliant_ids=','.join(map(str, policeCompliant_ids)),
-            #     selected_policeSubmissionLGGS_ids=','.join(map(str, policeSubmissionLGGS_ids)),
-            #     selected_trafficViolationCompared_ids=','.join(map(str, trafficViolationCompared_ids)),
-            #     selected_trafficViolationComparedMyColission_ids=','.join(map(str, trafficViolationComparedMyColission_ids)),
-            #     selected_complaintAndOfficeToAttend_ids=','.join(map(str, complaintAndOfficeToAttend_ids)),
-            #     selected_file2Return2dOffice_ids =','.join(map(str, file2Return2dOffice_ids)),
-            # )
-            # filter_selection.save()
+            # Save track selected data
+            filter_selection = FilterSelection(
+                car_num= carNum,
+                assign_team= agent,
+                creator=request.user,  # Set this to the current user
+                filename= pdf_filename1,
+                selected_urban_control_ids=','.join(map(str, urbanControl_ids)),
+                selected_police_compliant_ids=','.join(map(str, policeCompliant_ids)),
+                selected_policeSubmissionLGGS_ids=','.join(map(str, policeSubmissionLGGS_ids)),
+                selected_trafficViolationCompared_ids=','.join(map(str, trafficViolationCompared_ids)),
+                selected_trafficViolationComparedMyColission_ids=','.join(map(str, trafficViolationComparedMyColission_ids)),
+                selected_complaintAndOfficeToAttend_ids=','.join(map(str, complaintAndOfficeToAttend_ids)),
+                selected_file2Return2dOffice_ids =','.join(map(str, file2Return2dOffice_ids)),
+            )
+            filter_selection.save()
+
+            # UPDATE CarNum
+            get_file = CarNumber.objects.all()
+            if get_file.exists():
+                last_file = CarNumber.objects.all().order_by('-id').first()
+                # print(last_file)
+                upId = last_file.id
+                getIndex = last_file.name
+                file_num = int(getIndex) + 1
+                d = "%03d" % (file_num) 
+                print("Men Like Roy 222", d)
+
+                newCar_num = CarNumber.objects.get(id=upId)
+                newCar_num.name = d
+                newCar_num.save()
 
             return Response(serialized_data, status=status.HTTP_200_OK)
         return Response(serialized_data, status=status.HTTP_200_OK)
@@ -916,7 +934,70 @@ class FilterDataView(APIView):
             print("Men Like Roy", d)
         return d
     
-    
+class FilteredDataDetailUpdateView(APIView):
+    def get(self, request, selection_id):
+        # user = request.user
+
+        try:
+            filter_selection = FilterSelection.objects.get(id=selection_id)
+
+            urban_control_ids = filter_selection.selected_urban_control_ids.split(',')
+            id_list1 = [int(id_str) for id_str in urban_control_ids if id_str.isdigit()]
+            queryset_urban_control = UrbanControl.objects.filter(id__in=id_list1)
+            serializer_urban_control = UrbanControlSerializer(queryset_urban_control, many=True)
+
+            police_compliant_ids = filter_selection.selected_police_compliant_ids.split()
+            id_list2 = [int(id_str) for id_str in police_compliant_ids if id_str.isdigit()]
+            queryset_police_compliant = PoliceCompliant.objects.filter(id__in=id_list2)
+            serializer_police_compliant = PoliceCompliantSerializer(queryset_police_compliant, many=True)
+            
+            policeSubmissionLGGS_ids = filter_selection.selected_policeSubmissionLGGS_ids.split()
+            id_list3 = [int(id_str) for id_str in policeSubmissionLGGS_ids if id_str.isdigit()]
+            queryset_policeSubmissionLGGS = PoliceSubmissionLGGS.objects.filter(id__in=id_list3)
+            serializer_policeSubmissionLGGS = PoliceSubmissionLGGSSerializer2(queryset_policeSubmissionLGGS, many=True)
+
+            trafficViolationCompared_ids = filter_selection.selected_trafficViolationCompared_ids.split(',')
+            id_list4 = [int(id_str) for id_str in trafficViolationCompared_ids if id_str.isdigit()]
+            queryset_trafficViolationCompared = TrafficViolationCompared.objects.filter(id__in=id_list4)
+            serializer_trafficViolationCompared = TrafficViolationComparedSerializer2(queryset_trafficViolationCompared, many=True)
+
+            trafficViolationComparedMyColission_ids = filter_selection.selected_trafficViolationComparedMyColission_ids.split()
+            id_list5 = [int(id_str) for id_str in trafficViolationComparedMyColission_ids if id_str.isdigit()]
+            queryset_trafficViolationComparedMyColission = TrafficViolationComparedMyColission.objects.filter(id__in=id_list5)
+            serializer_trafficViolationComparedMyColission = TrafficViolationComparedMyColissionSerializer2(queryset_trafficViolationComparedMyColission, many=True)
+       
+            complaintAndOfficeToAttend_ids = filter_selection.selected_complaintAndOfficeToAttend_ids.split()
+            id_list6 = [int(id_str) for id_str in complaintAndOfficeToAttend_ids if id_str.isdigit()]
+            queryset_complaintAndOfficeToAttend = ComplaintAndOfficeToAttend.objects.filter(id__in=id_list6)
+            serializer_complaintAndOfficeToAttend = ComplaintAndOfficeToAttendSerializer2(queryset_complaintAndOfficeToAttend, many=True)
+
+            file2Return2dOffice_ids = filter_selection.selected_file2Return2dOffice_ids.split()
+            id_list7 = [int(id_str) for id_str in file2Return2dOffice_ids if id_str.isdigit()]
+            queryset_file2Return2dOffice = File2Return2dOffice.objects.filter(id__in=id_list7)
+            serializer_file2Return2dOffice = File2Return2dOfficeSerializer2(queryset_file2Return2dOffice, many=True)
+
+
+            response_data = {
+                'urban_control': serializer_urban_control.data,
+                'police_compliant': serializer_police_compliant.data,
+                'police_submission_lggs': serializer_policeSubmissionLGGS.data, 
+                'traffic_violation_compared': serializer_trafficViolationCompared.data, 
+                'traffic_violation_compared_my_colission': serializer_trafficViolationComparedMyColission.data, 
+                'complaint_and_office_to_attend': serializer_complaintAndOfficeToAttend.data, 
+                'file_2_return_2d_office': serializer_file2Return2dOffice.data, 
+            }
+
+            return Response(response_data, status=status.HTTP_200_OK)
+
+        except FilterSelection.DoesNotExist:
+            return Response({'error': 'Filter selection not found for the user'}, status=status.HTTP_404_NOT_FOUND)
+
+# class ListSelectedFilteredData(ListAPIView):
+#     permission_classes = (AllowAny,)
+#     serializer_class = FilterSelectionSerializer
+#     queryset = FilterSelection.objects.all()
+
+
 class CarNum(APIView):
     def get(self, request):
         get_file = CarNumber.objects.all()
@@ -936,19 +1017,32 @@ class CarNum(APIView):
             return Response(d)
         
 
+# class ToggleSignature(APIView):
+#     def post(self, request):
+#         new_value = request.data.get("approve_signature", False)
+#         userId = request.data['userId']
+#         instance = User.objects.get(id=userId)
+        
+#         instance.approve_signature = new_value
+#         instance.save()
+#         return Response({
+#             "success": "Field updated successfully",
+#             "status": new_value
+#             })
+    
 class ToggleSignature(APIView):
     def post(self, request):
-        new_value = request.data.get("approve_signature", False)
-        userId = request.data['userId']
-        instance = User.objects.get(id=userId)
+        user = request.user  # Get the user object from the request
+        instance = get_object_or_404(User, id=user.id)
         
-        instance.approve_signature = new_value
+        # Toggle the value of approve_signature
+        instance.approve_signature = not instance.approve_signature
         instance.save()
+        
         return Response({
             "success": "Field updated successfully",
-            "status": new_value
-            })
-    
+            "status": instance.approve_signature
+        })
 
 class GeneratePDFAndSendEmail(APIView):
     def post(self, request):

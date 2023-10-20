@@ -439,16 +439,7 @@
             >
             <span style="font-family: Arial">&nbsp;</span>
             </p>
-            <p
-            class="ListParagraph"
-            style="
-                margin-left: 0pt;
-                margin-bottom: 0pt;
-                text-align: justify;
-                line-height: normal;
-                font-size: 11.5pt;
-            "
-            >
+            <p>
             <span style="font-family: Arial"
                 >C. Mediante Acuerdo 029 de 2023 el Honorable Concejo Municipal aprobó
                 la creación de la Inspección Municipal 3 a 6 categoría (Énfasis en
@@ -1164,22 +1155,18 @@
             </p>
             <br /><br /><br /><br />
             
-            <!-- {is_organisor && <div>
-                {isSignOrg && 
-                    <div>
-                        {userLeadDetail?.signature? 
-                            <img src="userLeadDetail?.signature" alt="..." className="" style="height: 55px; width: 80px;" />
-                            : null
-                        }
-                    </div>
-                }
-                <p style="margin-bottom: 0pt; text-align: justify; line-height: normal; font-size: 11.5pt;">
-                    <span style="font-family: Arial, Helvetica, sans-serif;">{userLeadDetail?.first_name} {userLeadDetail?.last_name}</span>
-                </p>
-                <p style="margin-bottom: 0pt; text-align: justify; line-height: normal; font-size: 11.5pt;">
-                    <span style="font-family: Arial, Helvetica, sans-serif;">{userLeadDetail?.position}</span>
-                </p>
-            </div>} -->
+            <div>
+                {% if userOrg.approve_signature %}
+
+                    {% if userOrg.signature is not null %}
+                        <img src="media/{{userOrg.signature}}" alt="..." className="" style="height: 55px; width: 80px" />
+                    {% else %}
+                        <p>No Signature</p>
+                    {% endif %}
+        
+                {% endif %}
+
+            </div>
             
             <p
             style="
@@ -1190,13 +1177,11 @@
             "
             >
             <strong>
-                <span style="font-family: Arial">ROSMIRA MURILLO HENAO</span>
+                <span style="font-family: Arial">{{userOrg.first_name}} {{userOrg.last_name}}</span>
             </strong>
             </p>
             <p style="margin-bottom: 0pt; line-height: normal; font-size: 11.5pt">
-            <span style="font-family: Arial"
-                >Secretaria General y de Gobierno&nbsp;</span
-            >
+            <span style="font-family: Arial">{{userOrg.position}}</span>
             </p>
         </section>
     </div>

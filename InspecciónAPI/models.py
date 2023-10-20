@@ -112,6 +112,7 @@ class FilterSelection(models.Model):
     car_num = models.CharField(max_length=310)
     assign_team = models.ForeignKey(Agent, null=True, blank=True, on_delete=models.SET_NULL)
     creator = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    filename = models.CharField(null=True, blank=True, max_length=255)
     selected_urban_control_ids = models.TextField()
     selected_police_compliant_ids = models.TextField()
     selected_policeSubmissionLGGS_ids = models.TextField()
@@ -120,6 +121,9 @@ class FilterSelection(models.Model):
     selected_complaintAndOfficeToAttend_ids = models.TextField()
     selected_file2Return2dOffice_ids = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.car_num or ''
 
 
 class InspNotifify(models.Model):
