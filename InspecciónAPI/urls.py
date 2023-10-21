@@ -9,7 +9,7 @@ from .views import (
     File2Return2dOfficeView, File2Return2dOfficeDetailView, File2Return2dOfficePrivateView, InspNotifyView,
     UploadPDFView, UltimateView, InspUserListView, CarNum, ToggleSignature, ListUpdateAndEmailPDFView,
 
-    GeneratePDFAndSendEmail, FilterDataView, FilteredDataDetailUpdateView, ListSelectedFilteredData
+    FilterDataView, FilteredDataDetailUpdateView, ListSelectedFilteredData
 )
 
 urlpatterns = [
@@ -51,11 +51,10 @@ urlpatterns = [
     path('insp_userlist/', InspUserListView.as_view()),
 
     path('carnum/', CarNum.as_view()),
-    path('toggle_signature/', ToggleSignature.as_view()),
+    path('toggle_signature/<int:selection_id>/<int:user_id>/', ToggleSignature.as_view()),
     path('list-pdf/', ListUpdateAndEmailPDFView.as_view()),
 
     # New
-    path('generate-pdf-and-send-email/', GeneratePDFAndSendEmail.as_view(), name='generate_pdf_and_send_email'),
     path('filter_test/', FilterDataView.as_view()),
     path('list_filtered_selected/', ListSelectedFilteredData.as_view()),
     path('filter_detail/<int:selection_id>/', FilteredDataDetailUpdateView.as_view(), name='filtered_data'),

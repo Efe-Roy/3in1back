@@ -2,20 +2,6 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-  width: 100%;
-  border: 1px solid #ddd;
-}
-
-th, td {
-  text-align: left;
-  padding: 8px;
-}
-
-</style>
 </head>
 <body>
 
@@ -24,31 +10,25 @@ th, td {
 <p>Resize the browser window to see the effect. Try to remove the div element and see what happens to the table.</p>
 
 <div style="overflow-x:auto;">
-  <table>
-    <tr>
-      <th>First Name</th>
-      <th>Last Name</th>
-      <th>Points</th>
-      <th>Points</th>
-    </tr>
-    <tr>
-      <td>Jill</td>
-      <td>Smith</td>
-      <td>50</td>
-      <td>50</td>
-    </tr>
-    <tr>
-      <td>Eve</td>
-      <td>Jackson</td>
-      <td>94</td>
-      <td>94</td>
-    </tr>
-    <tr>
-      <td>Adam</td>
-      <td>Johnson</td>
-      <td>67</td>
-      <td>67</td>
-    </tr>
+  <table style="width: 100%; border-collapse: collapse; border-spacing: 0; border: 1px solid #ddd;">
+      <tr>
+          <th style="background-color: #d8863d; text-align: left; padding: 8px;">FECHA DE LOS HECHOS</th>
+          <th style="background-color: #d8863d; text-align: left; padding: 8px;">FECHA RECIBIDO</th>
+          <th style="background-color: #d8863d; text-align: left; padding: 8px;">IMPLICADO</th>
+          <th style="background-color: #d8863d; text-align: left; padding: 8px;">CEDULA</th>
+          <th style="background-color: #d8863d; text-align: left; padding: 8px;">CODIGO INFRACCION</th>
+          <th style="background-color: #d8863d; text-align: left; padding: 8px;">RESPONSABLE DEL PROCEDIMIENTO</th>
+          <th style="background-color: #d8863d; text-align: left; padding: 8px;">Numero DE Compararendo</th>
+      </tr>
+      <tr>
+          <td style="text-align: left; padding: 8px;">{{item.date_events|date:"d/m/Y"}}</td>
+          <td style="text-align: left; padding: 8px;">{{item.date_received|date:"d/m/Y"}}</td>
+          <td style="text-align: left; padding: 8px;">{{item.involved}}</td>
+          <td style="text-align: left; padding: 8px;">{{item.id_card}}</td>
+          <td style="text-align: left; padding: 8px;">{{item.violation_code}}</td>
+          <td style="text-align: left; padding: 8px;">{{item.res_procedure}}</td>
+          <td style="text-align: left; padding: 8px;">{{item.compare_number}} Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ipsam animi praesentium vero! Recusandae deserunt qui quidem doloremque aliquam quos ex explicabo molestias, ducimus nesciunt tempore consequatur dolor obcaecati quod eius!</td>
+      </tr>
   </table>
 </div>
 

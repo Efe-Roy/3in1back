@@ -832,7 +832,9 @@ class FilterDataView(APIView):
             'carNum': carNum,
             'current_date': current_date,
             'agent': agent,
-            'userOrg': userOrg
+            'userOrg': userOrg,
+            # 'baseUrl': 'http://127.0.0.1:8000'
+            'baseUrl': 'https://radicaciondelicencias.com'
         }
         html = template.render(context)
 
@@ -847,7 +849,9 @@ class FilterDataView(APIView):
             'carNum': carNum,
             'current_date': current_date,
             'agent': agent,
-            'userOrg': userOrg
+            'userOrg': userOrg,
+            # 'baseUrl': 'http://127.0.0.1:8000'
+            'baseUrl': 'https://radicaciondelicencias.com'
         }
         html2 = template2.render(context2)
 
@@ -894,6 +898,7 @@ class FilterDataView(APIView):
                 assign_team= agent,
                 creator=request.user,  # Set this to the current user
                 filename= pdf_filename1,
+                filename2= pdf_filename2,
                 selected_urban_control_ids=','.join(map(str, urbanControl_ids)),
                 selected_police_compliant_ids=','.join(map(str, policeCompliant_ids)),
                 selected_policeSubmissionLGGS_ids=','.join(map(str, policeSubmissionLGGS_ids)),
@@ -978,6 +983,8 @@ class FilteredDataDetailUpdateView(APIView):
 
 
             response_data = {
+                'agent_signature': filter_selection.agent_signature,
+                'organizer_signature': filter_selection.organizer_signature,
                 'urban_control': serializer_urban_control.data,
                 'police_compliant': serializer_police_compliant.data,
                 'police_submission_lggs': serializer_policeSubmissionLGGS.data, 
@@ -991,12 +998,6 @@ class FilteredDataDetailUpdateView(APIView):
 
         except FilterSelection.DoesNotExist:
             return Response({'error': 'Filter selection not found for the user'}, status=status.HTTP_404_NOT_FOUND)
-
-# class ListSelectedFilteredData(ListAPIView):
-#     permission_classes = (AllowAny,)
-#     serializer_class = FilterSelectionSerializer
-#     queryset = FilterSelection.objects.all()
-
 
 class CarNum(APIView):
     def get(self, request):
@@ -1016,69 +1017,23 @@ class CarNum(APIView):
 
             return Response(d)
         
-
-# class ToggleSignature(APIView):
-#     def post(self, request):
-#         new_value = request.data.get("approve_signature", False)
-#         userId = request.data['userId']
-#         instance = User.objects.get(id=userId)
-        
-#         instance.approve_signature = new_value
-#         instance.save()
-#         return Response({
-#             "success": "Field updated successfully",
-#             "status": new_value
-#             })
     
 class ToggleSignature(APIView):
-    def post(self, request):
-        user = request.user  # Get the user object from the request
-        instance = get_object_or_404(User, id=user.id)
+    def post(self, request, selection_id, user_id):
+        user_instance = get_object_or_404(User, id=user_id)
+        selection_instance = get_object_or_404(FilterSelection, id=selection_id)
         
-        # Toggle the value of approve_signature
-        instance.approve_signature = not instance.approve_signature
-        instance.save()
+        # Toggle the value
+        if user_instance.is_organisor:
+            selection_instance.organizer_signature = not selection_instance.organizer_signature
+        elif user_instance.is_agent:
+            selection_instance.agent_signature = not selection_instance.agent_signature
+        else:
+            print("User Unauthorise")
         
+        selection_instance.save()
         return Response({
             "success": "Field updated successfully",
-            "status": instance.approve_signature
+            "status_organizer": selection_instance.organizer_signature,
+            "status_agent": selection_instance.agent_signature
         })
-
-class GeneratePDFAndSendEmail(APIView):
-    def post(self, request):
-        # Create an HTML template
-        template = get_template('insp/mail.html')
-        context = {'data': 'This is your data'}
-        html = template.render(context)
-
-        # Generate the PDF
-        result = io.BytesIO()
-        pdf = pisa.pisaDocument(io.BytesIO(html.encode("UTF-8")), result)
-
-        if not pdf.err:
-            # Generate a dynamic filename
-            numberstamp = "002"
-            pdf_filename = f'generated_pdf_{numberstamp}.pdf'
-
-            # Save the PDF to the media directory
-            pdf_file_path = os.path.join(settings.MEDIA_ROOT, 'generated_pdfs', pdf_filename)
-            os.makedirs(os.path.dirname(pdf_file_path), exist_ok=True)
-
-            with open(pdf_file_path, 'wb') as pdf_file:
-                pdf_file.write(result.getvalue())
-
-
-            # Send the PDF via email
-            # subject = 'PDF Report'
-            # message = 'Please find attached your PDF report.'
-            # from_email = settings.EMAIL_HOST_USER
-            # recipient_list = ['dakaraefe3@gmail.com']
-
-            # email = EmailMessage(subject, message, from_email, recipient_list)
-            # email.attach('generated_pdf.pdf', result.getvalue(), 'application/pdf')
-            # email.send()
-
-            # Return a success response
-            return Response({'message': 'PDF generated and email sent successfully'}, status=status.HTTP_201_CREATED)
-
-        return Response({'error': 'Error generating the PDF and sending email'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

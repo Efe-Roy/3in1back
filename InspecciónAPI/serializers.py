@@ -198,10 +198,10 @@ class FilterSelectionSerializer(serializers.ModelSerializer):
         model = FilterSelection
         fields = [
             'id', 'car_num', 'assign_team', 'creator', 
-            'filename', 'selected_urban_control_ids', 'selected_police_compliant_ids', 
+            'filename', 'filename2', 'selected_urban_control_ids', 'selected_police_compliant_ids', 
             'selected_policeSubmissionLGGS_ids', 'selected_trafficViolationCompared_ids', 
             'selected_trafficViolationComparedMyColission_ids', 'selected_complaintAndOfficeToAttend_ids', 
-            'selected_file2Return2dOffice_ids', 'timestamp'
+            'selected_file2Return2dOffice_ids', 'timestamp', 'agent_signature', 'organizer_signature'
             ]
     def get_creator(self, obj):
         return UserSerializer(obj.creator).data
