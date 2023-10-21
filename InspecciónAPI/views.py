@@ -834,7 +834,7 @@ class FilterDataView(APIView):
             'agent': agent,
             'userOrg': userOrg,
             # 'baseUrl': 'http://127.0.0.1:8000'
-            'baseUrl': 'https://fuscaliaycontraloria.com'
+            # 'baseUrl': 'https://fuscaliaycontraloria.com'
         }
         html = template.render(context)
 
@@ -851,7 +851,7 @@ class FilterDataView(APIView):
             'agent': agent,
             'userOrg': userOrg,
             # 'baseUrl': 'http://127.0.0.1:8000'
-            'baseUrl': 'https://fuscaliaycontraloria.com'
+            # 'baseUrl': 'https://fuscaliaycontraloria.com'
         }
         html2 = template2.render(context2)
 
