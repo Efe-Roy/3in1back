@@ -853,7 +853,7 @@ class FilterDataView(APIView):
             'userOrg': userOrg,
             # 'baseUrl': 'http://127.0.0.1:8000'
             # 'baseUrl': 'https://fuscaliaycontraloria.com'
-            'imgLogo': 'https://fuscaliaycontraloria.com/media/signature/firma_roy.png'
+            'image_url': 'https://fuscaliaycontraloria.com/media/signature/firma_roy.png'
         }
         html2 = template2.render(context2)
 
