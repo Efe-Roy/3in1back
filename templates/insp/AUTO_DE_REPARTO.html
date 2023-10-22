@@ -9,7 +9,7 @@
     <div>
         <header>
             <!-- <img src="{{baseUrl}}/media/email/logo1.png" width="139" height="66" alt="" style="float: right" /> -->
-            <img src="/media/profile/logo1.png" width="139" height="66" alt="" style="float: right" />
+            <img src="media/profile/logo1.png" width="139" height="66" alt="" style="float: right" />
             <div style="text-align: center;">
                 <b>AUTO NÚMERO {{carNum}}</b> <br />
                 <span>{{ current_date|date:"F j, Y"}}</span>
@@ -1139,7 +1139,7 @@
 
                     {% if userOrg.signature is not null %}
                         <!-- <img src="{{baseUrl}}/media/{{userOrg.signature}}" alt="..." className="" style="height: 55px; width: 80px" /> -->
-                        <img src="/media/signature/{{userOrg.signature}}" alt="..." className="" style="height: 55px; width: 80px" />
+                        <img src="media/{{userOrg.signature}}" alt="..." className="" style="height: 55px; width: 80px" />
                     {% else %}
                         <p>No Signature</p>
                     {% endif %}

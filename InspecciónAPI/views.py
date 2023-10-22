@@ -851,7 +851,7 @@ class FilterDataView(APIView):
             'current_date': current_date,
             'agent': agent,
             'userOrg': userOrg,
-            # 'baseUrl': 'http://127.0.0.1:8000'
+            'baseUrl': 'http://127.0.0.1:8000',
             # 'baseUrl': 'https://fuscaliaycontraloria.com'
             'image_url': 'https://fuscaliaycontraloria.com/media/signature/firma_roy.png'
         }
@@ -889,11 +889,11 @@ class FilterDataView(APIView):
             # recipient_list = ['dakaraefe3@gmail.com', 'dakaraefe@gmail.com']
             recipient_list = [agent.user.email, userOrg.email]
 
-            email = EmailMessage(subject, message, from_email, recipient_list)
-            email.content_subtype = "html"
-            email.attach(pdf_filename1, result.getvalue(), 'application/pdf')
-            email.attach(pdf_filename2, result2.getvalue(), 'application/pdf')
-            email.send()
+            # email = EmailMessage(subject, message, from_email, recipient_list)
+            # email.content_subtype = "html"
+            # email.attach(pdf_filename1, result.getvalue(), 'application/pdf')
+            # email.attach(pdf_filename2, result2.getvalue(), 'application/pdf')
+            # email.send()
 
             # Save track selected data
             filter_selection = FilterSelection(
