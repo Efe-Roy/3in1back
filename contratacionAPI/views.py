@@ -145,6 +145,16 @@ class get_contratacion(ListCreateAPIView):
         if typology_id:
             queryset = queryset.filter(typology_id=typology_id)
 
+        # Filter based on start_date parameter
+        start_date = self.request.query_params.get('start_date', None)
+        if start_date:
+            # Parse the start_date from the request and filter the queryset
+            try:
+                start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+                queryset = queryset.filter(start_date=start_date)
+            except ValueError:
+                print("Invalid start_date format")
+
         return queryset
     
 
@@ -183,10 +193,11 @@ class get_contratacion(ListCreateAPIView):
         )['total_accumulated_value'] or Decimal('0.00')  # Default to 0.00 if no valid values are found
 
 
-        queryset = queryset.extra(
-            select={'contact_no_integer': "substring(contact_no from '\\d+')::integer"},
-            order_by=['contact_no_integer', 'contact_no']
-        )
+        # queryset = queryset.extra(
+        #     select={'contact_no_integer': "substring(contact_no from '\\d+')::integer"},
+        #     order_by=['contact_no_integer', 'contact_no']
+        # )
+        queryset = queryset.order_by('process_num')
 
         # Paginate the queryset
         page = self.paginate_queryset(queryset)
@@ -340,10 +351,12 @@ class get_filtered_contratacion(ListCreateAPIView):
             )
         )['total_accumulated_value'] or Decimal('0.00')  # Default to 0.00 if no valid values are found
 
-        queryset = queryset.extra(
-            select={'contact_no_integer': "substring(contact_no from '\\d+')::integer"},
-            order_by=['contact_no_integer', 'contact_no']
-        )
+        # queryset = queryset.extra(
+        #     select={'contact_no_integer': "substring(contact_no from '\\d+')::integer"},
+        #     order_by=['contact_no_integer', 'contact_no']
+        # )
+
+        queryset = queryset.order_by('contact_no')
 
         serializer = self.get_serializer(queryset, many=True)
         response_data = {
