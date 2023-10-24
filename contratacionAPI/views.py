@@ -193,11 +193,11 @@ class get_contratacion(ListCreateAPIView):
         )['total_accumulated_value'] or Decimal('0.00')  # Default to 0.00 if no valid values are found
 
 
-        # queryset = queryset.extra(
-        #     select={'contact_no_integer': "substring(contact_no from '\\d+')::integer"},
-        #     order_by=['contact_no_integer', 'contact_no']
-        # )
-        queryset = queryset.order_by('process_num')
+        queryset = queryset.extra(
+            select={'process_num_integer': "substring(process_num from '\\d+')::integer"},
+            order_by=['process_num_integer', 'process_num']
+        )
+        # queryset = queryset.order_by('process_num')
 
         # Paginate the queryset
         page = self.paginate_queryset(queryset)
