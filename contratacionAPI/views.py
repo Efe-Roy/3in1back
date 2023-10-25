@@ -23,8 +23,8 @@ from rest_framework.authentication import TokenAuthentication
 import json
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
-from django.db.models import Sum, F, DecimalField, Count, IntegerField
-from django.db.models.functions import Cast
+from django.db.models import Sum, F, DecimalField, Count, IntegerField, Case, When, Value, CharField, Func, ExpressionWrapper
+from django.db.models.functions import Cast, Substr
 from decimal import Decimal
 from datetime import datetime
 
@@ -148,10 +148,18 @@ class get_contratacion(ListCreateAPIView):
         # Filter based on start_date parameter
         start_date = self.request.query_params.get('start_date', None)
         if start_date:
-            # Parse the start_date from the request and filter the queryset
             try:
                 start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
-                queryset = queryset.filter(start_date=start_date)
+                queryset = queryset.filter(start_date__gte=start_date)
+            except ValueError:
+                print("Invalid start_date format")
+
+        # Filter based on finish_date parameter
+        finish_date = self.request.query_params.get('finish_date', None)
+        if finish_date:
+            try:
+                finish_date = datetime.strptime(finish_date, '%Y-%m-%d').date()
+                queryset = queryset.filter(finish_date__lt=finish_date)
             except ValueError:
                 print("Invalid start_date format")
 
@@ -192,12 +200,47 @@ class get_contratacion(ListCreateAPIView):
             )
         )['total_accumulated_value'] or Decimal('0.00')  # Default to 0.00 if no valid values are found
 
-
-        queryset = queryset.extra(
-            select={'process_num_integer': "substring(process_num from '\\d+')::integer"},
-            order_by=['process_num_integer', 'process_num']
-        )
         # queryset = queryset.order_by('process_num')
+
+
+        first_initials_order = {
+            'C-PS': 1,
+            'C-S': 2,
+            'C-A': 3,
+            'C-INT': 4,
+            'C-SL': 5,
+            'C-CONS': 6,
+            'C-AR': 7,
+            'C-OP': 8,
+            'C-I': 9,
+            'CT-INT': 10,
+            'C-T': 11,
+            'C-C': 12,
+        }
+
+        second_initials_order = {
+            'AMS': 1,
+            'SGG': 2,
+            'SPO': 3,
+            'SHB': 4,
+            'SIE': 5,
+            'SPD': 6,
+            'SSP': 7,
+        }
+
+        queryset = queryset.annotate(
+            first_order=Case(
+                *[When(process_num__startswith=key, then=Value(value)) for key, value in first_initials_order.items()],
+                default=Value(999), output_field=CharField()
+            ),
+            second_order=Case(
+                *[When(process_num__endswith=key, then=Value(value)) for key, value in second_initials_order.items()],
+                default=Value(999), output_field=CharField()
+            )
+        )
+
+        queryset = queryset.order_by('first_order', 'second_order', 'process_num')
+
 
         # Paginate the queryset
         page = self.paginate_queryset(queryset)
