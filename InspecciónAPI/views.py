@@ -820,7 +820,8 @@ class FilterDataView(APIView):
             print({'error': 'Data not available yet'})
 
         # Create an HTML template1
-        template = get_template('insp/AUTO_DE_REPARTO.html')
+        template = get_template('insp/mail.html')
+        # template = get_template('insp/AUTO_DE_REPARTO.html')
         context = {
             'urban_control': queryset1,
             'police_compliant': queryset2,
@@ -889,11 +890,11 @@ class FilterDataView(APIView):
             # recipient_list = ['dakaraefe3@gmail.com', 'dakaraefe@gmail.com']
             recipient_list = [agent.user.email, userOrg.email]
 
-            email = EmailMessage(subject, message, from_email, recipient_list)
-            email.content_subtype = "html"
-            email.attach(pdf_filename1, result.getvalue(), 'application/pdf')
-            email.attach(pdf_filename2, result2.getvalue(), 'application/pdf')
-            email.send()
+            # email = EmailMessage(subject, message, from_email, recipient_list)
+            # email.content_subtype = "html"
+            # email.attach(pdf_filename1, result.getvalue(), 'application/pdf')
+            # email.attach(pdf_filename2, result2.getvalue(), 'application/pdf')
+            # email.send()
 
             # Save track selected data
             filter_selection = FilterSelection(
