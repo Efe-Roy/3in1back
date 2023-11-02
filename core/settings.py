@@ -18,7 +18,7 @@ DEBUG = True
 
 # ALLOWED_HOSTS = ['147.182.215.149', '127.0.0.1', 'fuscaliaycontraloria.com']
 ALLOWED_HOSTS = ['147.182.215.149', 'fuscaliaycontraloria.com']
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
 env = environ.Env()
 environ.Env.read_env()
 
