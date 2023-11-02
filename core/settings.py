@@ -1,5 +1,6 @@
 
 from pathlib import Path
+import environ
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -17,6 +18,9 @@ DEBUG = True
 
 # ALLOWED_HOSTS = ['147.182.215.149', '127.0.0.1', 'fuscaliaycontraloria.com']
 ALLOWED_HOSTS = ['147.182.215.149', 'fuscaliaycontraloria.com']
+ALLOWED_HOSTS = []
+env = environ.Env()
+environ.Env.read_env()
 
 
 # Application definition
@@ -225,6 +229,13 @@ LOGGING = {
 # settings.py
 
 TWILIO_ACCOUNT_SID = 'ACa5df16262abbbd8f40e59febeb07ee07'
-TWILIO_AUTH_TOKEN = '8355eb35ae9fc4c34d61c3a51ffb7441'
-TWILIO_WHATSAPP_NUMBER = 'whatsapp:+14155238886'
+TWILIO_AUTH_TOKEN = '69ccb2f31ae2494b7532574708ed1d87'
+TWILIO_NUMBER = '+12193886879'
 
+# TWILIO_ACCOUNT_SID = env("MY_ACCOUNT_SID")
+# TWILIO_AUTH_TOKEN = env("TWILIO_AUTH_TOKEN")
+# TWILIO_NUMBER = env("MY_TWILIO_NUMBER")
+SMS_BROADCAST_TO_NUMBERS = [
+   "+573016577567",
+   "+2348134964142", # use the format +1XXXXXXXXXX
+ ]

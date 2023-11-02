@@ -412,6 +412,7 @@
       <!-- Start Table -->
       <div>
         <br><br><br>
+        {% if traffic_violation_compared|length > 0 %}
         <b><em><u> CONTRAVENCIONES DE TRANSITO POR COMPARENDO </u></em></b>
         <div style="overflow-x:auto;">
             <table style="width: 100%; border-collapse: collapse; border-spacing: 0; border: 1px solid #000000; table-layout: fixed;">
@@ -426,13 +427,13 @@
                 </tr>
                 {% for item in traffic_violation_compared %}
                     <tr>
-                        <td style="text-align: left; padding: 8px; font-size:8.5pt;">{{item.date_events|date:"d/m/Y"}}</td>
-                        <td style="text-align: left; padding: 8px; font-size:8.5pt;">{{item.date_received|date:"d/m/Y"}}</td>
-                        <td style="text-align: left; padding: 8px; font-size:8.5pt;">{{item.involved}}</td>
-                        <td style="text-align: left; padding: 8px; font-size:8.5pt;">{{item.id_card}}</td>
-                        <td style="text-align: left; padding: 8px; font-size:8.5pt;">{{item.violation_code}}</td>
-                        <td style="padding: 8px; font-size:8.5pt;">{{item.res_procedure}}</td>
-                        <td style="padding: 8px; font-size:8.5pt;">{{item.compare_number}}</td>
+                        <td style="text-align: left; padding: 8px; font-size:8.5pt; word-break: break-all; white-space: pre-wrap">{{item.date_events|date:"d/m/Y"}}</td>
+                        <td style="text-align: left; padding: 8px; font-size:8.5pt; word-break: break-all; white-space: pre-wrap">{{item.date_received|date:"d/m/Y"}}</td>
+                        <td style="text-align: left; padding: 8px; font-size:8.5pt; word-break: break-all; white-space: pre-wrap">{{item.involved}}</td>
+                        <td style="text-align: left; padding: 8px; font-size:8.5pt; word-break: break-all; white-space: pre-wrap">{{item.id_card}}</td>
+                        <td style="text-align: left; padding: 8px; font-size:8.5pt; word-break: break-all; white-space: pre-wrap">{{item.violation_code}}</td>
+                        <td style="padding: 8px; font-size:8.5pt; word-break: break-all; white-space: pre-wrap">{{item.res_procedure}}</td>
+                        <td style="padding: 8px; font-size:8.5pt; word-break: break-all; white-space: pre-wrap">{{item.compare_number}}</td>
                     </tr>
                 {% empty %}
                     <tr>
@@ -443,7 +444,9 @@
         </div>
         <br>
         <br>
+        {% endif %}
     
+        {% if police_compliant|length > 0 %}
         <b><em><u> QUERELLA DE POLICIA </u></em></b>
         <div style="overflow-x:auto;">
             <table style="width: 100%; border-collapse: collapse; border-spacing: 0; border: 1px solid #000000; table-layout: fixed;">
@@ -455,10 +458,10 @@
                 </tr>
                 {% for item in police_compliant %}
                     <tr>
-                        <td style="text-align: left; padding: 8px;">{{item.filed}}</td>
-                        <td style="text-align: left; padding: 8px;">{{item.date_received|date:"d/m/Y"}}</td>
-                        <td style="text-align: left; padding: 8px;">{{item.complainants}}</td>
-                        <td style="text-align: left; padding: 8px;">{{item.defendants}}</td>
+                        <td style="text-align: left; padding: 8px; word-break: break-all; white-space: pre-wrap">{{item.filed}}</td>
+                        <td style="text-align: left; padding: 8px; word-break: break-all; white-space: pre-wrap">{{item.date_received|date:"d/m/Y"}}</td>
+                        <td style="text-align: left; padding: 8px; word-break: break-all; white-space: pre-wrap">{{item.complainants}}</td>
+                        <td style="text-align: left; padding: 8px; word-break: break-all; white-space: pre-wrap">{{item.defendants}}</td>
                     </tr>
                 {% empty %}
                     <tr>
@@ -469,7 +472,9 @@
         </div>
         <br>
         <br>
+        {% endif %}
     
+        {% if traffic_violation_compared_my_colission|length > 0 %}
         <b><em><u> CONTRAVENCIONES DE TRANSITO POR COLISION </u></em></b>
         <div style="overflow-x:auto;">
             <table style="width: 100%; border-collapse: collapse; border-spacing: 0; border: 1px solid #000000; table-layout: fixed;">
@@ -480,9 +485,9 @@
                 </tr>
                 {% for item in traffic_violation_compared_my_colission %}
                     <tr>
-                        <td style="text-align: left; padding: 8px;">{{item.date_received|date:"d/m/Y"}}</td>
-                        <td style="text-align: left; padding: 8px;">{{item.involved}}</td>
-                        <td style="text-align: left; padding: 8px;">{{item.res_procedure}}</td>
+                        <td style="text-align: left; padding: 8px; word-break: break-all; white-space: pre-wrap">{{item.date_received|date:"d/m/Y"}}</td>
+                        <td style="text-align: left; padding: 8px; word-break: break-all; white-space: pre-wrap">{{item.involved}}</td>
+                        <td style="text-align: left; padding: 8px; word-break: break-all; white-space: pre-wrap">{{item.res_procedure}}</td>
                     </tr>
                 {% empty %}
                     <tr>
@@ -493,7 +498,10 @@
         </div>
         <br>
         <br>
-    
+        {% endif %}
+
+
+        {% if police_submission_lggs|length > 0 %}
         <b><em><u> COMPARENDOS POLICIVOS RADICADOS EN LA SECRETARIA GENERAL Y DE GOIERNO </u></em></b>
         <div style="overflow-x:auto;">
             <table style="width: 100%; border-collapse: collapse; border-spacing: 0; border: 1px solid #000000; table-layout: fixed;">
@@ -505,10 +513,10 @@
                 </tr>
                 {% for item in police_submission_lggs %}
                     <tr>
-                        <td style="text-align: left; padding: 8px;">{{item.name}}</td>
-                        <td style="text-align: left; padding: 8px;">{{item.Id_card}}</td>
-                        <td style="text-align: left; padding: 8px;">{{item.appearance_num}}</td>
-                        <td style="text-align: left; padding: 8px;">{{item.act_num}}</td>
+                        <td style="text-align: left; padding: 8px; word-break: break-all; white-space: pre-wrap">{{item.name}}</td>
+                        <td style="text-align: left; padding: 8px; word-break: break-all; white-space: pre-wrap">{{item.Id_card}}</td>
+                        <td style="text-align: left; padding: 8px; word-break: break-all; white-space: pre-wrap">{{item.appearance_num}}</td>
+                        <td style="text-align: left; padding: 8px; word-break: break-all; white-space: pre-wrap">{{item.act_num}}</td>
                     </tr>
                 {% empty %}
                     <tr>
@@ -519,7 +527,10 @@
         </div>
         <br>
         <br>
+        {% endif %}
     
+
+        {% if file_2_return_2d_office|length > 0 %}
         <b><em><u> EXPEDIENTE PARA DEVOLVER AL DESPACHO DE PRIMERA INSTANCIA </u></em></b>
         <div style="overflow-x:auto;">
             <table style="width: 100%; border-collapse: collapse; border-spacing: 0; border: 1px solid #000000; table-layout: fixed;">
@@ -530,9 +541,9 @@
                 </tr>
                 {% for item in file_2_return_2d_office %}
                     <tr>
-                        <td style="text-align: left; padding: 8px;">{{item.filed}}</td>
-                        <td style="text-align: left; padding: 8px;">{{item.guy|date:"d/m/Y"}}</td>
-                        <td style="text-align: left; padding: 8px;">{{item.involved}}</td>
+                        <td style="text-align: left; padding: 8px; word-break: break-all; white-space: pre-wrap">{{item.filed}}</td>
+                        <td style="text-align: left; padding: 8px; word-break: break-all; white-space: pre-wrap">{{item.guy|date:"d/m/Y"}}</td>
+                        <td style="text-align: left; padding: 8px; word-break: break-all; white-space: pre-wrap">{{item.involved}}</td>
                     </tr>
                 {% empty %}
                     <tr>
@@ -543,7 +554,9 @@
         </div>
         <br>
         <br>
+        {% endif %}
     
+        {% if complaint_and_office_to_attend|length > 0 %}
         <b><em><u> QUEJAS Y OFICIOS POR ATENDER </u></em></b>
         <div style="overflow-x:auto;">
             <table style="width: 100%; border-collapse: collapse; border-spacing: 0; border: 1px solid #000000; table-layout: fixed;">
@@ -554,9 +567,9 @@
                 </tr>
                 {% for item in complaint_and_office_to_attend %}
                     <tr>
-                        <td style="text-align: left; padding: 8px;">{{item.filed}}</td>
-                        <td style="text-align: left; padding: 8px;">{{item.date_received|date:"d/m/Y"}}</td>
-                        <td style="text-align: left; padding: 8px;">{{item.affair}}</td>
+                        <td style="text-align: left; padding: 8px; word-break: break-all; white-space: pre-wrap">{{item.filed}}</td>
+                        <td style="text-align: left; padding: 8px; word-break: break-all; white-space: pre-wrap">{{item.date_received|date:"d/m/Y"}}</td>
+                        <td style="text-align: left; padding: 8px; word-break: break-all; white-space: pre-wrap">{{item.affair}}</td>
                     </tr>
                 {% empty %}
                     <tr>
@@ -567,7 +580,10 @@
         </div>
         <br>
         <br>
+        {% endif %}
     
+
+        {% if urban_control|length > 0 %}
         <b><em><u> CONTROL URBANISTICO </u></em></b>
         <div style="overflow-x:auto;">
             <table style="width: 100%; border-collapse: collapse; border-spacing: 0; border: 1px solid #000000; table-layout: fixed;">
@@ -579,10 +595,10 @@
               </tr>
                 {% for item in urban_control %}
                     <tr>
-                        <td style="text-align: left; padding: 8px;">{{item.filed}}</td>
-                        <td style="text-align: left; padding: 8px;">{{item.date_received|date:"d/m/Y"}}</td>
-                        <td style="text-align: left; padding: 8px;">{{item.Involved_applicant}}</td>
-                        <td style="text-align: left; padding: 8px;">{{item.res_report}}</td>
+                        <td style="text-align: left; padding: 8px; word-break: break-all; white-space: pre-wrap">{{item.filed}}</td>
+                        <td style="text-align: left; padding: 8px; word-break: break-all; white-space: pre-wrap">{{item.date_received|date:"d/m/Y"}}</td>
+                        <td style="text-align: left; padding: 8px; word-break: break-all; white-space: pre-wrap">{{item.Involved_applicant}}</td>
+                        <td style="text-align: left; padding: 8px; word-break: break-all; white-space: pre-wrap">{{item.res_report}}</td>
                     </tr>
                 {% empty %}
                     <tr>
@@ -592,6 +608,7 @@
             </table>
         </div>
         <br><br><br>
+        {% endif %}
     </div>
 
       <!-- End Table -->

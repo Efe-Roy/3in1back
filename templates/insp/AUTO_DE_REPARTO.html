@@ -913,6 +913,7 @@
             ================================================================================================================= -->
             <div>
                 <br><br><br>
+                {% if traffic_violation_compared|length > 0 %}
                 <b><em><u> CONTRAVENCIONES DE TRANSITO POR COMPARENDO </u></em></b>
                 <div style="overflow-x:auto;">
                     <table style="width: 100%; border-collapse: collapse; border-spacing: 0; border: 1px solid #ddd; table-layout: fixed;">
@@ -944,7 +945,9 @@
                 </div>
                 <br>
                 <br>
+                {% endif %}
             
+                {% if police_compliant|length > 0 %}
                 <b><em><u> QUERELLA DE POLICIA </u></em></b>
                 <div style="overflow-x:auto;">
                     <table style="width: 100%; border-collapse: collapse; border-spacing: 0; border: 1px solid #ddd; table-layout: fixed;">
@@ -970,7 +973,9 @@
                 </div>
                 <br>
                 <br>
+                {% endif %}
             
+                {% if traffic_violation_compared_my_colission|length > 0 %}
                 <b><em><u> CONTRAVENCIONES DE TRANSITO POR COLISION </u></em></b>
                 <div style="overflow-x:auto;">
                     <table style="width: 100%; border-collapse: collapse; border-spacing: 0; border: 1px solid #ddd; table-layout: fixed;">
@@ -994,7 +999,10 @@
                 </div>
                 <br>
                 <br>
+                {% endif %}
             
+
+                {% if police_submission_lggs|length > 0 %}
                 <b><em><u> COMPARENDOS POLICIVOS RADICADOS EN LA SECRETARIA GENERAL Y DE GOIERNO </u></em></b>
                 <div style="overflow-x:auto;">
                     <table style="width: 100%; border-collapse: collapse; border-spacing: 0; border: 1px solid #ddd; table-layout: fixed;">
@@ -1020,7 +1028,10 @@
                 </div>
                 <br>
                 <br>
+                {% endif %}
+
             
+                {% if file_2_return_2d_office|length > 0 %}
                 <b><em><u> EXPEDIENTE PARA DEVOLVER AL DESPACHO DE PRIMERA INSTANCIA </u></em></b>
                 <div style="overflow-x:auto;">
                     <table style="width: 100%; border-collapse: collapse; border-spacing: 0; border: 1px solid #ddd; table-layout: fixed;">
@@ -1044,7 +1055,10 @@
                 </div>
                 <br>
                 <br>
+                {% endif %}
             
+
+                {% if complaint_and_office_to_attend|length > 0 %}
                 <b><em><u> QUEJAS Y OFICIOS POR ATENDER </u></em></b>
                 <div style="overflow-x:auto;">
                     <table style="width: 100%; border-collapse: collapse; border-spacing: 0; border: 1px solid #ddd; table-layout: fixed;">
@@ -1068,7 +1082,10 @@
                 </div>
                 <br>
                 <br>
+                {% endif %}
             
+
+                {% if urban_control|length > 0 %}
                 <b><em><u> CONTROL URBANISTICO </u></em></b>
                 <div style="overflow-x:auto;">
                     <table style="width: 100%; border-collapse: collapse; border-spacing: 0; border: 1px solid #ddd; table-layout: fixed;">
@@ -1093,6 +1110,7 @@
                     </table>
                 </div>
                 <br><br><br>
+                {% endif %}
             </div>
             <!-- =================================================================================================================
             Tables End

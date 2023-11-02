@@ -37,6 +37,7 @@ import io
 from django.template.loader import get_template
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
+import pytz
 
 # Create your views here.
 class PoliceCompliantView(APIView):
@@ -769,6 +770,11 @@ class FilterDataView(APIView):
     def post(self, request, *args, **kwargs):
         carNum = self.fetch_CarNum(request.data)
         current_date = timezone.now()
+
+        # Convert current_date to Colombia's time zone
+        colombia_timezone = pytz.timezone('America/Bogota')
+        current_date_colombia = current_date.astimezone(colombia_timezone)
+
         assign_agent_id = request.data.get('assign_agent_id', None)
         agent = Agent.objects.get(id=assign_agent_id)
         userOrg = User.objects.get(id=request.user.id)
@@ -833,10 +839,7 @@ class FilterDataView(APIView):
             'carNum': carNum,
             'current_date': current_date,
             'agent': agent,
-            'userOrg': userOrg,
-            # 'baseUrl': 'http://127.0.0.1:8000'
-            # 'baseUrl': 'https://fuscaliaycontraloria.com'
-            'imgSig': 'https://fuscaliaycontraloria.com/media/signature/firma_roy.png'
+            'userOrg': userOrg
         }
         html = template.render(context)
 
@@ -852,9 +855,7 @@ class FilterDataView(APIView):
             'current_date': current_date,
             'agent': agent,
             'userOrg': userOrg,
-            # 'baseUrl': 'http://127.0.0.1:8000',
-            # 'baseUrl': 'https://fuscaliaycontraloria.com'
-            'image_url': 'https://fuscaliaycontraloria.com/media/signature/firma_roy.png'
+            'current_date_colombia': current_date_colombia
         }
         html2 = template2.render(context2)
 
@@ -890,11 +891,11 @@ class FilterDataView(APIView):
             # recipient_list = ['dakaraefe3@gmail.com', 'dakaraefe@gmail.com']
             recipient_list = [agent.user.email, userOrg.email]
 
-            email = EmailMessage(subject, message, from_email, recipient_list)
-            email.content_subtype = "html"
-            email.attach(pdf_filename1, result.getvalue(), 'application/pdf')
-            email.attach(pdf_filename2, result2.getvalue(), 'application/pdf')
-            email.send()
+            # email = EmailMessage(subject, message, from_email, recipient_list)
+            # email.content_subtype = "html"
+            # email.attach(pdf_filename1, result.getvalue(), 'application/pdf')
+            # email.attach(pdf_filename2, result2.getvalue(), 'application/pdf')
+            # email.send()
 
             # Save track selected data
             filter_selection = FilterSelection(

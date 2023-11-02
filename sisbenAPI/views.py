@@ -21,6 +21,8 @@ from multiprocessing import Pool
 from multiprocessing import cpu_count
 import time
 from twilio.base.exceptions import TwilioRestException
+from django.http import HttpResponse
+
 
 # Create your views here.
 class CustomPagination(PageNumberPagination):
@@ -327,3 +329,32 @@ class SendBulkWhatsAppMessages(APIView):
 
         return success_count, failure_count
 
+def broadcast_sms(request):
+    message_to_broadcast = ("How are you")
+    client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
+    for recipient in settings.SMS_BROADCAST_TO_NUMBERS:
+        print(recipient)
+        if recipient:
+            client.messages.create(to=recipient,
+                                   from_=settings.TWILIO_NUMBER,
+                                   body=message_to_broadcast)
+    return HttpResponse("messages sent!" + message_to_broadcast, 200)
+
+
+# def broadcast_sms(request):
+#     message_to_broadcast = "How are you"
+#     client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
+    
+#     # Query the SisbenMain model to get a list of phone numbers
+#     recipients = SisbenMain.objects.exclude(cell_phone__isnull=True).exclude(cell_phone__exact='')
+
+#     for sisben_entry in recipients:
+#         recipient = sisben_entry.cell_phone
+#         if recipient:
+#             client.messages.create(
+#                 to=recipient,
+#                 from_=settings.TWILIO_NUMBER,
+#                 body=message_to_broadcast
+#             )
+    
+#     return HttpResponse("Messages sent! " + message_to_broadcast, status=200)
