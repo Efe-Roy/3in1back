@@ -146,6 +146,9 @@ class get_pqrs(ListCreateAPIView):
         elif user.is_pqrs:
             queryset = PqrsMain.objects.all()
             # print("User is_pqrs", user.username)
+        elif user.is_consult:
+            queryset = PqrsMain.objects.all()
+            # print("User is_consult", user.username)
         elif user.is_team:
             foundObject = Team.objects.get(user_id=user.id)
             team_id = foundObject.id

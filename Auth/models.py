@@ -29,6 +29,7 @@ class User(AbstractUser):
     is_hiring = models.BooleanField(default=False)
     is_hiring_org = models.BooleanField(default=False)
     is_sisben = models.BooleanField(default=False)
+    is_consult = models.BooleanField(default=False)
 
 class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

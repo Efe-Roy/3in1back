@@ -49,6 +49,8 @@ class PoliceCompliantView(APIView):
         if user.is_organisor:
             queryset = PoliceCompliant.objects.all().order_by('-id')
             # print("User is_organisor", user.id)
+        elif user.is_consult:
+            queryset = PoliceCompliant.objects.all().order_by('-id')
         elif user.is_agent:
             foundObject = Agent.objects.get(user_id=user.id)
             agent_id = foundObject.id
@@ -121,6 +123,9 @@ class UrbanControlView(APIView):
 
         user = self.request.user
         if user.is_organisor:
+            queryset = UrbanControl.objects.all().order_by('-id')
+            # print("User is_organisor", user.id)
+        elif user.is_consult:
             queryset = UrbanControl.objects.all().order_by('-id')
             # print("User is_organisor", user.id)
         elif user.is_agent:
@@ -201,6 +206,9 @@ class PoliceSubmissionLGGSView(APIView):
         if user.is_organisor:
             queryset = PoliceSubmissionLGGS.objects.all().order_by('-id')
             # print("User is_organisor", user.id)
+        elif user.is_consult:
+            queryset = PoliceSubmissionLGGS.objects.all().order_by('-id')
+            # print("User is_organisor", user.id)
         elif user.is_agent:
             foundObject = Agent.objects.get(user_id=user.id)
             agent_id = foundObject.id
@@ -279,6 +287,9 @@ class TrafficViolationComparedView(APIView):
         if user.is_organisor:
             queryset = TrafficViolationCompared.objects.all().order_by('-id')
             # print("User is_organisor", user.id)
+        elif user.is_consult:
+            queryset = TrafficViolationCompared.objects.all().order_by('-id')
+            # print("User is_organisor", user.id)
         elif user.is_agent:
             foundObject = Agent.objects.get(user_id=user.id)
             agent_id = foundObject.id
@@ -354,6 +365,9 @@ class TrafficViolationComparedMyColissionView(APIView):
 
         user = self.request.user
         if user.is_organisor:
+            queryset = TrafficViolationComparedMyColission.objects.all().order_by('-id')
+            # print("User is_organisor", user.id)
+        elif user.is_consult:
             queryset = TrafficViolationComparedMyColission.objects.all().order_by('-id')
             # print("User is_organisor", user.id)
         elif user.is_agent:
@@ -434,6 +448,9 @@ class ComplaintAndOfficeToAttendView(APIView):
         if user.is_organisor:
             queryset = ComplaintAndOfficeToAttend.objects.all().order_by('-id')
             # print("User is_organisor", user.id)
+        elif user.is_consult:
+            queryset = ComplaintAndOfficeToAttend.objects.all().order_by('-id')
+            # print("User is_organisor", user.id)
         elif user.is_agent:
             foundObject = Agent.objects.get(user_id=user.id)
             agent_id = foundObject.id
@@ -509,6 +526,9 @@ class File2Return2dOfficeView(APIView):
 
         user = self.request.user
         if user.is_organisor:
+            queryset = File2Return2dOffice.objects.all().order_by('-id')
+            # print("User is_organisor", user.id)
+        elif user.is_consult:
             queryset = File2Return2dOffice.objects.all().order_by('-id')
             # print("User is_organisor", user.id)
         elif user.is_agent:
@@ -588,6 +608,9 @@ class InspNotifyView(APIView):
 
         user = self.request.user
         if user.is_organisor:
+            queryset = InspNotifify.objects.all().order_by('-id')
+            # print("User is_organisor", user.id)
+        elif user.is_consult:
             queryset = InspNotifify.objects.all().order_by('-id')
             # print("User is_organisor", user.id)
         elif user.is_agent:

@@ -91,6 +91,8 @@ class get_contratacion(ListCreateAPIView):
         # print("qaws", user.is_organisor)
         if user.is_organisor:
             queryset = ContratacionMain.objects.all()
+        elif user.is_consult:
+            queryset = ContratacionMain.objects.all()
         elif user.is_hiring and user.username == "43420510":
             queryset = ContratacionMain.objects.all()
         elif user.is_hiring:
@@ -289,6 +291,8 @@ class get_filtered_contratacion(ListCreateAPIView):
         user = self.request.user
         # print("qaws", user.is_organisor)
         if user.is_organisor:
+            queryset = ContratacionMain.objects.all()
+        elif user.is_consult:
             queryset = ContratacionMain.objects.all()
         elif user.is_hiring and user.username == "43420510":
             queryset = ContratacionMain.objects.all()

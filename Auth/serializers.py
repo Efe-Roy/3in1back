@@ -15,7 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields=['id', 'username', 'first_name', 'last_name', 'email', 
                 'position', 'image', 'signature', 'approve_signature', 
                 'is_organisor', 'is_team', 'is_agent', 'is_pqrs', 
-                'is_hiring', 'is_hiring_org', 'is_sisben']
+                'is_hiring', 'is_hiring_org', 'is_sisben', 'is_consult']
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -57,7 +57,7 @@ class OperatorSignUpSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'email', 'password', 'is_agent', 
-                  'is_team', 'is_pqrs', 'is_hiring', 
+                  'is_team', 'is_pqrs', 'is_hiring', 'is_consult',
                   'responsible_secretary', 'is_hiring_org', 'is_sisben']
         extra_kwargs = {
             'password': {'write_only': True}
@@ -80,6 +80,7 @@ class OperatorSignUpSerializer(serializers.ModelSerializer):
             is_hiring=self.validated_data['is_hiring'],
             is_hiring_org=self.validated_data['is_hiring_org'],
             is_sisben=self.validated_data['is_sisben'],
+            is_consult=self.validated_data['is_consult'],
             is_organisor=False,
             is_active = False,
         )
