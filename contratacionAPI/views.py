@@ -93,6 +93,8 @@ class get_contratacion(ListCreateAPIView):
             queryset = ContratacionMain.objects.all()
         elif user.is_consult:
             queryset = ContratacionMain.objects.all()
+        elif user.is_hiring_org:
+            queryset = ContratacionMain.objects.all()
         elif user.is_hiring and user.username == "43420510":
             queryset = ContratacionMain.objects.all()
         elif user.is_hiring:
@@ -293,6 +295,8 @@ class get_filtered_contratacion(ListCreateAPIView):
         if user.is_organisor:
             queryset = ContratacionMain.objects.all()
         elif user.is_consult:
+            queryset = ContratacionMain.objects.all()
+        elif user.is_hiring_org:
             queryset = ContratacionMain.objects.all()
         elif user.is_hiring and user.username == "43420510":
             queryset = ContratacionMain.objects.all()
