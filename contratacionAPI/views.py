@@ -140,6 +140,10 @@ class get_contratacion(ListCreateAPIView):
         sex = self.request.query_params.get('sex', None)
         if sex:
             queryset = queryset.filter(sex__icontains=sex)
+        
+        addition = self.request.query_params.get('addition', None)
+        if addition:
+            queryset = queryset.filter(addition__icontains=addition)
 
         bpin_project_code_names = self.request.query_params.getlist('bpin_project_code', None)
         if bpin_project_code_names:
@@ -164,6 +168,19 @@ class get_contratacion(ListCreateAPIView):
             try:
                 finish_date = datetime.strptime(finish_date, '%Y-%m-%d').date()
                 queryset = queryset.filter(finish_date__lt=finish_date)
+            except ValueError:
+                print("Invalid start_date format")
+
+         # Check if both start_date and end_date are present
+        contract_start_date_str = self.request.query_params.get('contract_start_date_str', None)
+        contract_end_date_str = self.request.query_params.get('contract_end_date_str', None)
+        if contract_start_date_str and contract_end_date_str:
+            try:
+                print("***********************contract_start_date_str", contract_start_date_str)
+                print("***********************contract_end_date_str", contract_end_date_str)
+                start_date = datetime.strptime(contract_start_date_str, '%Y-%m-%d').date()
+                end_date = datetime.strptime(contract_end_date_str, '%Y-%m-%d').date()
+                queryset = queryset.filter( contract_date__range=[start_date, end_date] )
             except ValueError:
                 print("Invalid start_date format")
 
@@ -197,10 +214,10 @@ class get_contratacion(ListCreateAPIView):
         # Count instances where sex is "Femenino"
         female_count = queryset.filter(sex="Femenino").count()
 
-        # Calculate the accumulated value of real_executed_value_according_to_settlement
+        # Calculate the accumulated value of contract_value_plus
         accumulated_value = queryset.aggregate(
             total_accumulated_value=Sum(
-                Cast('real_executed_value_according_to_settlement', output_field=DecimalField(max_digits=15, decimal_places=2))
+                Cast('contract_value_plus', output_field=DecimalField(max_digits=15, decimal_places=2))
             )
         )['total_accumulated_value'] or Decimal('0.00')  # Default to 0.00 if no valid values are found
 
@@ -343,6 +360,10 @@ class get_filtered_contratacion(ListCreateAPIView):
         sex = self.request.query_params.get('sex', None)
         if sex:
             queryset = queryset.filter(sex__icontains=sex)
+        
+        addition = self.request.query_params.get('addition', None)
+        if addition:
+            queryset = queryset.filter(addition__icontains=addition)
 
         bpin_project_code_names = self.request.query_params.getlist('bpin_project_code', None)
         if bpin_project_code_names:
@@ -359,6 +380,28 @@ class get_filtered_contratacion(ListCreateAPIView):
             try:
                 start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
                 queryset = queryset.filter(start_date=start_date)
+            except ValueError:
+                print("Invalid start_date format")
+
+        # Filter based on finish_date parameter
+        finish_date = self.request.query_params.get('finish_date', None)
+        if finish_date:
+            try:
+                finish_date = datetime.strptime(finish_date, '%Y-%m-%d').date()
+                queryset = queryset.filter(finish_date__lt=finish_date)
+            except ValueError:
+                print("Invalid start_date format")
+
+         # Check if both start_date and end_date are present
+        contract_start_date_str = self.request.query_params.get('contract_start_date_str', None)
+        contract_end_date_str = self.request.query_params.get('contract_end_date_str', None)
+        if contract_start_date_str and contract_end_date_str:
+            try:
+                print("***********************contract_start_date_str", contract_start_date_str)
+                print("***********************contract_end_date_str", contract_end_date_str)
+                start_date = datetime.strptime(contract_start_date_str, '%Y-%m-%d').date()
+                end_date = datetime.strptime(contract_end_date_str, '%Y-%m-%d').date()
+                queryset = queryset.filter( contract_date__range=[start_date, end_date] )
             except ValueError:
                 print("Invalid start_date format")
 
@@ -395,10 +438,10 @@ class get_filtered_contratacion(ListCreateAPIView):
         # Count all
         count = queryset.count()
 
-        # Calculate the accumulated value of real_executed_value_according_to_settlement
+        # Calculate the accumulated value of contract_value_plus
         accumulated_value = queryset.aggregate(
             total_accumulated_value=Sum(
-                Cast('real_executed_value_according_to_settlement', output_field=DecimalField(max_digits=15, decimal_places=2))
+                Cast('contract_value_plus', output_field=DecimalField(max_digits=15, decimal_places=2))
             )
         )['total_accumulated_value'] or Decimal('0.00')  # Default to 0.00 if no valid values are found
 
