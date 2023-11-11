@@ -789,14 +789,26 @@ class UltimateView(APIView):
             
         return Response(status=status.HTTP_204_NO_CONTENT)
     
+month_mapping = {
+    'January': 'enero',
+    'February': 'febrero',
+    'March': 'marzo',
+    'April': 'abril',
+    'May': 'mayo',
+    'June': 'junio',
+    'July': 'julio',
+    'August': 'agosto',
+    'September': 'septiembre',
+    'October': 'octubre',
+    'November': 'noviembre',
+    'December': 'diciembre',
+}
+
 class FilterDataView(APIView):
     def post(self, request, *args, **kwargs):
         carNum = self.fetch_CarNum(request.data)
         current_date = timezone.now()
-
-        # Convert current_date to Colombia's time zone
-        colombia_timezone = pytz.timezone('America/Bogota')
-        current_date_colombia = current_date.astimezone(colombia_timezone)
+        month_in_spanish = month_mapping[current_date.strftime('%B')]
 
         assign_agent_id = request.data.get('assign_agent_id', None)
         agent = Agent.objects.get(id=assign_agent_id)
@@ -861,6 +873,7 @@ class FilterDataView(APIView):
             'file_2_return_2d_office': queryset7,
             'carNum': carNum,
             'current_date': current_date,
+            'month_in_spanish': month_in_spanish,
             'agent': agent,
             'userOrg': userOrg
         }
@@ -876,9 +889,9 @@ class FilterDataView(APIView):
         context2 = {
             'carNum': carNum,
             'current_date': current_date,
+            'month_in_spanish': month_in_spanish,
             'agent': agent,
             'userOrg': userOrg,
-            'current_date_colombia': current_date_colombia
         }
         html2 = template2.render(context2)
 
@@ -914,11 +927,11 @@ class FilterDataView(APIView):
             # recipient_list = ['dakaraefe3@gmail.com', 'dakaraefe@gmail.com']
             recipient_list = [agent.user.email, userOrg.email]
 
-            email = EmailMessage(subject, message, from_email, recipient_list)
-            email.content_subtype = "html"
-            email.attach(pdf_filename1, result.getvalue(), 'application/pdf')
-            email.attach(pdf_filename2, result2.getvalue(), 'application/pdf')
-            email.send()
+            # email = EmailMessage(subject, message, from_email, recipient_list)
+            # email.content_subtype = "html"
+            # email.attach(pdf_filename1, result.getvalue(), 'application/pdf')
+            # email.attach(pdf_filename2, result2.getvalue(), 'application/pdf')
+            # email.send()
 
             # Save track selected data
             filter_selection = FilterSelection(
