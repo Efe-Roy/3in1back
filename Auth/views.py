@@ -6,10 +6,11 @@ from rest_framework.response import Response
 from .serializers import (
     UserSerializer, UserProfileSerializer, SignupSerializer, 
     TeamSerializer, AgentSerializer, OperatorSignUpSerializer,
-    ResetPasswordEmailRequestSerializer,SetNewPasswordSerializer
+    ResetPasswordEmailRequestSerializer,SetNewPasswordSerializer,
+    ActivityTrackerSerializer
 )
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from .models import User, Team, Agent, UserProfile
+from .models import User, Team, Agent, ActivityTracker
 from rest_framework.generics import (
     ListAPIView, RetrieveAPIView, CreateAPIView,
     UpdateAPIView, DestroyAPIView
@@ -187,8 +188,16 @@ class CustomPageNumberPagination(PageNumberPagination):
     page_size_query_param = 'PageSize'
     # max_page_size = 100  # Set the maximum page size if needed
 
-class UserListView(generics.ListAPIView):
+class ActivityTrackerView(generics.ListAPIView):
     permission_classes = (AllowAny,)
+    serializer_class = ActivityTrackerSerializer
+    # queryset = User.objects.all()
+    queryset = ActivityTracker.objects.all().order_by('-createdAt')
+    pagination_class = CustomPageNumberPagination
+
+class UserListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    # permission_classes = (AllowAny,)
     serializer_class = UserSerializer
     # queryset = User.objects.all()
     queryset = User.objects.all().order_by('-date_joined')

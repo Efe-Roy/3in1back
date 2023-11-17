@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, UserProfile, Team, Agent
+from .models import User, UserProfile, Team, Agent, ActivityTracker
 from rest_framework.exceptions import AuthenticationFailed
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import force_str
@@ -160,3 +160,8 @@ class SetNewPasswordSerializer(serializers.Serializer):
             raise AuthenticationFailed('The reset link is invalid', 401)
         return super().validate(attrs)
     
+
+class ActivityTrackerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ActivityTracker
+        fields = '__all__'

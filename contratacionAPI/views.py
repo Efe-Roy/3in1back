@@ -7,9 +7,13 @@ from rest_framework.generics import (
 from .serializers import (
     ContratacionMainSerializer, ProcessTypeSerializer, AcroymsTypeSerializer,
     TypologyTypeSerializer, ResSecTypeSerializer, StateTypeSerializer, AllContratacionMainSerializer,
-    NotificationSerializer
+    NotificationSerializer, ValueAddedSerializer
     )
-from .models import ContratacionMain, processType, acroymsType, typologyType, resSecType, StateType, Notification
+from Auth.models import ActivityTracker
+from .models import (
+    ValueAdded, BpinProjectCode, ValueAffectedBpinProjCDP, BudgetItems, ArticleName, ItemValue,
+    ContratacionMain, processType, acroymsType, typologyType, resSecType, StateType, Notification
+)
 from rest_framework.views import APIView
 from django.http import Http404
 from rest_framework.response import Response
@@ -67,9 +71,17 @@ class get_post_contratacion(APIView):
         return Response( serializerPqrs.data)
     
     def post(self, request, format=None):
+        user = self.request.user
+        process_num = request.data["process_num"]
         serializer = AllContratacionMainSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            ActivityTracker.objects.create(
+                msg='Se creó un nuevo contrato con NÚMERO DE PROCESO: ' + process_num,
+                action='create',
+                sector='hiring',
+                user=user
+            )
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
         
@@ -488,9 +500,17 @@ class get_details_contratacion(APIView):
 
     def put(self, request, pk, format=None):
         ContratacionById = self.get_object(pk)
+        user = self.request.user
+        process_num = request.data["process_num"]
         serializer = AllContratacionMainSerializer(ContratacionById, data=request.data)
         if serializer.is_valid():
             serializer.save()
+            ActivityTracker.objects.create(
+                msg='Se actualizó un contrato con NÚMERO DE PROCESO: ' + process_num,
+                action='update',
+                sector='hiring',
+                user=user
+            )
             return Response(serializer.data)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
 
@@ -504,3 +524,14 @@ class NotificationView(ListAPIView):
     permission_classes = (AllowAny,)
     serializer_class = NotificationSerializer
     queryset = Notification.objects.all()
+
+
+class ListUnusedValueAdded(APIView):
+    def get(self, request, format=None):
+        # Get all ValueAdded objects that are not linked to any ContratacionMain objects
+        unused_value_added = ValueAdded.objects.filter(contratacionmain__isnull=True)
+
+        # Serialize the unused ValueAdded objects
+        serializer = ValueAddedSerializer(unused_value_added, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)

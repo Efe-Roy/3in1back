@@ -58,3 +58,38 @@ class Agent(models.Model):
 
     def __str__(self):
         return self.user.username
+    
+
+class ActivityTracker(models.Model):
+    UPDATED = 'update'
+    CREATE = 'create'
+    DELETE = 'delete'
+    EMPTY = 'empty'
+
+    ACTION_CHOICES = (
+        (UPDATED, 'update'),
+        (CREATE, 'create'),
+        (DELETE, 'delete'),
+        (EMPTY, 'empty'),
+    )
+    
+    PQRS = 'pqrs'
+    INSPECCIÓN = 'inspect'
+    CONTRATACIÓN = 'hiring'
+    SISBEN = 'sisben'
+    EMPTY = 'empty'
+
+    SECTOR_CHOICES = (
+        (PQRS, 'pqrs'),
+        (INSPECCIÓN, 'inspect'),
+        (CONTRATACIÓN, 'hiring'),
+        (SISBEN, 'sisben'),
+        (EMPTY, 'empty'),
+    )
+
+    msg = models.CharField(max_length=500)
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    action = models.CharField(max_length=20, choices=ACTION_CHOICES, default=EMPTY)
+    sector = models.CharField(max_length=20, choices=SECTOR_CHOICES, default=EMPTY)
+    createdAt = models.DateField(auto_now_add=True)
+
