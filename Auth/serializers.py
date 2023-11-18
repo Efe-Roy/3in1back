@@ -162,6 +162,12 @@ class SetNewPasswordSerializer(serializers.Serializer):
     
 
 class ActivityTrackerSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+
     class Meta:
         model = ActivityTracker
         fields = '__all__'
+        # fields = [ 'msg', 'user', 'action', 'sector', 'createdAt']
+
+    def get_user(self, obj):
+        return UserSerializer(obj.user).data

@@ -189,7 +189,8 @@ class CustomPageNumberPagination(PageNumberPagination):
     # max_page_size = 100  # Set the maximum page size if needed
 
 class ActivityTrackerView(generics.ListAPIView):
-    permission_classes = (AllowAny,)
+    permission_classes = [IsAuthenticated]
+    # permission_classes = (AllowAny,)
     serializer_class = ActivityTrackerSerializer
     # queryset = User.objects.all()
     queryset = ActivityTracker.objects.all().order_by('-createdAt')
@@ -205,12 +206,14 @@ class UserListView(generics.ListAPIView):
 
 
 class UserDetail(generics.RetrieveAPIView):
-    permission_classes = (AllowAny,)
+    permission_classes = [IsAuthenticated]
+    # permission_classes = (AllowAny,)
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 class get_all_team(ListAPIView):
-    permission_classes = (AllowAny,)
+    permission_classes = [IsAuthenticated]
+    # permission_classes = (AllowAny,)
     serializer_class = TeamSerializer
     queryset = Team.objects.all()
 
