@@ -203,10 +203,10 @@ class get_contratacion(ListCreateAPIView):
         queryset = self.get_queryset()
 
         # Count instances where state.name is "EJECUCION"
-        ejecucion_count = queryset.filter(state__name="EJECUCION").count()
+        # ejecucion_count = queryset.filter(state__name="EJECUCION").count()
 
         # Count instances where state.name is "EJECUCION"
-        terminado_count = queryset.filter(state__name="TERMINADO").count()
+        # terminado_count = queryset.filter(state__name="TERMINADO").count()
 
         # Count instances of each processType
         process_counts = queryset.values('process__name').annotate(process_count=Count('process'))
@@ -282,8 +282,8 @@ class get_contratacion(ListCreateAPIView):
             response_data = {
                 'results': serializer.data,
                 'accumulated_value': str(accumulated_value),  # Convert Decimal to string for serialization
-                'ejecucion_count': ejecucion_count,
-                'terminado_count': terminado_count,
+                # 'ejecucion_count': ejecucion_count,
+                # 'terminado_count': terminado_count,
                 'process_counts': process_counts,
                 'responsible_secretary_counts': responsible_secretary_counts,
                 'state_counts': state_counts,
@@ -298,15 +298,14 @@ class get_contratacion(ListCreateAPIView):
         response_data = {
             'results': serializer.data,
             'accumulated_value': str(accumulated_value),  # Convert Decimal to string for serialization
-            'ejecucion_count': ejecucion_count,
-            'terminado_count': terminado_count,
+            # 'ejecucion_count': ejecucion_count,
+            # 'terminado_count': terminado_count,
             'process_counts': process_counts,
             'responsible_secretary_counts': responsible_secretary_counts,
             'state_counts': state_counts,
             'typology_counts': typology_counts,
             'male_count': male_count,
             'female_count': female_count
-
         }
 
         return Response(response_data)
