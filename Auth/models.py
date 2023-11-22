@@ -91,5 +91,5 @@ class ActivityTracker(models.Model):
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
     action = models.CharField(max_length=20, choices=ACTION_CHOICES, default=EMPTY)
     sector = models.CharField(max_length=20, choices=SECTOR_CHOICES, default=EMPTY)
-    createdAt = models.DateField(auto_now_add=True)
+    createdAt = models.DateTimeField(auto_now_add=True)
 

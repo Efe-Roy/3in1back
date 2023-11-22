@@ -3,7 +3,7 @@ from .views import (
     get_all_processType, get_all_acroymsType, get_all_typologyType, 
     get_all_resSecType, get_all_StateType, get_post_contratacion, 
     get_details_contratacion, get_contratacion,get_filtered_contratacion, 
-    NotificationView, ListUnusedValueAdded
+    NotificationView, ListUnusedValueAdded, AutomatedNumberAPIView
     # ,
     # jsonRoy
 )
@@ -24,7 +24,7 @@ urlpatterns = [
     path('notifications', NotificationView.as_view()),
     path('list-value-added/', ListUnusedValueAdded.as_view()),
 
-    # path('json', jsonRoy, name='json')
+    path('automated-number/', AutomatedNumberAPIView.as_view())
 
 ]
 

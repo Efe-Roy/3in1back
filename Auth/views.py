@@ -193,7 +193,7 @@ class ActivityTrackerView(generics.ListAPIView):
     # permission_classes = (AllowAny,)
     serializer_class = ActivityTrackerSerializer
     # queryset = User.objects.all()
-    queryset = ActivityTracker.objects.all().order_by('-createdAt')
+    queryset = ActivityTracker.objects.all().order_by('-id')
     pagination_class = CustomPageNumberPagination
 
 class UserListView(generics.ListAPIView):
