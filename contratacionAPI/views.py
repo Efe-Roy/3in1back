@@ -61,81 +61,7 @@ class get_all_StateType(ListAPIView):
     permission_classes = (AllowAny,)
     serializer_class = StateTypeSerializer
     queryset = StateType.objects.all()
-
     
-class AutomatedNumberAPIView1(APIView):
-    def generate_automated_number(cls, initial1, initial2, count, year):
-        count_str = str(count).zfill(3)
-        return f'{initial1}-{initial2}-{count_str}-{year}'
-
-    def get(self, request, *args, **kwargs):
-        # Assuming you have the initial1, initial2, and count values available
-        initial1 = 'C-I'
-        initial2 = 'SGG'
-        count = 1  # You can fetch this value from the database or calculate it as needed
-        year = datetime.now().year  # Get the current year
-
-        initial_part = 'C-PS-AMS'
-        filtered_objects = ContratacionMain.objects.filter(process_num__startswith=initial_part)
-        if filtered_objects.exists():
-            highest_value = filtered_objects.aggregate(Max('process_num'))['process_num__max']
-
-            if highest_value is not None:
-                # Extract the numeric part from the 'process_num' field
-                numeric_part = int(highest_value.split('-')[-2])
-                plus_1 = numeric_part + 1
-                count_str = str(plus_1).zfill(3)
-                print({
-                    "Highest numeric part": numeric_part,
-                    "plus_1": plus_1,
-                    "output": f'{initial_part}-{count_str}-{year}'
-                })
-            else:
-                print(f"No objects found with process_num starting with {initial_part}")
-        else:
-            print(f"No objects found with process_num starting with {initial_part}")
-            
-
-        automated_number = self.generate_automated_number(initial1, initial2, count, year)
-
-        # You can return the automated number as a JSON response
-        data = {'automated_number': automated_number}
-        return Response(data, status=status.HTTP_200_OK)
-    
-   
-    
-class AutomatedNumberAPIView(APIView):
-    def get(self, request, *args, **kwargs):
-        year = datetime.now().year  # Get the current year
-        initial_part = 'C-T-AMS'
-        
-        filtered_objects = ContratacionMain.objects.filter(process_num__startswith=initial_part)
-        if filtered_objects.exists():
-            highest_value = filtered_objects.aggregate(Max('process_num'))['process_num__max']
-
-            if highest_value is not None:
-                # Extract the numeric part from the 'process_num' field
-                numeric_part = int(highest_value.split('-')[-2])
-                plus_1 = numeric_part + 1
-                count_str = str(plus_1).zfill(3)
-                print({
-                    "Highest numeric part": numeric_part,
-                    "plus_1": plus_1,
-                    "output": f'{initial_part}-{count_str}-{year}'
-                })
-            else:
-                print(f"No objects found with process_num starting with {initial_part}")
-        else:
-            print({
-                "msg": f"No objects found with process_num starting with {initial_part}",
-                "output": f'{initial_part}-001-{year}'
-                })
-
-        # You can return the automated number as a JSON response
-        data = {'automated_number': "automated_number"}
-        return Response(data, status=status.HTTP_200_OK)
-    
-   
     
 class get_post_contratacion(APIView):
     authentication_classes = [TokenAuthentication]
@@ -176,7 +102,7 @@ class get_post_contratacion(APIView):
 
         serializer = AllContratacionMainSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.validated_data['process_num'] = automated_number
+            # serializer.validated_data['process_num'] = automated_number
             serializer.save()
             ActivityTracker.objects.create(
                 msg='Se creó un nuevo contrato con NÚMERO DE PROCESO: ' + process_num,
