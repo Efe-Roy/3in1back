@@ -74,8 +74,8 @@ class get_post_contratacion(APIView):
     def post(self, request, format=None):
         user = self.request.user
         process_num = request.data["process_num"]
-        ac = acroymsType.objects.get(id=request.data["acroyms_of_contract"])
-        rsc = resSecType.objects.get(id=request.data["responsible_secretary"])
+        # ac = acroymsType.objects.get(id=request.data["acroyms_of_contract"])
+        # rsc = resSecType.objects.get(id=request.data["responsible_secretary"])
 
         order = {
             'AMS': "ALCALDÍA MUNICIPAL",
@@ -87,13 +87,13 @@ class get_post_contratacion(APIView):
             'SSP': "SECRETARÍA DE SERVICIOS PÚBLICOS Y MEDIO AMBIENTE",
         }
         
-        result = "Unknown"
-        if rsc.name in order.values():
-            # Find the key for the given name
-            result = next(key for key, value in order.items() if value == rsc.name)
+        # result = "Unknown"
+        # if rsc.name in order.values():
+        #     # Find the key for the given name
+        #     result = next(key for key, value in order.items() if value == rsc.name)
 
-        initial_part = f'{ac.name}-{result}'
-        automated_number = self.generate_automated_number(initial_part)
+        # initial_part = f'{ac.name}-{result}'
+        # automated_number = self.generate_automated_number(initial_part)
 
         # print({
         #     "initial_part": initial_part,
