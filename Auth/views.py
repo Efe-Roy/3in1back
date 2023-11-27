@@ -186,15 +186,27 @@ class UserProfileDetail(APIView):
 
 class CustomPageNumberPagination(PageNumberPagination):
     page_size_query_param = 'PageSize'
-    # max_page_size = 100  # Set the maximum page size if needed
 
 class ActivityTrackerView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
-    # permission_classes = (AllowAny,)
     serializer_class = ActivityTrackerSerializer
-    # queryset = User.objects.all()
-    queryset = ActivityTracker.objects.all().order_by('-id')
     pagination_class = CustomPageNumberPagination
+
+    def get_queryset(self):
+        queryset = ActivityTracker.objects.all().order_by('-id')
+
+        # Filter based on request parameters
+        username = self.request.query_params.get('username', None)
+        if username:
+            queryset = queryset.filter(user__username__icontains=username)
+
+        created_at = self.request.query_params.get('created_at', None)
+        if created_at:
+            # Assuming createdAt is in the format YYYY-MM-DD, you may need to adjust this based on your actual date format
+            queryset = queryset.filter(createdAt__startswith=created_at)
+   
+        return queryset
+
 
 class UserListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
