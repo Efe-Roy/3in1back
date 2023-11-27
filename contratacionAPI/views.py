@@ -74,8 +74,9 @@ class get_post_contratacion(APIView):
     def post(self, request, format=None):
         user = self.request.user
         process_num = request.data["process_num"]
-        # ac = acroymsType.objects.get(id=request.data["acroyms_of_contract"])
-        # rsc = resSecType.objects.get(id=request.data["responsible_secretary"])
+        pt = processType.objects.get(id=request.data["process"])
+        ac = acroymsType.objects.get(id=request.data["acroyms_of_contract"])
+        rsc = resSecType.objects.get(id=request.data["responsible_secretary"])
 
         order = {
             'AMS': "ALCALDÍA MUNICIPAL",
@@ -87,13 +88,20 @@ class get_post_contratacion(APIView):
             'SSP': "SECRETARÍA DE SERVICIOS PÚBLICOS Y MEDIO AMBIENTE",
         }
         
-        # result = "Unknown"
-        # if rsc.name in order.values():
-        #     # Find the key for the given name
-        #     result = next(key for key, value in order.items() if value == rsc.name)
+        result = "Unknown"
+        if rsc.name in order.values():
+            # Find the key for the given name
+            result = next(key for key, value in order.items() if value == rsc.name)
 
         # initial_part = f'{ac.name}-{result}'
-        # automated_number = self.generate_automated_number(initial_part)
+
+        if pt.name == "CONTRATACIÓN DIRECTA":
+            initial_part = f'{ac.name}-{result}'
+        else:
+            initial_part = f'{result}'
+        
+        automated_number = self.generate_automated_number(initial_part)
+            
 
         # print({
         #     "initial_part": initial_part,
@@ -102,7 +110,7 @@ class get_post_contratacion(APIView):
 
         serializer = AllContratacionMainSerializer(data=request.data)
         if serializer.is_valid():
-            # serializer.validated_data['process_num'] = automated_number
+            serializer.validated_data['process_num'] = automated_number
             serializer.save()
             ActivityTracker.objects.create(
                 msg='Se creó un nuevo contrato con NÚMERO DE PROCESO: ' + process_num,

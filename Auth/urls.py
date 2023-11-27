@@ -5,7 +5,8 @@ from .views import (
     get_all_team, UserProfileDetail,
     CreateOperatorView, get_all_agent, OTPVerificationView,
     RequestPasswordResetEmail, PasswordTokenCheckAPI,
-    SetNewPasswordAPIView, ActivityTrackerView
+    SetNewPasswordAPIView, ActivityTrackerView,
+    ActivateDeactivateUser
 )
 
 urlpatterns = [
@@ -14,6 +15,8 @@ urlpatterns = [
     path('api/rest-auth/', include('rest_auth.urls')),
     path('api/userlist/', UserListView.as_view()),
     path('api/users/<int:pk>/', UserDetail.as_view()),
+
+    path('api/activate-deactivate/', ActivateDeactivateUser.as_view()),
 
     path('api/activity-tracker/', ActivityTrackerView.as_view()),
 

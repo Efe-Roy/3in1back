@@ -15,7 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields=['id', 'username', 'first_name', 'last_name', 'email', 
                 'position', 'image', 'signature', 'approve_signature', 
                 'is_organisor', 'is_team', 'is_agent', 'is_pqrs', 
-                'is_hiring', 'is_hiring_org', 'is_sisben', 'is_consult']
+                'is_hiring', 'is_hiring_org', 'is_sisben', 'is_consult', 'is_active']
 
 
 class UserProfileSerializer(serializers.ModelSerializer):

@@ -201,7 +201,7 @@ class UserListView(generics.ListAPIView):
     # permission_classes = (AllowAny,)
     serializer_class = UserSerializer
     # queryset = User.objects.all()
-    queryset = User.objects.all().order_by('-date_joined')
+    queryset = User.objects.filter(is_staff=False).order_by('-date_joined')
     pagination_class = CustomPageNumberPagination
 
 
@@ -267,3 +267,34 @@ class SetNewPasswordAPIView(generics.GenericAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response({'success': True, 'message': 'Password reset success'}, status=status.HTTP_200_OK)
+    
+
+class ActivateDeactivateUser(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_user(self, id):
+        try:
+            return User.objects.get(id=id)
+        except User.DoesNotExist:
+            return None
+
+    def post(self, request, *args, **kwargs):
+        id = request.data.get('id')
+        action = request.data.get('action')  # 'activate' or 'deactivate'
+
+        user = self.get_user(id)
+
+        if not user:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if action == 'activate':
+            user.is_active = True
+        elif action == 'deactivate':
+            user.is_active = False
+        else:
+            return Response({'error': 'Invalid action'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.save()
+
+        return Response({'message': f'User {user.username} successfully {action}d'}, status=status.HTTP_200_OK)
+    
