@@ -200,6 +200,10 @@ class ActivityTrackerView(generics.ListAPIView):
         if username:
             queryset = queryset.filter(user__username__icontains=username)
 
+        first_name = self.request.query_params.get('first_name', None)
+        if first_name:
+            queryset = queryset.filter(user__first_name__icontains=first_name)
+
         created_at = self.request.query_params.get('created_at', None)
         if created_at:
             # Assuming createdAt is in the format YYYY-MM-DD, you may need to adjust this based on your actual date format
