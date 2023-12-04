@@ -594,12 +594,6 @@ class get_details_contratacion(APIView):
         return Response(status= HTTP_204_NO_CONTENT)
     
 
-# class NotificationView(ListAPIView):
-#     permission_classes = (AllowAny,)
-#     serializer_class = NotificationSerializer
-#     queryset = Notification.objects.all()
-
-
 class NotificationView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
@@ -617,16 +611,15 @@ class NotificationView(APIView):
             'SSP': "SECRETARÍA DE SERVICIOS PÚBLICOS Y MEDIO AMBIENTE",
         }
         
-        result = "Unknown"
-        if user.responsible_secretary.name in order.values():
-            # Find the key for the given name
-            result = next(key for key, value in order.items() if value == user.responsible_secretary.name)
-
-        # print("result cc", result+"-")
-        addDash = result+"-"
         if user.is_organisor:
             queryset = Notification.objects.all()
         else:
+            result = "Unknown"
+            if user.responsible_secretary.name in order.values():
+                # Find the key for the given name
+                result = next(key for key, value in order.items() if value == user.responsible_secretary.name)
+
+            addDash = result+"-"
             queryset = Notification.objects.filter(msg__icontains=addDash)
         serializer = NotificationSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
