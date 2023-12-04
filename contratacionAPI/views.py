@@ -65,6 +65,7 @@ class get_all_StateType(ListAPIView):
     
 class get_post_contratacion(APIView):
     authentication_classes = [TokenAuthentication]
+    # permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
         queryset = ContratacionMain.objects.all()
@@ -593,11 +594,39 @@ class get_details_contratacion(APIView):
         return Response(status= HTTP_204_NO_CONTENT)
     
 
-class NotificationView(ListAPIView):
-    permission_classes = (AllowAny,)
-    serializer_class = NotificationSerializer
-    queryset = Notification.objects.all()
+# class NotificationView(ListAPIView):
+#     permission_classes = (AllowAny,)
+#     serializer_class = NotificationSerializer
+#     queryset = Notification.objects.all()
 
+
+class NotificationView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        user = self.request.user
+        queryset = Notification.objects.all()
+        order = {
+            'AMS': "ALCALDÍA MUNICIPAL",
+            'SGG': "SECRETARÍA GENERAL Y DE GOBIERNO",
+            'SPO': "SECRETARÍA DE PLANEACIÓN Y ORDENAMIENTO TERRITORIAL",
+            'SHB': "SECRETARÍA DE HACIENDA Y BIENES",
+            'SIE': "SECRETARÍA DE INNOACIÓN Y EMPRENDIMIENTO",
+            'SPD': "SECRETARÍA DE PROTECCIÓN SOCIAL Y DESARROLLO COMUNITARIO",
+            'SSP': "SECRETARÍA DE SERVICIOS PÚBLICOS Y MEDIO AMBIENTE",
+        }
+        
+        result = "Unknown"
+        if user.responsible_secretary.name in order.values():
+            # Find the key for the given name
+            result = next(key for key, value in order.items() if value == user.responsible_secretary.name)
+
+        # print("result cc", result+"-")
+        addDash = result+"-"
+        queryset = Notification.objects.filter(msg__icontains=addDash)
+        serializer = NotificationSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class ListUnusedValueAdded(APIView):
     def get(self, request, format=None):

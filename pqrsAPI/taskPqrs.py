@@ -19,7 +19,6 @@ def check_expiration():
     for instance in instances_to_notify:
         notification_msg = f"NÚMERO DE PROCESO '{instance.process_num}' está a punto de caducar en 10 días y date {instance.finish_date - timedelta(days=10)}"
         print("Baba Test", notification_msg)
-        # Notification.objects.create(msg=notification_msg)
 
         # Check if a notification with the same message already exists
         existing_notification = PqrsNotifify.objects.filter(msg=notification_msg).first()
