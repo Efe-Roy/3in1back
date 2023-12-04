@@ -606,7 +606,7 @@ class NotificationView(APIView):
 
     def get(self, request, format=None):
         user = self.request.user
-        queryset = Notification.objects.all()
+        
         order = {
             'AMS': "ALCALDÍA MUNICIPAL",
             'SGG': "SECRETARÍA GENERAL Y DE GOBIERNO",
@@ -624,7 +624,10 @@ class NotificationView(APIView):
 
         # print("result cc", result+"-")
         addDash = result+"-"
-        queryset = Notification.objects.filter(msg__icontains=addDash)
+        if user.is_organisor:
+            queryset = Notification.objects.all()
+        else:
+            queryset = Notification.objects.filter(msg__icontains=addDash)
         serializer = NotificationSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
