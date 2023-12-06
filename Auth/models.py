@@ -30,6 +30,8 @@ class User(AbstractUser):
     is_hiring_org = models.BooleanField(default=False)
     is_sisben = models.BooleanField(default=False)
     is_consult = models.BooleanField(default=False)
+    is_ticket_admin = models.BooleanField(default=False)
+    is_ticket_agent = models.BooleanField(default=False)
 
 class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -38,6 +40,12 @@ class UserProfile(models.Model):
     def __str__(self):
         return f'Profile for user {self.user.username}'
     
+
+class TicketUserAgent(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.user.username
 
 class Organisation(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

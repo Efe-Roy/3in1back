@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import Http404
 from django.db.models import Count
-from .models import Ticket
+from .models import Ticket, TicketUserAgent
 from .serializers import TicketSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -27,8 +27,12 @@ class TicketView(generics.ListCreateAPIView):
         # print("qaws", user.is_organisor)
         if user.is_organisor:
             queryset = Ticket.objects.all().order_by('-id')
+        elif user.is_ticket_agent:
+            foundObject = TicketUserAgent.objects.get(user_id=user.id)
+            ticket_agent = foundObject.id
+            queryset = Ticket.objects.filter(assign_to_agent=ticket_agent).order_by('-id')
         else:
-            queryset = Ticket.objects.filter(user=user)
+            queryset = Ticket.objects.filter(user=user).order_by('-id')
         
 
         # Filter based on request parameters
@@ -73,18 +77,24 @@ class TicketView(generics.ListCreateAPIView):
         return Response(response_data)
     
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        # Modify only the 'image[]' key in the request data
+        modified_data = request.data.copy()
+        if 'image[]' in modified_data:
+            modified_data['image'] = modified_data.pop('image[]')[0]
+        
+        # print("modified_data", modified_data)
+        # print("form data", request.data)
+        serializer = self.get_serializer(data=modified_data)
 
+        # serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         serializer.validated_data['user'] = self.request.user
+
 
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-
-
-    
     
 class TicketViewById(APIView):
     authentication_classes = [TokenAuthentication]

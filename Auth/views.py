@@ -1,5 +1,5 @@
 import random
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
@@ -10,17 +10,7 @@ from .serializers import (
     ActivityTrackerSerializer
 )
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from .models import User, Team, Agent, ActivityTracker
-from rest_framework.generics import (
-    ListAPIView, RetrieveAPIView, CreateAPIView,
-    UpdateAPIView, DestroyAPIView
-)
-from rest_framework.parsers import MultiPartParser, FormParser
-from django.dispatch import receiver
-from rest_framework.status import (
-    HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_201_CREATED,
-    HTTP_204_NO_CONTENT
-)
+from .models import User, Team, Agent, ActivityTracker, TicketUserAgent
 from rest_framework.views import APIView
 from django.http import Http404
 from django.core.mail import send_mail
@@ -76,6 +66,8 @@ class CreateOperatorView(generics.GenericAPIView):
             user=user,
             organisation= self.request.user.userprofile
         )
+        if user.is_ticket_agent == True:
+            TicketUserAgent.objects.create(user=user)
             
         return Response({
             "user": OperatorSignUpSerializer(user, context=self.get_serializer_context()).data,
@@ -127,6 +119,8 @@ class CustomAuthToken(ObtainAuthToken):
             "is_hiring_org": user.is_hiring_org,
             "is_consult": user.is_consult,
             "is_sisben": user.is_sisben,
+            "is_ticket_admin": user.is_ticket_admin,
+            "is_ticket_agent": user.is_ticket_agent,
             "username": user.username,
             "email": user.email,
         })
@@ -162,7 +156,7 @@ class UserProfileDetail(APIView):
 
             return Response(serializer.data)
 
-        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
         # if image_files:
@@ -227,13 +221,13 @@ class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-class get_all_team(ListAPIView):
+class get_all_team(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     # permission_classes = (AllowAny,)
     serializer_class = TeamSerializer
     queryset = Team.objects.all()
 
-class get_all_agent(ListAPIView):
+class get_all_agent(generics.ListAPIView):
     permission_classes = (AllowAny,)
     serializer_class = AgentSerializer
     queryset = Agent.objects.all()
