@@ -9,7 +9,7 @@ class TicketSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ticket
-        fields = ("id", "user", "subject", "description", "state", "responsible_secretary", "created_on", "last_update_on")
+        fields = ("id", "user", "subject", "description", "state", "created_on", "last_update_on")
 
     def get_user(self, obj):
         return UserSerializer(obj.user).data
