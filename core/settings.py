@@ -20,8 +20,8 @@ if path.isfile(dotenv_file):
 SECRET_KEY = getenv('DJANGO_SECRET_KEY', get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-# DEBUG = getenv('DEBUG', 'False') == 'True'
+# DEBUG = False
+DEBUG = getenv('DEBUG', 'False') == 'True'
 
 # ALLOWED_HOSTS = ['147.182.215.149', '127.0.0.1', 'fuscaliaycontraloria.com']
 # ALLOWED_HOSTS = ['147.182.215.149', 'fuscaliaycontraloria.com']
