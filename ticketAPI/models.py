@@ -22,13 +22,15 @@ class Ticket(models.Model):
 
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
     assign_to_agent = models.ForeignKey(TicketUserAgent, null=True, blank=True, on_delete=models.SET_NULL)
-    subject = models.CharField(max_length=40, null=False, blank=False, default=None)
-    description = models.TextField(blank=True)
+    subject = models.CharField(max_length=40, null=True, blank=True, default=None)
+    description = models.TextField(null=True, blank=True)
+    feedback = models.TextField(null=True, blank=True)
+    ticket_num = models.CharField(max_length=30, null=True, blank=True, default=None)
     state = models.CharField(max_length=10, choices=STATES, default=STATE_TO_APPROVE)
     image = models.ImageField(_("Image"), upload_to=upload_to, null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_update_on = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.subject or ''
+        return self.ticket_num or ''
     

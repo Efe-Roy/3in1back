@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import User, UserProfile, Team, Agent, ActivityTracker
+from contratacionAPI.models import resSecType
 from rest_framework.exceptions import AuthenticationFailed
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import force_str
@@ -8,15 +9,25 @@ from django.conf import settings
 from django.core.mail import send_mail
 
 
+class ResSecTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = resSecType
+        fields = '__all__'
 
 class UserSerializer(serializers.ModelSerializer):
+    responsible_secretary = serializers.SerializerMethodField()
+
     class Meta:
         model=User
         fields=['id', 'username', 'first_name', 'last_name', 'email', 
+                'responsible_secretary',
                 'position', 'image', 'signature', 'approve_signature', 
                 'is_organisor', 'is_team', 'is_agent', 'is_pqrs', 
                 'is_hiring', 'is_hiring_org', 'is_sisben', 'is_consult', 
                 'is_ticket_admin', 'is_ticket_agent','is_active']
+        
+    def get_responsible_secretary(self, obj):
+        return ResSecTypeSerializer(obj.responsible_secretary).data
 
 
 class UserProfileSerializer(serializers.ModelSerializer):

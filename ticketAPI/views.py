@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import Http404
 from django.db.models import Count
 from .models import Ticket, TicketUserAgent
+from Auth.models import TicketUserAgent, User
 from .serializers import TicketSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,6 +10,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework import status, generics
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from datetime import datetime
 
 # Create your views here.
 class CustomPagination(PageNumberPagination):
@@ -77,24 +79,45 @@ class TicketView(generics.ListCreateAPIView):
         return Response(response_data)
     
     def create(self, request, *args, **kwargs):
-        # Modify only the 'image[]' key in the request data
-        modified_data = request.data.copy()
-        if 'image[]' in modified_data:
-            modified_data['image'] = modified_data.pop('image[]')[0]
-        
-        # print("modified_data", modified_data)
-        # print("form data", request.data)
+        generate_automated_number = self.generate_automated_number()
+        # print("generate_automated_number", generate_automated_number)
+        modified_data = self.modify_request_data(request.data)
         serializer = self.get_serializer(data=modified_data)
-
         # serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.validated_data['user'] = self.request.user
-
+        serializer.validated_data['ticket_num'] = generate_automated_number
 
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
+    def modify_request_data(self, data):
+        modified_data = data.copy()
+        if 'image[]' in modified_data:
+            modified_data['image'] = modified_data.pop('image[]')[0]  # Extract the first element
+        return modified_data
+    
+    def generate_automated_number(self):
+        get_ticket = Ticket.objects.all()
+        year = datetime.now().year
 
+        if get_ticket.exists():
+            last_ticket = Ticket.objects.all().order_by('-id')[0]
+            string = last_ticket.ticket_num
+            parts = string.split("-")
+            number = parts[0]
+            # print(number)
+            file_num = int(number) + 1
+            d = "%04d" % ( file_num, ) + f'-{year}'
+            # print(d)
+            return d
+        else:
+            # print("Empty")
+            file_num = 1
+            d = "%04d" % ( file_num, ) + f'-{year}'
+            # print(d)
+            return d
     
 class TicketViewById(APIView):
     authentication_classes = [TokenAuthentication]
@@ -113,7 +136,20 @@ class TicketViewById(APIView):
     def put(self, request, pk, format=None):
         querysetById = self.get_object(pk)
         serializer = TicketSerializer(querysetById, data=request.data)
+        assign_to_agent = request.data.get("assign_to_agent", None)
+
+        foundObject = None
+        if assign_to_agent:
+            try:
+                foundObject = TicketUserAgent.objects.get(user_id=assign_to_agent)
+                # print("foundObject", foundObject)
+            except TicketUserAgent.DoesNotExist:
+                return Response({"assign_to_agent": ["Invalid user ID"]}, status=status.HTTP_400_BAD_REQUEST)
+
         if serializer.is_valid():
+            if assign_to_agent:
+                serializer.validated_data['assign_to_agent'] = foundObject
+
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status= status.HTTP_400_BAD_REQUEST)

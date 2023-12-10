@@ -208,11 +208,19 @@ class ActivityTrackerView(generics.ListAPIView):
 
 class UserListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
-    # permission_classes = (AllowAny,)
     serializer_class = UserSerializer
-    # queryset = User.objects.all()
-    queryset = User.objects.filter(is_staff=False).order_by('-date_joined')
+    # queryset = User.objects.filter(is_staff=False).order_by('-date_joined')
     pagination_class = CustomPageNumberPagination
+
+    def get_queryset(self):
+        queryset = User.objects.filter(is_staff=False).order_by('-date_joined')
+
+        # Filter based on request parameters
+        is_ticket_agent = self.request.query_params.get('is_ticket_agent', False)
+        if is_ticket_agent:
+            queryset = queryset.filter(is_ticket_agent=is_ticket_agent)
+   
+        return queryset
 
 
 class UserDetail(generics.RetrieveAPIView):

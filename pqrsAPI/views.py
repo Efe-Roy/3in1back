@@ -10,6 +10,7 @@ from .serializers import (PqrsMainSerializer, EntityTypeSerializer, PqrsNotifySe
                           )
 from .models import PqrsMain, EntityType, NameType, MediumResType, FileResNum, StatusType, PqrsNotifify
 from Auth.models import Agent, Team
+from datetime import datetime
 
 from rest_framework.views import APIView
 from django.http import Http404
@@ -63,6 +64,7 @@ class In_Form_pqrs(APIView):
             raise Http404
 
     def put(self, request, pk, format=None):
+        year = datetime.now().year
         PqrsById = self.get_object(pk)
 
         serializer = InnerFormPqrsMaintSerializer(PqrsById, data=request.data)
@@ -78,7 +80,7 @@ class In_Form_pqrs(APIView):
                 part = getIndex.split('-')
                 desired_value = part[1]
                 file_num = int(desired_value) + 1
-                d = "RR-" + "%04d" % (file_num,) + "-2023"
+                d = "RR-" + "%04d" % (file_num,) + "-" + {year}
                 # print("Men Like Roy", d)
 
                 newFile_res_num = FileResNum.objects.get(id=upId)
@@ -89,7 +91,7 @@ class In_Form_pqrs(APIView):
             else:
                 print("getIndex is None")
                 file_num = 1
-                d = "RR-" + "%04d" % (file_num,) + "-2023"
+                d = "RR-" + "%04d" % (file_num,) + "-" + {year}
                 FileResNum.objects.create(name=d)
                 # print(d)
 
@@ -214,6 +216,7 @@ class get_details_pqrs(APIView):
 class CurrentFileNumView(APIView):
     def get(self, request, format=None):
         get_file = PqrsMain.objects.all()
+        year = datetime.now().year
 
 
         if get_file.exists():
@@ -227,14 +230,14 @@ class CurrentFileNumView(APIView):
             number = parts[0]
             print(number)
             file_num = int(number) + 1
-            d = "%04d" % ( file_num, ) + "-2023"
+            d = "%04d" % ( file_num, ) + "-" + {year}
 
             # d = "%04d" % ( file_num, )
             print(d)
         else:
             print("Empty")
             file_num = 1
-            d = "%04d" % ( file_num, ) + "-2023"
+            d = "%04d" % ( file_num, ) + "-" + {year}
 
             # d = "%04d" % ( file_num, )
             print(d)
@@ -243,6 +246,7 @@ class CurrentFileNumView(APIView):
 
 class FileResNumView(APIView):
     def get(self, request, format=None):
+        year = datetime.now().year
 
         get_file = FileResNum.objects.all()
 
@@ -257,18 +261,18 @@ class FileResNumView(APIView):
                 part = getIndex.split('-')
                 desired_value = part[1]
                 file_num = int(desired_value) + 1
-                d = "RR-" + "%04d" % (file_num,) + "-2023"
+                d = "RR-" + "%04d" % (file_num,) + "-" + {year}
                 # print(d)
                 print("new File Num", d)
             else:
                 print("getIndex is None")
                 file_num = 1
-                d = "RR-" + "%04d" % (file_num,) + "-2023"
+                d = "RR-" + "%04d" % (file_num,) + "-" + {year}
 
         else:
             print("getIndex is None")
             file_num = 1
-            d = "RR-" + "%04d" % (file_num,) + "-2023"
+            d = "RR-" + "%04d" % (file_num,) + "-" + {year}
             # FileResNum.objects.create(name=d)
             print(d)
         
