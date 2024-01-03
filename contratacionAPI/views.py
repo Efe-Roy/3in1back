@@ -23,9 +23,7 @@ from rest_framework.status import (
     HTTP_204_NO_CONTENT
 )
 from rest_framework.authentication import TokenAuthentication
-
-# from django.http import JsonResponse
-import json
+import re
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from django.db.models import Sum, F, DecimalField, Count, IntegerField, Case, When, Value, CharField, Func, ExpressionWrapper
@@ -183,6 +181,11 @@ class get_contratacion(ListCreateAPIView):
         process_num = self.request.query_params.get('process_num', None)
         if process_num:
             queryset = queryset.filter(process_num__icontains=process_num)
+
+        process_num_year = self.request.query_params.get('process_num_year', None)
+        if process_num_year:
+            # Assuming process_num is a CharField
+            queryset = queryset.filter(process_num__endswith=process_num_year)
 
         acroyms_of_contract_id = self.request.query_params.get('acroyms_of_contract_id', None)
         if acroyms_of_contract_id:

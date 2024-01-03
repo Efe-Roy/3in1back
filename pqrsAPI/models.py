@@ -29,6 +29,12 @@ class FileResNum(models.Model):
     def __str__(self):
         return self.name
 
+class PqrsFileNum(models.Model):
+    name = models.CharField(max_length=310)
+
+    def __str__(self):
+        return self.name
+
 class EntityType(models.Model):
     name = models.CharField(max_length=310)
 

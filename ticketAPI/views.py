@@ -17,7 +17,6 @@ class CustomPagination(PageNumberPagination):
     page_size_query_param = 'PageSize'
 
 class TicketView(generics.ListCreateAPIView):
-    # authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = TicketSerializer
     pagination_class = CustomPagination

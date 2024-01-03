@@ -8,7 +8,7 @@ from .serializers import (PqrsMainSerializer, EntityTypeSerializer, PqrsNotifySe
                           NameTypeSerializer, AllPqrsSerializer, RestrictedPqrsMaintSerializer,
                           MediumResTypeSerializer, InnerFormPqrsMaintSerializer, StatusTypeSerializer
                           )
-from .models import PqrsMain, EntityType, NameType, MediumResType, FileResNum, StatusType, PqrsNotifify
+from .models import PqrsMain, EntityType, NameType, MediumResType, FileResNum, StatusType, PqrsNotifify, PqrsFileNum
 from Auth.models import Agent, Team
 from datetime import datetime
 
@@ -111,14 +111,20 @@ class get_post_pqrs(APIView):
 
     def post(self, request, format=None):
         serializer = RestrictedPqrsMaintSerializer(data=request.data)
+        automated_number = self.generate_automated_number()
+        # print("automated_number", automated_number)
         # print("zzzxxxcccvvv", request.data["responsible_for_the_response"])
 
         if serializer.is_valid():
+            serializer.validated_data['file_num'] = automated_number
             serializer.save()
+
+            self.save_automated_number(automated_number)
            
+        #    PqrsFileNum.name
             team_id = request.data['responsible_for_the_response']
             team = Team.objects.get(id=team_id)
-            print("email", team.user.email)
+            # print("email", team.user.email)
 
             # Send activation email
             email_body = f'Hola {team.user.username}, \n Se le ha asignado el número de expediente {request.data["file_num"]}.'
@@ -128,6 +134,39 @@ class get_post_pqrs(APIView):
             
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
+    
+    def generate_automated_number(cls):
+        get_num_file = PqrsFileNum.objects.all()
+        year = datetime.now().year
+
+        if get_num_file.exists():
+            last_file = PqrsFileNum.objects.all().order_by('-id')[0]
+
+            string = last_file.name
+            # print("string", string)
+            # parts = string.split("-")
+            # number = parts[0]
+            file_num = int(string) + 1
+            ed = "%04d" % ( file_num, )
+            d = f'{ed}-{year}'
+            return d
+        else:
+            file_num = 1
+            ed = "%04d" % ( file_num, )
+            d = f'{ed}-{year}'
+            return d
+        
+    def save_automated_number(cls, numData):
+        existing_object = PqrsFileNum.objects.all()
+        parts = numData.split("-")
+        number = parts[0]
+        if existing_object.exists():
+            last_file = PqrsFileNum.objects.all().order_by('-id')[0]
+            last_file.name = number
+            last_file.save()
+        else:
+            pass
+        
 
 class CustomPagination(PageNumberPagination):
     page_size_query_param = 'PageSize'
@@ -143,19 +182,19 @@ class get_pqrs(ListCreateAPIView):
 
         user = self.request.user
         if user.is_organisor:
-            queryset = PqrsMain.objects.all()
+            queryset = PqrsMain.objects.all().order_by('-id')
             # print("User is_organisor", user.id)
         elif user.is_pqrs:
-            queryset = PqrsMain.objects.all()
+            queryset = PqrsMain.objects.all().order_by('-id')
             # print("User is_pqrs", user.username)
         elif user.is_consult:
-            queryset = PqrsMain.objects.all()
+            queryset = PqrsMain.objects.all().order_by('-id')
             # print("User is_consult", user.username)
         elif user.is_team:
             foundObject = Team.objects.get(user_id=user.id)
             team_id = foundObject.id
             # print("User is_team", team_id)
-            queryset = PqrsMain.objects.filter(responsible_for_the_response_id=team_id)
+            queryset = PqrsMain.objects.filter(responsible_for_the_response_id=team_id).order_by('-id')
         else:
             print("User Unauthorise")
             queryset = None
@@ -215,29 +254,53 @@ class get_details_pqrs(APIView):
 
 class CurrentFileNumView(APIView):
     def get(self, request, format=None):
-        get_file = PqrsMain.objects.all()
+        # get_file = PqrsMain.objects.all()
+        get_num_file = PqrsFileNum.objects.all()
         year = datetime.now().year
 
 
-        if get_file.exists():
-            print("Has Data")
-            last_file = PqrsMain.objects.all().order_by('-id')[0]
-            # file_num = int(last_file.file_num) + 1
+        # if get_file.exists():
+        #     # print("Has Data nn")
+        #     last_file = PqrsMain.objects.all().order_by('-id')[0]
 
-            # string = "0001-2023"
-            string = last_file.file_num
+        #     string = last_file.file_num
+        #     parts = string.split("-")
+        #     number = parts[0]
+        #     num2 = parts[1]
+        #     file_num = int(number) + 1
+        #     ed = "%04d" % ( file_num, )
+        #     d = f'{ed}-{year}'
+
+        #     print(num2)
+        # else:
+        #     print("Empty")
+        #     file_num = 1
+        #     ed = "%04d" % ( file_num, )
+        #     d = f'{ed}-{year}'
+        #     # d = "%04d" % ( file_num, ) + "-" + {year}
+
+        #     # d = "%04d" % ( file_num, )
+        #     print(d)
+
+        if get_num_file.exists():
+            print("Has Data nn")
+            last_file = PqrsFileNum.objects.all().order_by('-id')[0]
+
+            string = last_file.name
             parts = string.split("-")
             number = parts[0]
-            print(number)
+            # num2 = parts[1]
             file_num = int(number) + 1
-            d = "%04d" % ( file_num, ) + "-" + {year}
+            ed = "%04d" % ( file_num, )
+            d = f'{ed}-{year}'
 
-            # d = "%04d" % ( file_num, )
-            print(d)
+            # print(num2)
         else:
             print("Empty")
             file_num = 1
-            d = "%04d" % ( file_num, ) + "-" + {year}
+            ed = "%04d" % ( file_num, )
+            d = f'{ed}-{year}'
+            # d = "%04d" % ( file_num, ) + "-" + {year}
 
             # d = "%04d" % ( file_num, )
             print(d)
