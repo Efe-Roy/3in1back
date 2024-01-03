@@ -213,7 +213,7 @@ class UserListView(generics.ListAPIView):
     pagination_class = CustomPageNumberPagination
 
     def get_queryset(self):
-        queryset = User.objects.filter(is_staff=False).order_by('-date_joined')
+        queryset = User.objects.filter(is_staff=False, is_organisor=False).order_by('-date_joined')
 
         # Filter based on request parameters
         is_ticket_agent = self.request.query_params.get('is_ticket_agent', False)
