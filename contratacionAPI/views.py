@@ -96,13 +96,18 @@ class get_prerequisite(APIView):
         filtered_objects = ContratacionMain.objects.filter(process_num__startswith=initial_part)
         if filtered_objects.exists():
             highest_value = filtered_objects.aggregate(Max('process_num'))['process_num__max']
+            print("highest_value", highest_value.split('-')[-1])
 
             if highest_value is not None:
                 # Extract the numeric part from the 'process_num' field
-                numeric_part = int(highest_value.split('-')[-2])
-                plus_1 = numeric_part + 1
-                count_str = str(plus_1).zfill(3)
-                return f'{initial_part}-{count_str}-{year}'
+                year_part = int(highest_value.split('-')[-1])
+                if year_part >= year:
+                    numeric_part = int(highest_value.split('-')[-2])
+                    plus_1 = numeric_part + 1
+                    count_str = str(plus_1).zfill(3)
+                    return f'{initial_part}-{count_str}-{year}'
+                else:
+                    return f'{initial_part}-001-{year}'
             else:
                 return f'{initial_part}-001-{year}'
         else:
@@ -177,19 +182,23 @@ class get_post_contratacion(APIView):
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
     
-    
     def generate_automated_number(cls, initial_part):
         year = datetime.now().year
         filtered_objects = ContratacionMain.objects.filter(process_num__startswith=initial_part)
         if filtered_objects.exists():
             highest_value = filtered_objects.aggregate(Max('process_num'))['process_num__max']
+            print("highest_value", highest_value.split('-')[-1])
 
             if highest_value is not None:
                 # Extract the numeric part from the 'process_num' field
-                numeric_part = int(highest_value.split('-')[-2])
-                plus_1 = numeric_part + 1
-                count_str = str(plus_1).zfill(3)
-                return f'{initial_part}-{count_str}-{year}'
+                year_part = int(highest_value.split('-')[-1])
+                if year_part >= year:
+                    numeric_part = int(highest_value.split('-')[-2])
+                    plus_1 = numeric_part + 1
+                    count_str = str(plus_1).zfill(3)
+                    return f'{initial_part}-{count_str}-{year}'
+                else:
+                    return f'{initial_part}-001-{year}'
             else:
                 return f'{initial_part}-001-{year}'
         else:
