@@ -79,7 +79,7 @@ class get_prerequisite(APIView):
 
         pt_order = {
             'MC': "CONTRATACIÓN MÍNIMA CUANTÍA.",
-            'SAMC': "SELECCIÓN ABREVIADA. (DE MENOR CUANTÍA, SUBASTA)",
+            'SAMC': "SELECCIÓN ABREVIADA DE MENOR CUANTÍA",
             'SI': "SUBASTA INVERSA",
             'LP': "LICITACIÓN PÚBLICA",
             'CM': "CONCURSO DE MÉRITOS",
@@ -160,7 +160,7 @@ class get_post_contratacion(APIView):
 
         pt_order = {
             'MC': "CONTRATACIÓN MÍNIMA CUANTÍA.",
-            'SAMC': "SELECCIÓN ABREVIADA. (DE MENOR CUANTÍA, SUBASTA)",
+            'SAMC': "SELECCIÓN ABREVIADA DE MENOR CUANTÍA",
             'SI': "SUBASTA INVERSA",
             'LP': "LICITACIÓN PÚBLICA",
             'CM': "CONCURSO DE MÉRITOS",
