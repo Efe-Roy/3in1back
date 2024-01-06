@@ -67,7 +67,7 @@ class get_prerequisite(APIView):
         ac = acroymsType.objects.get(id=acR)
         rsc = resSecType.objects.get(id=rscR)
 
-        order = {
+        rsc_order = {
             'AMS': "ALCALDÍA MUNICIPAL",
             'SGG': "SECRETARÍA GENERAL Y DE GOBIERNO",
             'SPO': "SECRETARÍA DE PLANEACIÓN Y ORDENAMIENTO TERRITORIAL",
@@ -76,16 +76,30 @@ class get_prerequisite(APIView):
             'SPD': "SECRETARÍA DE PROTECCIÓN SOCIAL Y DESARROLLO COMUNITARIO",
             'SSP': "SECRETARÍA DE SERVICIOS PÚBLICOS Y MEDIO AMBIENTE",
         }
+
+        pt_order = {
+            'MC': "CONTRATACIÓN MÍNIMA CUANTÍA.",
+            'SAMC': "SELECCIÓN ABREVIADA. (DE MENOR CUANTÍA, SUBASTA)",
+            'SI': "SUBASTA INVERSA",
+            'LP': "LICITACIÓN PÚBLICA",
+            'CM': "CONCURSO DE MÉRITOS",
+            'CD': "CONTRATACIÓN DIRECTA",
+        }
         
         result = "Unknown"
-        if rsc.name in order.values():
+        if rsc.name in rsc_order.values():
             # Find the key for the given name
-            result = next(key for key, value in order.items() if value == rsc.name)
+            result = next(key for key, value in rsc_order.items() if value == rsc.name)
+        
+        result_pt = "Unknown"
+        if pt.name in pt_order.values():
+            # Find the key for the given name
+            result_pt = next(key for key, value in pt_order.items() if value == pt.name)
 
         if pt.name == "CONTRATACIÓN DIRECTA":
-            initial_part = f'{ac.name}-{result}'
+            initial_part = f'{ac.name}-{result_pt}-{result}'
         else:
-            initial_part = f'{result}'
+            initial_part = f'{result_pt}-{result}'
         
         automated_number = self.generate_automated_number(initial_part)
 
@@ -143,27 +157,33 @@ class get_post_contratacion(APIView):
             'SPD': "SECRETARÍA DE PROTECCIÓN SOCIAL Y DESARROLLO COMUNITARIO",
             'SSP': "SECRETARÍA DE SERVICIOS PÚBLICOS Y MEDIO AMBIENTE",
         }
+
+        pt_order = {
+            'MC': "CONTRATACIÓN MÍNIMA CUANTÍA.",
+            'SAMC': "SELECCIÓN ABREVIADA. (DE MENOR CUANTÍA, SUBASTA)",
+            'SI': "SUBASTA INVERSA",
+            'LP': "LICITACIÓN PÚBLICA",
+            'CM': "CONCURSO DE MÉRITOS",
+            'CD': "CONTRATACIÓN DIRECTA",
+        }
         
         result = "Unknown"
         if rsc.name in order.values():
             # Find the key for the given name
             result = next(key for key, value in order.items() if value == rsc.name)
 
-        # initial_part = f'{ac.name}-{result}'
+        result_pt = "Unknown"
+        if pt.name in pt_order.values():
+            # Find the key for the given name
+            result_pt = next(key for key, value in pt_order.items() if value == pt.name)
 
         if pt.name == "CONTRATACIÓN DIRECTA":
-            initial_part = f'{ac.name}-{result}'
+            initial_part = f'{ac.name}-{result_pt}-{result}'
         else:
-            initial_part = f'{result}'
+            initial_part = f'{result_pt}-{result}'
         
         automated_number = self.generate_automated_number(initial_part)
-            
-
-        # print({
-        #     "initial_part": initial_part,
-        #     "automated_number": automated_number,
-        # })
-
+        
         serializer = AllContratacionMainSerializer(data=request.data)
         if serializer.is_valid():
             if pt.name == "CONTRATACIÓN DIRECTA":
