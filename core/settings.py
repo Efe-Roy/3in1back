@@ -1,35 +1,20 @@
 
 from pathlib import Path
 import os
-# from os import getenv, path
-# from django.core.management.utils import get_random_secret_key
-# import dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-# dotenv_file = BASE_DIR / '.env.local'
-# if path.isfile(dotenv_file):
-#     dotenv.load_dotenv(dotenv_file)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-s2v*ko$0$n&k^dy#t3h0i9i2t^$70l9l28*ez7-tgllzwk-hb0'
-# SECRET_KEY = getenv('DJANGO_SECRET_KEY', get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-# DEBUG = getenv('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = ['147.182.215.149', '127.0.0.1', 'fuscaliaycontraloria.com']
-# ALLOWED_HOSTS = ['147.182.215.149', 'fuscaliaycontraloria.com']
-# ALLOWED_HOSTS = getenv(
-#     'DJANGO_ALLOWED_HOSTS',
-#     '127.0.0.1,localhost'
-# ).split(',')
-
 
 # Application definition
 INSTALLED_APPS = [
@@ -188,11 +173,6 @@ CORS_ALLOWED_ORIGINS = [
     "http://167.71.19.13",
     "https://procesosadministrativos.com",
 ]
-
-# CORS_ALLOWED_ORIGINS = getenv(
-#     'CORS_ALLOWED_ORIGINS',
-#     'http://127.0.0.1:3000,http://localhost:3000'
-# ).split(',')
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',

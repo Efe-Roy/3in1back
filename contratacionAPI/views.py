@@ -60,6 +60,58 @@ class get_all_StateType(ListAPIView):
     serializer_class = StateTypeSerializer
     queryset = StateType.objects.all()
     
+
+class get_prerequisite(APIView):
+    def get(self, request, ptR, acR, rscR):
+        pt = processType.objects.get(id=ptR)
+        ac = acroymsType.objects.get(id=acR)
+        rsc = resSecType.objects.get(id=rscR)
+
+        order = {
+            'AMS': "ALCALDÍA MUNICIPAL",
+            'SGG': "SECRETARÍA GENERAL Y DE GOBIERNO",
+            'SPO': "SECRETARÍA DE PLANEACIÓN Y ORDENAMIENTO TERRITORIAL",
+            'SHB': "SECRETARÍA DE HACIENDA Y BIENES",
+            'SIE': "SECRETARÍA DE INNOACIÓN Y EMPRENDIMIENTO",
+            'SPD': "SECRETARÍA DE PROTECCIÓN SOCIAL Y DESARROLLO COMUNITARIO",
+            'SSP': "SECRETARÍA DE SERVICIOS PÚBLICOS Y MEDIO AMBIENTE",
+        }
+        
+        result = "Unknown"
+        if rsc.name in order.values():
+            # Find the key for the given name
+            result = next(key for key, value in order.items() if value == rsc.name)
+
+        if pt.name == "CONTRATACIÓN DIRECTA":
+            initial_part = f'{ac.name}-{result}'
+        else:
+            initial_part = f'{result}'
+        
+        automated_number = self.generate_automated_number(initial_part)
+
+        return Response(automated_number)
+    
+    def generate_automated_number(cls, initial_part):
+        year = datetime.now().year
+        filtered_objects = ContratacionMain.objects.filter(process_num__startswith=initial_part)
+        if filtered_objects.exists():
+            highest_value = filtered_objects.aggregate(Max('process_num'))['process_num__max']
+
+            if highest_value is not None:
+                # Extract the numeric part from the 'process_num' field
+                numeric_part = int(highest_value.split('-')[-2])
+                plus_1 = numeric_part + 1
+                count_str = str(plus_1).zfill(3)
+                return f'{initial_part}-{count_str}-{year}'
+            else:
+                return f'{initial_part}-001-{year}'
+        else:
+            return f'{initial_part}-001-{year}'
+        
+
+            
+
+
     
 class get_post_contratacion(APIView):
     authentication_classes = [TokenAuthentication]
@@ -72,7 +124,7 @@ class get_post_contratacion(APIView):
     
     def post(self, request, format=None):
         user = self.request.user
-        process_num = request.data["process_num"]
+        # process_num = request.data["process_num"]
         pt = processType.objects.get(id=request.data["process"])
         ac = acroymsType.objects.get(id=request.data["acroyms_of_contract"])
         rsc = resSecType.objects.get(id=request.data["responsible_secretary"])
@@ -117,7 +169,7 @@ class get_post_contratacion(APIView):
 
             serializer.save()
             ActivityTracker.objects.create(
-                msg='Se creó un nuevo contrato con NÚMERO DE PROCESO: ' + process_num,
+                msg='Se creó un nuevo contrato con NÚMERO DE PROCESO: ' + automated_number,
                 action='create',
                 sector='hiring',
                 user=user
