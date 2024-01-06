@@ -72,7 +72,7 @@ class get_prerequisite(APIView):
             'SGG': "SECRETARÍA GENERAL Y DE GOBIERNO",
             'SPO': "SECRETARÍA DE PLANEACIÓN Y ORDENAMIENTO TERRITORIAL",
             'SHB': "SECRETARÍA DE HACIENDA Y BIENES",
-            'SIE': "SECRETARÍA DE INNOACIÓN Y EMPRENDIMIENTO",
+            'SIE': "SECRETARÍA DE INNOVACIÓN Y EMPRENDIMIENTO",
             'SPD': "SECRETARÍA DE PROTECCIÓN SOCIAL Y DESARROLLO COMUNITARIO",
             'SSP': "SECRETARÍA DE SERVICIOS PÚBLICOS Y MEDIO AMBIENTE",
         }
@@ -97,7 +97,7 @@ class get_prerequisite(APIView):
             result_pt = next(key for key, value in pt_order.items() if value == pt.name)
 
         if pt.name == "CONTRATACIÓN DIRECTA":
-            initial_part = f'{ac.name}-{result_pt}-{result}'
+            initial_part = f'{result_pt}-{ac.name}-{result}'
         else:
             initial_part = f'{result_pt}-{result}'
         
@@ -178,7 +178,7 @@ class get_post_contratacion(APIView):
             result_pt = next(key for key, value in pt_order.items() if value == pt.name)
 
         if pt.name == "CONTRATACIÓN DIRECTA":
-            initial_part = f'{ac.name}-{result_pt}-{result}'
+            initial_part = f'{result_pt}-{ac.name}-{result}'
         else:
             initial_part = f'{result_pt}-{result}'
         
