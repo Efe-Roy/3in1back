@@ -40,126 +40,7 @@ from django.shortcuts import get_object_or_404
 import pytz
 from datetime import datetime
 
-# Create your views here.
-class AutoGenView(APIView):
-    def get(self, request, format=None):
-        pc = self.police_compliant_autogen()
-        uc = self.urban_control_autogen()
-        coa = self.complaintAndOfficeToAttend_autogen()
-        fro = self.File_Return_Office_autogen()
-        
-        return Response({
-            "police_compliant": pc,
-            "urban_control": uc,
-            "complaint_office_Attend": coa,
-            "file_return_office": fro
-        })
- 
-    def police_compliant_autogen(cls):
-        get_num_file = PoliceCompliant.objects.all()
-        year = datetime.now().year
-
-        if get_num_file.exists():
-            last_file = PoliceCompliant.objects.all().order_by('-id')[0]
-            string = last_file.filed
-
-            if "-" in string:
-                year_part = int(string.split('-')[-1])
-                # print("year_part", year_part)
-                if year_part >= year:
-                    numeric_part = int(string.split('-')[-2])
-                    plus_1 = numeric_part + 1
-                    count_str = str(plus_1).zfill(3)
-                    return f'{count_str}-{year}'
-                else:
-                    file_num = 1
-                    ed = "%04d" % ( file_num, )
-                    return f'{ed}-{year}'
-            else:
-                # print("The '-' character is not present in the string.")
-                file_num = 1
-                ed = "%04d" % ( file_num, )
-                return f'{ed}-{year}'
- 
-    def urban_control_autogen(cls):
-        get_num_file = UrbanControl.objects.all()
-        year = datetime.now().year
-
-        if get_num_file.exists():
-            last_file = UrbanControl.objects.all().order_by('-id')[0]
-            string = last_file.filed
-
-            if "-" in string:
-                year_part = int(string.split('-')[-1])
-                # print("year_part", year_part)
-                if year_part >= year:
-                    numeric_part = int(string.split('-')[-2])
-                    plus_1 = numeric_part + 1
-                    count_str = str(plus_1).zfill(3)
-                    return f'{count_str}-{year}'
-                else:
-                    file_num = 1
-                    ed = "%04d" % ( file_num, )
-                    return f'{ed}-{year}'
-            else:
-                # print("The '-' character is not present in the string.")
-                file_num = 1
-                ed = "%04d" % ( file_num, )
-                return f'{ed}-{year}'
-            
-    def complaintAndOfficeToAttend_autogen(cls):
-        get_num_file = ComplaintAndOfficeToAttend.objects.all()
-        year = datetime.now().year
-
-        if get_num_file.exists():
-            last_file = ComplaintAndOfficeToAttend.objects.all().order_by('-id')[0]
-            string = last_file.filed
-
-            if "-" in string:
-                year_part = int(string.split('-')[-1])
-                # print("year_part", year_part)
-                if year_part >= year:
-                    numeric_part = int(string.split('-')[-2])
-                    plus_1 = numeric_part + 1
-                    count_str = str(plus_1).zfill(3)
-                    return f'{count_str}-{year}'
-                else:
-                    file_num = 1
-                    ed = "%04d" % ( file_num, )
-                    return f'{ed}-{year}'
-            else:
-                # print("The '-' character is not present in the string.")
-                file_num = 1
-                ed = "%04d" % ( file_num, )
-                return f'{ed}-{year}'
-    
-    def File_Return_Office_autogen(cls):
-        get_num_file = File2Return2dOffice.objects.all()
-        year = datetime.now().year
-
-        if get_num_file.exists():
-            last_file = File2Return2dOffice.objects.all().order_by('-id')[0]
-            string = last_file.filed
-
-            if "-" in string:
-                year_part = int(string.split('-')[-1])
-                # print("year_part", year_part)
-                if year_part >= year:
-                    numeric_part = int(string.split('-')[-2])
-                    plus_1 = numeric_part + 1
-                    count_str = str(plus_1).zfill(3)
-                    return f'{count_str}-{year}'
-                else:
-                    file_num = 1
-                    ed = "%04d" % ( file_num, )
-                    return f'{ed}-{year}'
-            else:
-                # print("The '-' character is not present in the string.")
-                file_num = 1
-                ed = "%04d" % ( file_num, )
-                return f'{ed}-{year}'
-    
-
+# Create your views here.   
 class PoliceCompliantView(APIView):
     authentication_classes = [TokenAuthentication]
     def get(self, request, format=None):
@@ -903,26 +784,6 @@ class UltimateView(APIView):
         queryset7 = File2Return2dOffice.objects.filter(assign_team_id=pk, status_track=True)
         queryset7.update(status_track=False)
 
-
-
-    
-        # get_file = CarNumber.objects.all()
-        # if get_file.exists():
-        #     last_file = CarNumber.objects.all().order_by('-id').first()
-        #     # print(last_file)
-        #     upId = last_file.id
-        #     getIndex = last_file.name
-        #     file_num = int(getIndex) + 1
-        #     d = "%03d" % (file_num) 
-        #     print("Men Like Roy", d)
-
-        #     newCar_num = CarNumber.objects.get(id=upId)
-        #     newCar_num.name = d
-        #     newCar_num.save()
-
-        #     UploadSignedPDF.objects.create(car_num=d, assign_team=agent, creator=CreatorIntance)
-
-            
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 month_mapping = {
@@ -942,7 +803,7 @@ month_mapping = {
 
 class FilterDataView(APIView):
     def post(self, request, *args, **kwargs):
-        carNum = self.fetch_CarNum(request.data)
+        carNum = self.fetch_CarNum()
         current_date = timezone.now()
         month_in_spanish = month_mapping[current_date.strftime('%B')]
 
@@ -1087,34 +948,72 @@ class FilterDataView(APIView):
             filter_selection.save()
 
             # UPDATE CarNum
-            get_file = CarNumber.objects.all()
-            if get_file.exists():
-                last_file = CarNumber.objects.all().order_by('-id').first()
-                # print(last_file)
-                upId = last_file.id
-                getIndex = last_file.name
-                file_num = int(getIndex) + 1
-                d = "%03d" % (file_num) 
-                print("Men Like Roy 222", d)
-
-                newCar_num = CarNumber.objects.get(id=upId)
-                newCar_num.name = d
-                newCar_num.save()
+            self.update_CarNum()
 
             return Response(serialized_data, status=status.HTTP_200_OK)
         return Response(serialized_data, status=status.HTTP_200_OK)
     
-    def fetch_CarNum(self, post_data):
-        get_file = CarNumber.objects.all()
-        if get_file.exists():
-            last_file = CarNumber.objects.all().order_by('-id').first()
-            # print(last_file)
+    def fetch_CarNum(self):
+        get_num_file = CarNumber.objects.all()
+        year = datetime.now().year
+
+        if get_num_file.exists():
+            last_file = CarNumber.objects.all().order_by('-id')[0]
+            string = last_file.name
+
+            if "-" in string:
+                year_part = int(string.split('-')[-1])
+                if year_part >= year:
+                    numeric_part = int(string.split('-')[-2])
+                    plus_1 = numeric_part + 1
+                    count_str = str(plus_1).zfill(3)
+                    return f'{count_str}-{year}'
+                else:
+                    file_num = 1
+                    ed = "%04d" % ( file_num, )
+                    return f'{ed}-{year}'
+            else:
+                file_num = 1
+                ed = "%04d" % ( file_num, )
+                return f'{ed}-{year}'
+        
+    def update_CarNum(self):
+        get_num_file = CarNumber.objects.all()
+        year = datetime.now().year
+
+        if get_num_file.exists():
+            last_file = CarNumber.objects.all().order_by('-id')[0]
+            string = last_file.name
             upId = last_file.id
-            getIndex = last_file.name
-            file_num = int(getIndex) + 1
-            d = "%03d" % (file_num) 
-            print("Men Like Roy", d)
-        return d
+
+            if "-" in string:
+                year_part = int(string.split('-')[-1])
+                if year_part >= year:
+                    numeric_part = int(string.split('-')[-2])
+                    plus_1 = numeric_part + 1
+                    count_str = str(plus_1).zfill(3)
+                    d = f'{count_str}-{year}'
+                
+                    newCar_num = CarNumber.objects.get(id=upId)
+                    newCar_num.name = d
+                    newCar_num.save()
+                else:
+                    file_num = 1
+                    ed = "%04d" % ( file_num, )
+                    d = f'{ed}-{year}'
+
+                    newCar_num = CarNumber.objects.get(id=upId)
+                    newCar_num.name = d
+                    newCar_num.save()
+            else:
+                file_num = 1
+                ed = "%04d" % ( file_num, )
+                d = f'{ed}-{year}'
+
+                newCar_num = CarNumber.objects.get(id=upId)
+                newCar_num.name = d
+                newCar_num.save()
+        
     
 class FilteredDataDetailUpdateView(APIView):
     def get(self, request, selection_id):
@@ -1178,21 +1077,28 @@ class FilteredDataDetailUpdateView(APIView):
 
 class CarNum(APIView):
     def get(self, request):
-        get_file = CarNumber.objects.all()
-        if get_file.exists():
-            last_file = CarNumber.objects.all().order_by('-id').first()
-            # print(last_file)
-            upId = last_file.id
-            getIndex = last_file.name
-            file_num = int(getIndex) + 1
-            d = "%03d" % (file_num) 
-            print("Men Like Roy", d)
+        get_num_file = CarNumber.objects.all()
+        year = datetime.now().year
 
-            # newCar_num = CarNumber.objects.get(id=upId)
-            # newCar_num.name = d
-            # newCar_num.save()
+        if get_num_file.exists():
+            last_file = CarNumber.objects.all().order_by('-id')[0]
+            string = last_file.name
 
-            return Response(d)
+            if "-" in string:
+                year_part = int(string.split('-')[-1])
+                if year_part >= year:
+                    numeric_part = int(string.split('-')[-2])
+                    plus_1 = numeric_part + 1
+                    count_str = str(plus_1).zfill(3)
+                    return Response(f'{count_str}-{year}')
+                else:
+                    file_num = 1
+                    ed = "%04d" % ( file_num, )
+                    return Response(f'{ed}-{year}')
+            else:
+                file_num = 1
+                ed = "%04d" % ( file_num, )
+                return Response(f'{ed}-{year}')
         
     
 class ToggleSignature(APIView):
