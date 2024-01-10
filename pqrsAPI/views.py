@@ -5,7 +5,7 @@ from rest_framework.generics import (
     UpdateAPIView, DestroyAPIView, ListCreateAPIView
 )
 from .serializers import (PqrsMainSerializer, EntityTypeSerializer, PqrsNotifySerializer,
-                          NameTypeSerializer, AllPqrsSerializer, RestrictedPqrsMaintSerializer,
+                          NameTypeSerializer, AllPqrsSerializer,
                           MediumResTypeSerializer, InnerFormPqrsMaintSerializer, StatusTypeSerializer
                           )
 from .models import PqrsMain, EntityType, NameType, MediumResType, FileResNum, StatusType, PqrsNotifify, PqrsFileNum
@@ -50,12 +50,7 @@ class get_all_pqrs2(ListAPIView):
     permission_classes = (AllowAny,)
     serializer_class = AllPqrsSerializer
     queryset = PqrsMain.objects.all()
-
-# class In_Form_pqrs(UpdateAPIView):
-#     permission_classes = (AllowAny,)
-#     serializer_class = InnerFormPqrsMaintSerializer
-#     queryset = PqrsMain.objects.all()
-
+    
 class In_Form_pqrs(APIView):
     def get_object(self, pk):
         try:
@@ -99,8 +94,6 @@ class In_Form_pqrs(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
 
-
-
 class get_post_pqrs(APIView):
     authentication_classes = [TokenAuthentication]
 
@@ -110,10 +103,9 @@ class get_post_pqrs(APIView):
         return Response( serializerPqrs.data)
 
     def post(self, request, format=None):
-        serializer = RestrictedPqrsMaintSerializer(data=request.data)
+        serializer = PqrsMainSerializer(data=request.data)
         automated_number = self.generate_automated_number()
         # print("automated_number", automated_number)
-        # print("zzzxxxcccvvv", request.data["responsible_for_the_response"])
 
         if serializer.is_valid():
             serializer.validated_data['file_num'] = automated_number
@@ -121,17 +113,16 @@ class get_post_pqrs(APIView):
 
             self.save_automated_number(automated_number)
            
-        #    PqrsFileNum.name
-            team_id = request.data['responsible_for_the_response']
-            team = Team.objects.get(id=team_id)
-            # print("email", team.user.email)
+            if request.data['responsible_for_the_response']:
+                team_id = request.data['responsible_for_the_response']
+                team = Team.objects.get(id=team_id)
 
-            # Send activation email
-            email_body = f'Hola {team.user.username}, \n Se le ha asignado el número de expediente {request.data["file_num"]}.'
-            data = {'email_body': email_body, 'to_email': team.user.email,
-                    'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
-            send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
-            
+                # Send activation email
+                email_body = f'Hola {team.user.username}, \n Se le ha asignado el número de expediente {request.data["file_num"]}.'
+                data = {'email_body': email_body, 'to_email': team.user.email,
+                        'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
+                send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
+        
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
     
@@ -167,7 +158,6 @@ class get_post_pqrs(APIView):
         else:
             pass
         
-
 class CustomPagination(PageNumberPagination):
     page_size_query_param = 'PageSize'
     # max_page_size = 100
@@ -251,36 +241,10 @@ class get_details_pqrs(APIView):
         PqrsById.delete()
         return Response(status= HTTP_204_NO_CONTENT)
 
-
 class CurrentFileNumView(APIView):
     def get(self, request, format=None):
-        # get_file = PqrsMain.objects.all()
         get_num_file = PqrsFileNum.objects.all()
         year = datetime.now().year
-
-
-        # if get_file.exists():
-        #     # print("Has Data nn")
-        #     last_file = PqrsMain.objects.all().order_by('-id')[0]
-
-        #     string = last_file.file_num
-        #     parts = string.split("-")
-        #     number = parts[0]
-        #     num2 = parts[1]
-        #     file_num = int(number) + 1
-        #     ed = "%04d" % ( file_num, )
-        #     d = f'{ed}-{year}'
-
-        #     print(num2)
-        # else:
-        #     print("Empty")
-        #     file_num = 1
-        #     ed = "%04d" % ( file_num, )
-        #     d = f'{ed}-{year}'
-        #     # d = "%04d" % ( file_num, ) + "-" + {year}
-
-        #     # d = "%04d" % ( file_num, )
-        #     print(d)
 
         if get_num_file.exists():
             print("Has Data nn")
@@ -300,10 +264,7 @@ class CurrentFileNumView(APIView):
             file_num = 1
             ed = "%04d" % ( file_num, )
             d = f'{ed}-{year}'
-            # d = "%04d" % ( file_num, ) + "-" + {year}
-
-            # d = "%04d" % ( file_num, )
-            print(d)
+            # print(d)
 
         return Response(d)
 
@@ -324,24 +285,22 @@ class FileResNumView(APIView):
                 part = getIndex.split('-')
                 desired_value = part[1]
                 file_num = int(desired_value) + 1
-                d = "RR-" + "%04d" % (file_num,) + "-" + {year}
-                # print(d)
-                print("new File Num", d)
+                ed = "%04d" % ( file_num, )
+                d = f'RR-{ed}-{year}'
+                # print("new File Num", d)
             else:
-                print("getIndex is None")
+                # print("getIndex is None")
                 file_num = 1
-                d = "RR-" + "%04d" % (file_num,) + "-" + {year}
+                ed = "%04d" % ( file_num, )
+                d = f'RR-{ed}-{year}'
 
         else:
             print("getIndex is None")
             file_num = 1
             d = "RR-" + "%04d" % (file_num,) + "-" + {year}
-            # FileResNum.objects.create(name=d)
             print(d)
         
         return Response(d)
-
-    
 
 class PqrsNotifyView(ListAPIView):
     permission_classes = (AllowAny,)

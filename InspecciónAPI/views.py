@@ -38,8 +38,128 @@ from django.template.loader import get_template
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 import pytz
+from datetime import datetime
 
 # Create your views here.
+class AutoGenView(APIView):
+    def get(self, request, format=None):
+        pc = self.police_compliant_autogen()
+        uc = self.urban_control_autogen()
+        coa = self.complaintAndOfficeToAttend_autogen()
+        fro = self.File_Return_Office_autogen()
+        
+        return Response({
+            "police_compliant": pc,
+            "urban_control": uc,
+            "complaint_office_Attend": coa,
+            "file_return_office": fro
+        })
+ 
+    def police_compliant_autogen(cls):
+        get_num_file = PoliceCompliant.objects.all()
+        year = datetime.now().year
+
+        if get_num_file.exists():
+            last_file = PoliceCompliant.objects.all().order_by('-id')[0]
+            string = last_file.filed
+
+            if "-" in string:
+                year_part = int(string.split('-')[-1])
+                # print("year_part", year_part)
+                if year_part >= year:
+                    numeric_part = int(string.split('-')[-2])
+                    plus_1 = numeric_part + 1
+                    count_str = str(plus_1).zfill(3)
+                    return f'{count_str}-{year}'
+                else:
+                    file_num = 1
+                    ed = "%04d" % ( file_num, )
+                    return f'{ed}-{year}'
+            else:
+                # print("The '-' character is not present in the string.")
+                file_num = 1
+                ed = "%04d" % ( file_num, )
+                return f'{ed}-{year}'
+ 
+    def urban_control_autogen(cls):
+        get_num_file = UrbanControl.objects.all()
+        year = datetime.now().year
+
+        if get_num_file.exists():
+            last_file = UrbanControl.objects.all().order_by('-id')[0]
+            string = last_file.filed
+
+            if "-" in string:
+                year_part = int(string.split('-')[-1])
+                # print("year_part", year_part)
+                if year_part >= year:
+                    numeric_part = int(string.split('-')[-2])
+                    plus_1 = numeric_part + 1
+                    count_str = str(plus_1).zfill(3)
+                    return f'{count_str}-{year}'
+                else:
+                    file_num = 1
+                    ed = "%04d" % ( file_num, )
+                    return f'{ed}-{year}'
+            else:
+                # print("The '-' character is not present in the string.")
+                file_num = 1
+                ed = "%04d" % ( file_num, )
+                return f'{ed}-{year}'
+            
+    def complaintAndOfficeToAttend_autogen(cls):
+        get_num_file = ComplaintAndOfficeToAttend.objects.all()
+        year = datetime.now().year
+
+        if get_num_file.exists():
+            last_file = ComplaintAndOfficeToAttend.objects.all().order_by('-id')[0]
+            string = last_file.filed
+
+            if "-" in string:
+                year_part = int(string.split('-')[-1])
+                # print("year_part", year_part)
+                if year_part >= year:
+                    numeric_part = int(string.split('-')[-2])
+                    plus_1 = numeric_part + 1
+                    count_str = str(plus_1).zfill(3)
+                    return f'{count_str}-{year}'
+                else:
+                    file_num = 1
+                    ed = "%04d" % ( file_num, )
+                    return f'{ed}-{year}'
+            else:
+                # print("The '-' character is not present in the string.")
+                file_num = 1
+                ed = "%04d" % ( file_num, )
+                return f'{ed}-{year}'
+    
+    def File_Return_Office_autogen(cls):
+        get_num_file = File2Return2dOffice.objects.all()
+        year = datetime.now().year
+
+        if get_num_file.exists():
+            last_file = File2Return2dOffice.objects.all().order_by('-id')[0]
+            string = last_file.filed
+
+            if "-" in string:
+                year_part = int(string.split('-')[-1])
+                # print("year_part", year_part)
+                if year_part >= year:
+                    numeric_part = int(string.split('-')[-2])
+                    plus_1 = numeric_part + 1
+                    count_str = str(plus_1).zfill(3)
+                    return f'{count_str}-{year}'
+                else:
+                    file_num = 1
+                    ed = "%04d" % ( file_num, )
+                    return f'{ed}-{year}'
+            else:
+                # print("The '-' character is not present in the string.")
+                file_num = 1
+                ed = "%04d" % ( file_num, )
+                return f'{ed}-{year}'
+    
+
 class PoliceCompliantView(APIView):
     authentication_classes = [TokenAuthentication]
     def get(self, request, format=None):
@@ -80,7 +200,36 @@ class PoliceCompliantView(APIView):
             
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
+    
+    def generate_automated_number(cls):
+        get_num_file = PoliceCompliant.objects.all()
+        year = datetime.now().year
 
+        if get_num_file.exists():
+            last_file = PoliceCompliant.objects.all().order_by('-id')[0]
+
+            string = last_file.filed
+            year_part = int(string.split('-')[-1])
+            if year_part >= year:
+               print("Inpec Year is correct")
+            else:
+                file_num = 1
+                ed = "%04d" % ( file_num, )
+                d = f'{ed}-{year}'
+                print("Afresh Data", d)
+            # print("string", string)
+            # parts = string.split("-")
+            # number = parts[0]
+            file_num = int(string) + 1
+            ed = "%04d" % ( file_num, )
+            d = f'{ed}-{year}'
+            return d
+        else:
+            file_num = 1
+            ed = "%04d" % ( file_num, )
+            d = f'{ed}-{year}'
+            return d
+    
 class PoliceCompliantDetailView(APIView):
     def get_object(self, pk):
         try:
@@ -111,7 +260,6 @@ class PoliceCompliantPrivateView(UpdateAPIView):
     # permission_classes = (IsAuthenticated, )
     serializer_class = ByIdPoliceCompliantSerializer
     queryset = PoliceCompliant.objects.all()
-
 
 
 class UrbanControlView(APIView):
@@ -194,8 +342,6 @@ class UrbanControlPrivateView(UpdateAPIView):
     queryset = UrbanControl.objects.all()
     
 
-
-
 class PoliceSubmissionLGGSView(APIView):
     authentication_classes = [TokenAuthentication]
 
@@ -274,9 +420,6 @@ class PoliceSubmissionLGGSPrivateView(UpdateAPIView):
     queryset = PoliceSubmissionLGGS.objects.all()
 
 
-
-
-
 class TrafficViolationComparedView(APIView):
     authentication_classes = [TokenAuthentication]
 
@@ -353,8 +496,6 @@ class TrafficViolationComparedPrivateView(UpdateAPIView):
     # permission_classes = (IsAuthenticated, )
     serializer_class = ByIdTrafficViolationComparedSerializer
     queryset = TrafficViolationCompared.objects.all()
-
-
 
 
 class TrafficViolationComparedMyColissionView(APIView):
@@ -436,8 +577,6 @@ class TrafficViolationComparedMyColissionPrivateView(UpdateAPIView):
     queryset = TrafficViolationComparedMyColission.objects.all()
 
 
-
-
 class ComplaintAndOfficeToAttendView(APIView):
     authentication_classes = [TokenAuthentication]
 
@@ -515,7 +654,6 @@ class ComplaintAndOfficeToAttendPrivateView(UpdateAPIView):
     # permission_classes = (IsAuthenticated, )
     serializer_class = ByIdComplaintAndOfficeToAttendSerializer
     queryset = ComplaintAndOfficeToAttend.objects.all()
-
 
 
 class File2Return2dOfficeView(APIView):
@@ -596,8 +734,6 @@ class File2Return2dOfficePrivateView(UpdateAPIView):
     # permission_classes = (IsAuthenticated, )
     serializer_class = ByIdFile2Return2dOfficeSerializer
     queryset = File2Return2dOffice.objects.all()
-
-
 
 
 class InspNotifyView(APIView):

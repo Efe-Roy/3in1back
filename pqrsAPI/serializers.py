@@ -68,17 +68,6 @@ class AllPqrsSerializer(serializers.ModelSerializer):
     def get_responsible_for_the_response(self, obj):
         return TeamSerializer(obj.responsible_for_the_response).data
 
-
-class RestrictedPqrsMaintSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = PqrsMain
-        fields = ('id', 'date_of_entry', 'sender', 'entity_or_position', 'subject',
-                  'file_num', 'responsible_for_the_response', 'name', 'days_of_the_response', 'expiration_date',
-                  'status_of_the_response'
-                    # 'medium_of_the_response', 'date_of_response', 'file_res'
-                  )
-
 class InnerFormPqrsMaintSerializer(serializers.ModelSerializer):
 
     class Meta:

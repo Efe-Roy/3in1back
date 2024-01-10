@@ -9,7 +9,7 @@ from .views import (
     File2Return2dOfficeView, File2Return2dOfficeDetailView, File2Return2dOfficePrivateView, InspNotifyView,
     UploadPDFView, UltimateView, InspUserListView, CarNum, ToggleSignature, ListUpdateAndEmailPDFView,
 
-    FilterDataView, FilteredDataDetailUpdateView, ListSelectedFilteredData
+    FilterDataView, FilteredDataDetailUpdateView, ListSelectedFilteredData, AutoGenView
 )
 
 urlpatterns = [
@@ -42,6 +42,8 @@ urlpatterns = [
     path('file2return2doffice/private/<pk>/', File2Return2dOfficePrivateView.as_view()),
 
 
+
+    path('autogen', AutoGenView.as_view()),
 
 
     path('insp_notify', InspNotifyView.as_view()),
