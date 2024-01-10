@@ -234,6 +234,7 @@ class get_all_team(generics.ListAPIView):
     # permission_classes = (AllowAny,)
     serializer_class = TeamSerializer
     queryset = Team.objects.all()
+    # queryset = Team.objects.filter(user__is_activate=False)
 
 class get_all_agent(generics.ListAPIView):
     permission_classes = (AllowAny,)
