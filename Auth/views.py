@@ -216,6 +216,10 @@ class UserListView(generics.ListAPIView):
         queryset = User.objects.filter(is_staff=False, is_organisor=False).order_by('-date_joined')
 
         # Filter based on request parameters
+        username = self.request.query_params.get('username', None)
+        if username:
+            queryset = queryset.filter(username__icontains=username)
+
         is_ticket_agent = self.request.query_params.get('is_ticket_agent', False)
         if is_ticket_agent:
             queryset = queryset.filter(is_ticket_agent=is_ticket_agent)
@@ -233,8 +237,8 @@ class get_all_team(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     # permission_classes = (AllowAny,)
     serializer_class = TeamSerializer
-    queryset = Team.objects.all()
-    # queryset = Team.objects.filter(user__is_activate=False)
+    # queryset = Team.objects.all()
+    queryset = Team.objects.filter(user__is_active=False)
 
 class get_all_agent(generics.ListAPIView):
     permission_classes = (AllowAny,)

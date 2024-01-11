@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import ( 
     ContratacionMain, processType, acroymsType, 
-    typologyType, resSecType, StateType, 
+    typologyType, resSecType, StateType, LawFirmModel,
 
     ValueAdded, BpinProjectCode, ValueAffectedBpinProjCDP,
     BudgetItems, ArticleName, ItemValue, Notification
@@ -270,3 +270,8 @@ class NotificationSerializer(serializers.ModelSerializer):
             'msg',
             'createdAt'
         )
+
+class LawFirmSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LawFirmModel
+        fields = '__all__'

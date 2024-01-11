@@ -8,12 +8,13 @@ from rest_framework.generics import (
 from .serializers import (
     ContratacionMainSerializer, ProcessTypeSerializer, AcroymsTypeSerializer,
     TypologyTypeSerializer, ResSecTypeSerializer, StateTypeSerializer, AllContratacionMainSerializer,
-    NotificationSerializer, ValueAddedSerializer
+    NotificationSerializer, ValueAddedSerializer, LawFirmSerializer
     )
 from Auth.models import ActivityTracker
 from .models import (
     ValueAdded, BpinProjectCode, ValueAffectedBpinProjCDP, BudgetItems, ArticleName, ItemValue,
-    ContratacionMain, processType, acroymsType, typologyType, resSecType, StateType, Notification
+    ContratacionMain, processType, acroymsType, typologyType, resSecType, StateType, Notification,
+    LawFirmModel
 )
 from rest_framework.views import APIView
 from django.http import Http404
@@ -722,3 +723,31 @@ class ListUnusedValueAdded(APIView):
         serializer = ValueAddedSerializer(unused_value_added, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class LawFirmView(APIView):
+    def get_object(self, pk):
+        try:
+            return ContratacionMain.objects.get(id=pk)
+        except ContratacionMain.DoesNotExist:
+            raise Http404
+
+    def post(self, request, pk, format=None):
+        objContract = self.get_object(pk)
+        serializer = LawFirmSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.validated_data['contract'] = objContract
+            serializer.save()
+
+            return Response(serializer.data, status= HTTP_201_CREATED)
+        return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
+
+
+#     def put(self, request, pk, format=None):
+#         filed = self.get_object(pk)
+#         serializer = VeriyDocSerializer(filed, data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    

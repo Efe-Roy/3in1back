@@ -714,7 +714,10 @@ class ListSelectedFilteredData(ListCreateAPIView):
     pagination_class = CustomPageNumberPagination
 
     def get_queryset(self):
-        queryset = FilterSelection.objects.all().order_by('-id')
+        if self.request.user.is_organisor:
+            queryset = FilterSelection.objects.all().order_by('-id')
+        else:
+            queryset = FilterSelection.objects.filter(assign_team__user=self.request.user)
         return queryset
 
 

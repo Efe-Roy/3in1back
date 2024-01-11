@@ -31,7 +31,6 @@ INSTALLED_APPS = [
     'contratacionAPI',
     'InspecciónAPI',
     # 'sisbenAPI',
-    'lawFirm',
     'ticketAPI',
     
 
