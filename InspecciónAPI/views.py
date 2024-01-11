@@ -696,7 +696,11 @@ class InspUserListView(ListCreateAPIView):
     pagination_class = CustomPageNumberPagination
 
     def get_queryset(self):
-        queryset = Agent.objects.all().order_by('-id')
+        # queryset = Agent.objects.all().order_by('-id')
+        if self.request.user.is_organisor:
+            queryset = Agent.objects.all().order_by('-id')
+        else:
+            queryset = None
         return queryset
 
 class ListUpdateAndEmailPDFView(ListCreateAPIView):
@@ -717,7 +721,7 @@ class ListSelectedFilteredData(ListCreateAPIView):
         if self.request.user.is_organisor:
             queryset = FilterSelection.objects.all().order_by('-id')
         else:
-            queryset = FilterSelection.objects.filter(assign_team__user=self.request.user)
+            queryset = FilterSelection.objects.filter(assign_team__user=self.request.user).order_by('-id')
         return queryset
 
 

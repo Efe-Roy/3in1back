@@ -243,7 +243,8 @@ class get_all_team(generics.ListAPIView):
 class get_all_agent(generics.ListAPIView):
     permission_classes = (AllowAny,)
     serializer_class = AgentSerializer
-    queryset = Agent.objects.all()
+    # queryset = Agent.objects.all()
+    queryset = Agent.objects.filter(user__is_active=False)
 
 
 class RequestPasswordResetEmail(generics.GenericAPIView):
