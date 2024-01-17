@@ -224,6 +224,14 @@ class UserListView(generics.ListAPIView):
         if is_ticket_agent:
             queryset = queryset.filter(is_ticket_agent=is_ticket_agent)
    
+        is_team = self.request.query_params.get('is_team', False)
+        if is_team:
+            queryset = queryset.filter(is_team=is_team)
+   
+        is_agent = self.request.query_params.get('is_agent', False)
+        if is_agent:
+            queryset = queryset.filter(is_agent=is_agent)
+   
         return queryset
 
 
