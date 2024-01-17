@@ -8,7 +8,7 @@ from rest_framework.generics import (
 from .serializers import (
     ContratacionMainSerializer, ProcessTypeSerializer, AcroymsTypeSerializer,
     TypologyTypeSerializer, ResSecTypeSerializer, StateTypeSerializer, AllContratacionMainSerializer,
-    NotificationSerializer, ValueAddedSerializer, LawFirmSerializer
+    NotificationSerializer, ValueAddedSerializer, LawFirmSerializer, PlanContratacionMainSerializer
     )
 from Auth.models import ActivityTracker
 from .models import (
@@ -31,6 +31,7 @@ from django.db.models import Sum, F, DecimalField, Count, IntegerField, Case, Wh
 from django.db.models.functions import Cast, Substr
 from decimal import Decimal
 from datetime import datetime
+from .namesTitle import NAMES
 
 # def jsonRoy(request):
 #     data= list(ContratacionMain.objects.values())
@@ -129,10 +130,94 @@ class get_prerequisite(APIView):
             return f'{initial_part}-001-{year}'
         
 
-            
+class create_contratacion(APIView):
+    authentication_classes = [TokenAuthentication]
+    # permission_classes = [IsAuthenticated]
 
+    def post(self, request, format=None):
+        user = self.request.user
+        # process_num = request.data["process_num"]
+        pt = processType.objects.get(id=request.data["process"])
+        ac = acroymsType.objects.get(id=request.data["acroyms_of_contract"])
+        rsc = resSecType.objects.get(id=request.data["responsible_secretary"])
 
+        order = {
+            'AMS': "ALCALDÍA MUNICIPAL",
+            'SGG': "SECRETARÍA GENERAL Y DE GOBIERNO",
+            'SPO': "SECRETARÍA DE PLANEACIÓN Y ORDENAMIENTO TERRITORIAL",
+            'SHB': "SECRETARÍA DE HACIENDA Y BIENES",
+            'SIE': "SECRETARÍA DE INNOACIÓN Y EMPRENDIMIENTO",
+            'SPD': "SECRETARÍA DE PROTECCIÓN SOCIAL Y DESARROLLO COMUNITARIO",
+            'SSP': "SECRETARÍA DE SERVICIOS PÚBLICOS Y MEDIO AMBIENTE",
+        }
+
+        pt_order = {
+            'MC': "CONTRATACIÓN MÍNIMA CUANTÍA.",
+            'SAMC': "SELECCIÓN ABREVIADA DE MENOR CUANTÍA",
+            'SI': "SUBASTA INVERSA",
+            'LP': "LICITACIÓN PÚBLICA",
+            'CM': "CONCURSO DE MÉRITOS",
+            'CD': "CONTRATACIÓN DIRECTA",
+        }
+        
+        result = "Unknown"
+        if rsc.name in order.values():
+            # Find the key for the given name
+            result = next(key for key, value in order.items() if value == rsc.name)
+
+        result_pt = "Unknown"
+        if pt.name in pt_order.values():
+            # Find the key for the given name
+            result_pt = next(key for key, value in pt_order.items() if value == pt.name)
+
+        if pt.name == "CONTRATACIÓN DIRECTA":
+            initial_part = f'{result_pt}-{ac.name}-{result}'
+        else:
+            initial_part = f'{result_pt}-{result}'
+        
+        automated_number = self.gen_auto(initial_part)
+        
+        serializer = PlanContratacionMainSerializer(data=request.data)
+        if serializer.is_valid():
+            if pt.name == "CONTRATACIÓN DIRECTA":
+                serializer.validated_data['process_num'] = automated_number
+                serializer.validated_data['contact_no'] = automated_number
+            else:
+                serializer.validated_data['process_num'] = automated_number
+
+            serializer.save()
+            ActivityTracker.objects.create(
+                msg='Se creó un nuevo contrato con NÚMERO DE PROCESO: ' + automated_number,
+                action='create',
+                sector='hiring',
+                user=user
+            )
+            return Response(serializer.data, status= HTTP_201_CREATED)
+        return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
     
+    def gen_auto(cls, initial_part):
+        year = datetime.now().year
+        filtered_objects = ContratacionMain.objects.filter(process_num__startswith=initial_part)
+        if filtered_objects.exists():
+            highest_value = filtered_objects.aggregate(Max('process_num'))['process_num__max']
+            print("highest_value", highest_value.split('-')[-1])
+
+            if highest_value is not None:
+                # Extract the numeric part from the 'process_num' field
+                year_part = int(highest_value.split('-')[-1])
+                if year_part >= year:
+                    numeric_part = int(highest_value.split('-')[-2])
+                    plus_1 = numeric_part + 1
+                    count_str = str(plus_1).zfill(3)
+                    return f'{initial_part}-{count_str}-{year}'
+                else:
+                    return f'{initial_part}-001-{year}'
+            else:
+                return f'{initial_part}-001-{year}'
+        else:
+            return f'{initial_part}-001-{year}'
+        
+
 class get_post_contratacion(APIView):
     authentication_classes = [TokenAuthentication]
     # permission_classes = [IsAuthenticated]
@@ -724,30 +809,42 @@ class ListUnusedValueAdded(APIView):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-
 class LawFirmView(APIView):
-    def get_object(self, pk):
-        try:
-            return ContratacionMain.objects.get(id=pk)
-        except ContratacionMain.DoesNotExist:
-            raise Http404
+    def get(self, request, pk, format=None):
+        objCon = ContratacionMain.objects.get(id=pk)
+        objLaw_queryset = LawFirmModel.objects.filter(contract=objCon).order_by("id")
 
+        for objLaw in objLaw_queryset:
+            print(objLaw.document)
+
+        serializer = LawFirmSerializer(objLaw_queryset, many=True)
+        return Response(serializer.data)
+
+    
     def post(self, request, pk, format=None):
-        objContract = self.get_object(pk)
-        serializer = LawFirmSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.validated_data['contract'] = objContract
-            serializer.save()
+        objCon = ContratacionMain.objects.get(id=pk)
 
-            return Response(serializer.data, status= HTTP_201_CREATED)
-        return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
+        for name in NAMES:
+            obj = LawFirmModel(document=name, contract=objCon)
+            obj.save()
 
+        return Response("Created Successfully", status=status.HTTP_201_CREATED)
+    
+    def put(self, request, pk, *args, **kwargs):
+        data = request.data
+        print("useless, Doing nothing", pk)
 
-#     def put(self, request, pk, format=None):
-#         filed = self.get_object(pk)
-#         serializer = VeriyDocSerializer(filed, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        for lawfirm_data in data:
+            lawfirm_id = lawfirm_data.get('id')
+
+            lawfirm_instance = LawFirmModel.objects.get(id=lawfirm_id)
+            lawfirm_instance.document = lawfirm_data.get('document')
+            lawfirm_instance.conservation = lawfirm_data.get('conservation')
+            lawfirm_instance.personal_services = lawfirm_data.get('personal_services')
+            lawfirm_instance.work_contract = lawfirm_data.get('work_contract')
+            lawfirm_instance.direct_contract = lawfirm_data.get('direct_contract')
+            lawfirm_instance.fulfills = lawfirm_data.get('fulfills')
+            lawfirm_instance.save()
+
+        return Response({'message': 'Data updated successfully'}, status=status.HTTP_200_OK)
     

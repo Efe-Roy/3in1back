@@ -67,6 +67,19 @@ class ItemValueSerializer(serializers.ModelSerializer):
         fields = ('name',)
 
 
+class PlanContratacionMainSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContratacionMain
+        fields = (
+            'acroyms_of_contract',
+            'contact_no',
+            'process',
+            'process_num',
+            'responsible_secretary',
+            'typology',
+        )
+
+
 class AllContratacionMainSerializer(serializers.ModelSerializer):
     value_added = ValueAddedSerializer(many=True)
     bpin_project_code = BpinProjectCodeSerializer(many=True)
@@ -213,7 +226,6 @@ class AllContratacionMainSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
-
 
 
 class ContratacionMainSerializer(serializers.ModelSerializer):

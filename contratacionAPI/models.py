@@ -142,9 +142,10 @@ class Notification(models.Model):
     
 
 class LawFirmModel(models.Model):
-    contract = models.ForeignKey("ContratacionMain", related_name="contratacion", on_delete=models.CASCADE)
-    document = models.CharField(max_length=255)
-    conservation = models.BooleanField(default=False)
+    contract = models.ForeignKey("ContratacionMain", related_name="contratacion", on_delete=models.CASCADE, null=True, blank=True)
+    document = models.TextField()
+    conservation = models.CharField(max_length=255)
+    # conservation = models.BooleanField(default=False)
     personal_services = models.BooleanField(default=False)
     work_contract = models.BooleanField(default=False)
     direct_contract = models.BooleanField(default=False)

@@ -4,7 +4,8 @@ from .views import (
     get_all_processType, get_all_acroymsType, get_all_typologyType, 
     get_all_resSecType, get_all_StateType, get_post_contratacion, 
     get_details_contratacion, get_contratacion,get_filtered_contratacion, 
-    NotificationView, ListUnusedValueAdded, get_prerequisite, LawFirmView
+    NotificationView, ListUnusedValueAdded, get_prerequisite, LawFirmView,
+    create_contratacion
     # ,
     # jsonRoy
 )
@@ -20,6 +21,7 @@ urlpatterns = [
     path('get_filtered_contratacion/', get_filtered_contratacion.as_view()),
     path('get_prerequisite/<ptR>/<acR>/<rscR>/', get_prerequisite.as_view()),
     
+    path('create_contratacion', create_contratacion.as_view()),
     path('get_post_contratacion', get_post_contratacion.as_view()),
     path('get_detail_contratacion/<pk>/', get_details_contratacion.as_view()),
 
