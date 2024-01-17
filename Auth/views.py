@@ -245,12 +245,36 @@ class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+# class get_all_team(generics.ListAPIView):
+#     permission_classes = [IsAuthenticated]
+#     # permission_classes = (AllowAny,)
+#     serializer_class = TeamSerializer
+#     # queryset = Team.objects.all()
+#     queryset = Team.objects.filter(user__is_active=False)
+
 class get_all_team(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
-    # permission_classes = (AllowAny,)
     serializer_class = TeamSerializer
-    # queryset = Team.objects.all()
-    queryset = Team.objects.filter(user__is_active=False)
+    # queryset = User.objects.filter(is_staff=False).order_by('-date_joined')
+    pagination_class = CustomPageNumberPagination
+
+    def get_queryset(self):
+        queryset = Team.objects.all()
+
+        # Filter based on request parameters
+        is_team = self.request.query_params.get('is_team', False)
+        if is_team:
+            queryset = queryset.filter(user__is_team=is_team)
+   
+        is_agent = self.request.query_params.get('is_agent', False)
+        if is_agent:
+            queryset = queryset.filter(user__is_agent=is_agent)
+   
+        is_active = self.request.query_params.get('is_active', False)
+        if is_active:
+            queryset = queryset.filter(user__is_active=is_active)
+   
+        return queryset
 
 class get_all_agent(generics.ListAPIView):
     permission_classes = (AllowAny,)
