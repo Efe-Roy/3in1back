@@ -27,7 +27,7 @@ urlpatterns = [
     path('api/user/detail/<int:pk>/', UserProfileDetail.as_view()),
 
     path('api/teams/', get_all_team.as_view()),
-    path('api/agent', get_all_agent.as_view()),
+    path('api/agent/', get_all_agent.as_view()),
 
     path('api/request-reset-email/', RequestPasswordResetEmail.as_view(), name="request-reset-email"),
     path('api/password-reset/<uidb64>/<token>/', PasswordTokenCheckAPI.as_view(), name='password-reset-confirm'),
