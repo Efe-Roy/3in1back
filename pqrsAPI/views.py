@@ -106,6 +106,7 @@ class get_post_pqrs(APIView):
         serializer = PqrsMainSerializer(data=request.data)
         automated_number = self.generate_automated_number()
         # print("automated_number", automated_number)
+        # print("Data", request.data)
 
         if serializer.is_valid():
             serializer.validated_data['file_num'] = automated_number

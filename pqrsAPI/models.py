@@ -17,6 +17,7 @@ class PqrsMain(models.Model):
     status_of_the_response = models.ForeignKey("StatusType", null=True, blank=True, on_delete=models.SET_NULL)
     medium_of_the_response = models.ForeignKey("MediumResType", null=True, blank=True, on_delete=models.SET_NULL)
     date_of_response = models.DateField(auto_now_add=True)
+    need_answer = models.CharField(max_length=300, null=True, blank=True)
     
     file_res = models.CharField(max_length=300, null=True, blank=True)
     comment = models.CharField(max_length=300, null=True, blank=True)
