@@ -48,7 +48,7 @@ class AllPqrsSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'date_of_entry', 'sender', 'entity_or_position', 
             'subject', 'file_num', 'responsible_for_the_response', 
-            'name', 'days_of_the_response', 'expiration_date', 
+            'name', 'days_of_the_response', 'expiration_date', 'need_answer',
             'status_of_the_response', 'medium_of_the_response', 
             'date_of_response', 'file_res', 'comment', 'pdf'
         )
