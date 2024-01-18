@@ -252,6 +252,25 @@ class UserDetail(generics.RetrieveAPIView):
 #     # queryset = Team.objects.all()
 #     queryset = Team.objects.filter(user__is_active=False)
 
+class ChangePasswordView(APIView):
+    # authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        # current_password = request.data.get('current_password')
+        new_password = request.data.get('new_password')
+
+        # Check if the current password is correct
+        # if not user.check_password(current_password):
+        #     return Response({'error': 'Current password is incorrect.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Set the new password and save the user
+        user.set_password(new_password)
+        user.save()
+
+        return Response({'message': 'Password successfully changed.'}, status=status.HTTP_200_OK)
+    
 class get_all_team(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = TeamSerializer
