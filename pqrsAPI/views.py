@@ -139,12 +139,12 @@ class get_post_pqrs(APIView):
             # parts = string.split("-")
             # number = parts[0]
             file_num = int(string) + 1
-            ed = "%04d" % ( file_num, )
+            ed = "%03d" % ( file_num, )
             d = f'{ed}-{year}'
             return d
         else:
             file_num = 1
-            ed = "%04d" % ( file_num, )
+            ed = "%03d" % ( file_num, )
             d = f'{ed}-{year}'
             return d
         
@@ -256,14 +256,14 @@ class CurrentFileNumView(APIView):
             number = parts[0]
             # num2 = parts[1]
             file_num = int(number) + 1
-            ed = "%04d" % ( file_num, )
+            ed = "%03d" % ( file_num, )
             d = f'{ed}-{year}'
 
             # print(num2)
         else:
             print("Empty")
             file_num = 1
-            ed = "%04d" % ( file_num, )
+            ed = "%03d" % ( file_num, )
             d = f'{ed}-{year}'
             # print(d)
 
