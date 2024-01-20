@@ -203,6 +203,10 @@ AUTHENTICATION_BACKENDS = [
     # 'Auth.authentication.EmailAuthBackend',
 ]
 
+DATA_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 20
+FILE_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 20
+MAX_UPLOAD_SIZE = 1024 * 1024 * 100 
+
 # FILE_UPLOAD_HANDLERS = [
 #     'django.core.files.uploadhandler.MemoryFileUploadHandler',
 #     'django.core.files.uploadhandler.TemporaryFileUploadHandler',
