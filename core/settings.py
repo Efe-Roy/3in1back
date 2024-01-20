@@ -155,6 +155,10 @@ USE_TZ = True
 # STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_URL = '/media/'
+
+
 AWS_ACCESS_KEY_ID = 'DO00PRT6ALVZRZ9YPQ8K'
 AWS_SECRET_ACCESS_KEY = 'hlzEl2qyXWgINQuvEncA0HRri0gNZLblj+WqVZ8KNqw'
 AWS_STORAGE_BUCKET_NAME = 'three-in-one-space-bucket'
@@ -198,9 +202,6 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     # 'Auth.authentication.EmailAuthBackend',
 ]
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
 
 FILE_UPLOAD_HANDLERS = [
     'django.core.files.uploadhandler.MemoryFileUploadHandler',
