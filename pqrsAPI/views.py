@@ -59,40 +59,54 @@ class In_Form_pqrs(APIView):
             raise Http404
 
     def put(self, request, pk, format=None):
-        year = datetime.now().year
         PqrsById = self.get_object(pk)
+        automated_number = self.generate_automated_number()
 
         serializer = InnerFormPqrsMaintSerializer(PqrsById, data=request.data)
         if serializer.is_valid():
-            # print("status", PqrsById.status_of_the_response.id)
-
-            get_file = FileResNum.objects.all()
-
-            if get_file.exists():
-                last_file = FileResNum.objects.all().order_by('-id').first()
-                upId = last_file.id
-                getIndex = last_file.name
-                part = getIndex.split('-')
-                desired_value = part[1]
-                file_num = int(desired_value) + 1
-                d = "RR-" + "%04d" % (file_num,) + "-" + {year}
-                # print("Men Like Roy", d)
-
-                newFile_res_num = FileResNum.objects.get(id=upId)
-                # newFile_res_num.name = request.data["file_res"]
-                newFile_res_num.name = d
-                newFile_res_num.save()
-
-            else:
-                print("getIndex is None")
-                file_num = 1
-                d = "RR-" + "%04d" % (file_num,) + "-" + {year}
-                FileResNum.objects.create(name=d)
-                # print(d)
-
+            serializer.validated_data['file_res'] = automated_number
             serializer.save()
+            self.save_automated_number(automated_number)
             return Response(serializer.data)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
+
+    def generate_automated_number(cls):
+        year = datetime.now().year
+        get_file = FileResNum.objects.all()
+
+        if get_file.exists():
+            last_file = FileResNum.objects.all().order_by('-id').first()
+            getIndex = last_file.name
+            part = getIndex.split('-')
+            desired_value = part[1]
+            file_num = int(desired_value) + 1
+            ed = "%03d" % ( file_num, )
+            d = f'RP-{ed}-{year}'
+            return d
+
+        else:
+            print("getIndex is None")
+            file_num = 1
+            ed = "%03d" % ( file_num, )
+            d = f'RP-{ed}-{year}'
+            return d
+
+    def save_automated_number(cls, numData):
+        year = datetime.now().year
+
+        existing_object = FileResNum.objects.all()
+        if existing_object.exists():
+            last_file = FileResNum.objects.all().order_by('-id')[0]
+            last_file.name = numData
+            last_file.save()
+        else:
+            file_num = 1
+            ed = "%03d" % ( file_num, )
+            d = f'RP-{ed}-{year}'
+            FileResNum.objects.create(name=d)
+
+    
+
 
 class get_post_pqrs(APIView):
     authentication_classes = [TokenAuthentication]
@@ -276,7 +290,7 @@ class FileResNumView(APIView):
         get_file = FileResNum.objects.all()
 
         if get_file.exists():
-            print("Has Data")
+            # print("Has Data")
             last_file = FileResNum.objects.all().order_by('-id').first()
             getIndex = last_file.name
             # print("xcx", getIndex)
@@ -286,20 +300,23 @@ class FileResNumView(APIView):
                 part = getIndex.split('-')
                 desired_value = part[1]
                 file_num = int(desired_value) + 1
-                ed = "%04d" % ( file_num, )
-                d = f'RR-{ed}-{year}'
+                ed = "%03d" % ( file_num, )
+                d = f'RP-{ed}-{year}'
                 # print("new File Num", d)
             else:
                 # print("getIndex is None")
                 file_num = 1
-                ed = "%04d" % ( file_num, )
+                ed = "%03d" % ( file_num, )
                 d = f'RR-{ed}-{year}'
 
         else:
-            print("getIndex is None")
+            # print("getIndex is None")
             file_num = 1
-            d = "RR-" + "%04d" % (file_num,) + "-" + {year}
-            print(d)
+            # d = "RR-" + "%04d" % (file_num,) + "-" + {year}
+            file_num = 1
+            ed = "%03d" % ( file_num, )
+            d = f'RP-{ed}-{year}'
+            # print(d)
         
         return Response(d)
 
