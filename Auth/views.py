@@ -22,6 +22,20 @@ from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnico
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 
 
+class CheckAuthenticatedView(APIView):
+    def get(self, request, format=None):
+        user = self.request.user
+
+        try:
+            isAuthenticated = user.is_authenticated
+
+            if isAuthenticated:
+                return Response({ 'isAuthenticated': 'success' })
+            else:
+                return Response({ 'isAuthenticated': 'error' })
+        except:
+            return Response({ 'error': 'Something went wrong when checking authentication status' })
+
 class SignupView(generics.GenericAPIView):
     serializer_class = SignupSerializer
     def post(self, request, *args, **kwargs):
@@ -271,6 +285,26 @@ class ChangePasswordView(APIView):
 
         return Response({'message': 'Password successfully changed.'}, status=status.HTTP_200_OK)
     
+class LogoutView(APIView):
+    def post(self, request, format=None):
+        try:
+            # auth.logout(request)
+            request.auth.delete()
+            return Response({ 'success': 'Loggout Out' })
+        except:
+            return Response({ 'error': 'Something went wrong when logging out' })
+        
+class DeleteAccountView(APIView):
+    def delete(self, request, format=None):
+        user = self.request.user
+
+        try:
+            User.objects.filter(id=user.id).delete()
+
+            return Response({ 'success': 'User deleted successfully' })
+        except:
+            return Response({ 'error': 'Something went wrong when trying to delete user' })
+ 
 class get_all_team(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = TeamSerializer

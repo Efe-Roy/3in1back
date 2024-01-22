@@ -5,17 +5,18 @@ from .views import (
     get_all_team, UserProfileDetail,
     CreateOperatorView, get_all_agent, OTPVerificationView,
     RequestPasswordResetEmail, PasswordTokenCheckAPI,
-    SetNewPasswordAPIView, ActivityTrackerView,
-    ActivateDeactivateUser, ChangePasswordView
+    SetNewPasswordAPIView, ActivityTrackerView, CheckAuthenticatedView,
+    ActivateDeactivateUser, ChangePasswordView, LogoutView
 )
 
 urlpatterns = [
+    path('api/auth/authenticated', CheckAuthenticatedView.as_view()),
     path('api/rest-auth/registration/', SignupView.as_view()),
     path('api/rest-auth/login/', CustomAuthToken.as_view(), name ='auth-token'),
-    # path('api/rest-auth/', include('rest_auth.urls')),
     path('api/userlist/', UserListView.as_view()),
     path('api/users/<int:pk>/', UserDetail.as_view()),
     path('api/rest-auth/change-password/', ChangePasswordView.as_view()),
+    path('api/logout', LogoutView.as_view()),
 
     path('api/activate-deactivate/', ActivateDeactivateUser.as_view()),
 
