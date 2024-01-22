@@ -5,7 +5,7 @@ from .views import (
     get_all_resSecType, get_all_StateType, get_post_contratacion, 
     get_details_contratacion, get_contratacion,get_filtered_contratacion, 
     NotificationView, ListUnusedValueAdded, get_prerequisite, LawFirmView,
-    create_contratacion
+    create_contratacion, get_base
     # ,
     # jsonRoy
 )
@@ -20,6 +20,7 @@ urlpatterns = [
     path('get_contratacion/', get_contratacion.as_view()),
     path('get_filtered_contratacion/', get_filtered_contratacion.as_view()),
     path('get_prerequisite/<ptR>/<acR>/<rscR>/', get_prerequisite.as_view()),
+    path('get_base/<ptR>/<rscR>/', get_base.as_view()),
     
     path('create_contratacion', create_contratacion.as_view()),
     path('get_post_contratacion', get_post_contratacion.as_view()),
