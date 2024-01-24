@@ -32,6 +32,7 @@ class User(AbstractUser):
     is_consult = models.BooleanField(default=False)
     is_ticket_admin = models.BooleanField(default=False)
     is_ticket_agent = models.BooleanField(default=False)
+    is_lawyer = models.BooleanField(default=False)
 
 class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

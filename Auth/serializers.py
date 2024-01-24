@@ -24,7 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
                 'position', 'image', 'signature', 'approve_signature', 
                 'is_organisor', 'is_team', 'is_agent', 'is_pqrs', 
                 'is_hiring', 'is_hiring_org', 'is_sisben', 'is_consult', 
-                'is_ticket_admin', 'is_ticket_agent','is_active']
+                'is_ticket_admin', 'is_ticket_agent', 'is_lawyer', 'is_active']
         
     def get_responsible_secretary(self, obj):
         return ResSecTypeSerializer(obj.responsible_secretary).data
@@ -73,7 +73,8 @@ class OperatorSignUpSerializer(serializers.ModelSerializer):
         fields = ['username', 'email', 'password', 'is_agent', 
                   'is_team', 'is_pqrs', 'is_hiring', 'is_consult',
                   'responsible_secretary', 'is_hiring_org', 'is_sisben',
-                  'is_ticket_admin', 'is_ticket_agent']
+                  'is_ticket_admin', 'is_ticket_agent', 'is_lawyer'
+                ]
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -98,6 +99,7 @@ class OperatorSignUpSerializer(serializers.ModelSerializer):
             is_consult=self.validated_data['is_consult'],
             is_ticket_admin=self.validated_data['is_ticket_admin'],
             is_ticket_agent=self.validated_data['is_ticket_agent'],
+            is_lawyer=self.validated_data['is_lawyer'],
             is_organisor=False,
             is_active = False,
         )

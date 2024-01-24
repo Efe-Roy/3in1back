@@ -3,7 +3,7 @@ from Auth.models import UserProfile, Agent, Team, User
 
 # Create your models here.
 class PoliceSubmissionLGGS(models.Model):
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'is_organisor': True})
     assign_team = models.ForeignKey(Agent, null=True, blank=True, on_delete=models.SET_NULL)
     name = models.CharField(max_length=2300, null=True)
     Id_card = models.CharField(max_length=2300, null=True)
@@ -19,7 +19,7 @@ class PoliceSubmissionLGGS(models.Model):
 
 
 class UrbanControl(models.Model):
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'is_organisor': True})
     assign_team = models.ForeignKey(Agent, null=True, blank=True, on_delete=models.SET_NULL)
     filed = models.CharField(max_length=2300, null=True)
     date_received = models.DateField(null=True, blank=True)
@@ -34,7 +34,7 @@ class UrbanControl(models.Model):
 
 
 class PoliceCompliant(models.Model):
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'is_organisor': True})
     assign_team = models.ForeignKey(Agent, null=True, blank=True, on_delete=models.SET_NULL)
     filed = models.CharField(max_length=2300, null=True)
     date_received = models.DateField(null=True, blank=True)
@@ -49,7 +49,7 @@ class PoliceCompliant(models.Model):
 
 
 class TrafficViolationCompared(models.Model):
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'is_organisor': True})
     assign_team = models.ForeignKey(Agent, null=True, blank=True, on_delete=models.SET_NULL)
     date_events = models.DateField(null=True, blank=True)
     date_received = models.DateField(null=True, blank=True)
@@ -67,7 +67,7 @@ class TrafficViolationCompared(models.Model):
 
 
 class TrafficViolationComparedMyColission(models.Model):
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'is_organisor': True})
     assign_team = models.ForeignKey(Agent, null=True, blank=True, on_delete=models.SET_NULL)
     date_received = models.DateField(null=True, blank=True)
     involved = models.CharField(max_length=2300, null=True)
@@ -81,7 +81,7 @@ class TrafficViolationComparedMyColission(models.Model):
 
 
 class ComplaintAndOfficeToAttend(models.Model):
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'is_organisor': True})
     assign_team = models.ForeignKey(Agent, null=True, blank=True, on_delete=models.SET_NULL)
     filed = models.CharField(max_length=2300, null=True)
     date_received = models.DateField(null=True, blank=True)
@@ -95,7 +95,7 @@ class ComplaintAndOfficeToAttend(models.Model):
 
 
 class File2Return2dOffice(models.Model):
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'is_organisor': True})
     assign_team = models.ForeignKey(Agent, null=True, blank=True, on_delete=models.SET_NULL)
     filed = models.CharField(max_length=2300, null=True)
     guy = models.DateField(null=True, blank=True)

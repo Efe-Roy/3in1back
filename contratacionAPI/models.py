@@ -100,7 +100,6 @@ class ContratacionMain(models.Model):
     def __str__(self):
         return str(self.contractor) or ''
     
-
 class processType(models.Model):
     name = models.CharField(max_length=310, null=True, blank=True)
 

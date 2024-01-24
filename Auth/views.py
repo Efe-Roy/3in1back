@@ -246,6 +246,10 @@ class UserListView(generics.ListAPIView):
         if is_agent:
             queryset = queryset.filter(is_agent=is_agent)
    
+        is_lawyer = self.request.query_params.get('is_lawyer', False)
+        if is_lawyer:
+            queryset = queryset.filter(is_lawyer=is_lawyer)
+   
         is_active = self.request.query_params.get('is_active', False)
         if is_active:
             queryset = queryset.filter(is_active=is_active)

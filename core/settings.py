@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     'pqrsAPI',
     'contratacionAPI',
     'InspecciónAPI',
-    # 'sisbenAPI',
+    'lawAPI',
     'ticketAPI',
     
 
