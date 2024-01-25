@@ -16,7 +16,7 @@ urlpatterns = [
     path('api/userlist/', UserListView.as_view()),
     path('api/users/<int:pk>/', UserDetail.as_view()),
     path('api/rest-auth/change-password/', ChangePasswordView.as_view()),
-    path('api/logout', LogoutView.as_view()),
+    path('api/auth/logout', LogoutView.as_view()),
 
     path('api/activate-deactivate/', ActivateDeactivateUser.as_view()),
 

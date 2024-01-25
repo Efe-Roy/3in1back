@@ -119,11 +119,15 @@ class get_post_pqrs(APIView):
     def post(self, request, format=None):
         serializer = PqrsMainSerializer(data=request.data)
         automated_number = self.generate_automated_number()
+        need_answer = request.data["need_answer"]
         # print("automated_number", automated_number)
-        # print("Data", request.data)
-
+        print("Data need_answer :-", need_answer)
+        
         if serializer.is_valid():
             serializer.validated_data['file_num'] = automated_number
+            if request.data["need_answer"] == "No":
+                serializer.validated_data['status_of_the_response'] = StatusType.objects.get(id=2)
+                
             serializer.save()
 
             self.save_automated_number(automated_number)
