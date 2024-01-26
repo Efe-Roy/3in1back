@@ -16,7 +16,7 @@ class PqrsMain(models.Model):
     expiration_date = models.DateField(null=True, blank=True)
     status_of_the_response = models.ForeignKey("StatusType", null=True, blank=True, on_delete=models.SET_NULL)
     medium_of_the_response = models.ForeignKey("MediumResType", null=True, blank=True, on_delete=models.SET_NULL)
-    date_of_response = models.DateField(auto_now_add=True)
+    date_of_response = models.DateField(null=True, blank=True)
     need_answer = models.CharField(max_length=300, null=True, blank=True)
     
     file_res = models.CharField(max_length=300, null=True, blank=True)

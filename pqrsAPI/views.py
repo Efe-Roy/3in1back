@@ -112,7 +112,19 @@ class get_post_pqrs(APIView):
     authentication_classes = [TokenAuthentication]
 
     def get(self, request, format=None):
-        queryset = PqrsMain.objects.all()
+        # queryset = PqrsMain.objects.all()
+        user = self.request.user
+        if user.is_organisor or user.is_pqrs or user.is_consult:
+            queryset = PqrsMain.objects.all().order_by('-id')
+        elif user.is_team:
+            foundObject = Team.objects.get(user_id=user.id)
+            team_id = foundObject.id
+            # print("User is_team", team_id)
+            queryset = PqrsMain.objects.filter(responsible_for_the_response_id=team_id).order_by('-id')
+        else:
+            print("User Unauthorise")
+            queryset = None
+
         serializerPqrs = AllPqrsSerializer(queryset, many=True)
         return Response( serializerPqrs.data)
 
@@ -190,15 +202,8 @@ class get_pqrs(ListCreateAPIView):
         # queryset = PqrsMain.objects.all()
 
         user = self.request.user
-        if user.is_organisor:
+        if user.is_organisor or user.is_pqrs or user.is_consult:
             queryset = PqrsMain.objects.all().order_by('-id')
-            # print("User is_organisor", user.id)
-        elif user.is_pqrs:
-            queryset = PqrsMain.objects.all().order_by('-id')
-            # print("User is_pqrs", user.username)
-        elif user.is_consult:
-            queryset = PqrsMain.objects.all().order_by('-id')
-            # print("User is_consult", user.username)
         elif user.is_team:
             foundObject = Team.objects.get(user_id=user.id)
             team_id = foundObject.id
@@ -226,6 +231,10 @@ class get_pqrs(ListCreateAPIView):
         if file_num:
             queryset = queryset.filter(file_num__icontains=file_num)
    
+        need_answer = self.request.query_params.get('need_answer', None)
+        if need_answer:
+            queryset = queryset.filter(need_answer__icontains=need_answer)
+    
         responsible_user_id = self.request.query_params.get('responsible_user_id', None)
         if responsible_user_id:
             # Filter based on the 'user' field within the 'responsible_for_the_response' Team object

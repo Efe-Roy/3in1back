@@ -10,7 +10,7 @@ class PreviousStudyModel(models.Model):
     purpose_of_activities = models.TextField()
     worth = models.IntegerField()
     term = models.IntegerField()
-    bpin_code = models.IntegerField()
+    bpin_code = models.CharField(max_length=300, null=True, blank=True)
     lawyer_role = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, limit_choices_to={'is_lawyer': True})
     pdf = models.FileField(null=True, blank=True, upload_to='pdfs/lawyer/')
     createdAt = models.DateTimeField(auto_now_add=True)
