@@ -138,7 +138,10 @@ class get_post_pqrs(APIView):
         if serializer.is_valid():
             serializer.validated_data['file_num'] = automated_number
             if request.data["need_answer"] == "No":
-                serializer.validated_data['status_of_the_response'] = StatusType.objects.get(id=2)
+                serializer.validated_data['status_of_the_response'] = StatusType.objects.get(id=3)
+            if request.data["name"] == "5" or request.data["name"] == "7":
+                serializer.validated_data['status_of_the_response'] = StatusType.objects.get(id=4)
+            
                 
             serializer.save()
 
@@ -239,6 +242,10 @@ class get_pqrs(ListCreateAPIView):
         if responsible_user_id:
             # Filter based on the 'user' field within the 'responsible_for_the_response' Team object
             queryset = queryset.filter(responsible_for_the_response__user_id=responsible_user_id)
+        
+        status_of_the_response = self.request.query_params.get('status_of_the_response', None)
+        if status_of_the_response:
+            queryset = queryset.filter(status_of_the_response_id =status_of_the_response)
         
    
         return queryset

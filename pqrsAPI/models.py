@@ -20,7 +20,7 @@ class PqrsMain(models.Model):
     need_answer = models.CharField(max_length=300, null=True, blank=True)
     
     file_res = models.CharField(max_length=300, null=True, blank=True)
-    comment = models.CharField(max_length=300, null=True, blank=True)
+    comment = models.TextField(null=True, blank=True)
     pdf = models.FileField(null=True, blank=True, upload_to='pdfs/pqrs/')
     
 
