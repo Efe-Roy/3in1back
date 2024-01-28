@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'InspecciónAPI',
     'lawAPI',
     'ticketAPI',
+    'sisbenAPI',
     
 
     # API SetUp

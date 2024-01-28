@@ -7,6 +7,11 @@ class LocationTypeSerializer(serializers.ModelSerializer):
         model = LocationType
         fields = '__all__'
 
+class SisbenMainSerializer3(serializers.ModelSerializer):
+    class Meta:
+        model = SisbenMain
+        fields = ('citizenship_card')
+
 class SisbenMainSerializer2(serializers.ModelSerializer):
     class Meta:
         model = SisbenMain

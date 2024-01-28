@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (
-get_all_entityType, get_all_nameType, 
+get_all_entityType, get_all_nameType, DashboardView,
 get_post_pqrs, get_details_pqrs, get_all_pqrs2, CurrentFileNumView,
 FileResNumView, get_all_mediumRes, In_Form_pqrs, get_pqrs, get_all_statuType, PqrsNotifyView
 )
@@ -19,6 +19,7 @@ urlpatterns = [
     path('get_fileRes', FileResNumView.as_view()),
     path('post_inpqrs/<pk>/', In_Form_pqrs.as_view()),
 
+    path('dashboard', DashboardView.as_view()),
 
     path('pqrs_notify', PqrsNotifyView.as_view()),
 ]

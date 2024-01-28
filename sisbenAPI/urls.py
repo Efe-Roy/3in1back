@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import get_sisben, delete_data, post_sisben, get_all_location, detail_update_sisben, SendWhatsAppMessage, SendBulkWhatsAppMessages, broadcast_sms
+from .views import get_sisben, delete_data, FilterDuplicatesAPIView, post_sisben, get_all_location, detail_update_sisben, SendWhatsAppMessage, SendBulkWhatsAppMessages, broadcast_sms
 
 urlpatterns = [
     path('get_sisben/', get_sisben.as_view()),
@@ -9,6 +9,7 @@ urlpatterns = [
     path('delete_data/', delete_data, name='delete_data'),
     path('send_whatsapp/', SendWhatsAppMessage.as_view()),
     path('send_bulk_whatsapp/', SendBulkWhatsAppMessages.as_view()),
+    path('filter_duplicates/', FilterDuplicatesAPIView.as_view()),
 
     path(r'broadcast', broadcast_sms, name="default"),
 ]

@@ -3,7 +3,7 @@ from django.shortcuts import render
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import ( ListCreateAPIView, ListAPIView )
-from .serializers import SisbenMainSerializer, LocationTypeSerializer, SisbenMainSerializer2
+from .serializers import SisbenMainSerializer, LocationTypeSerializer, SisbenMainSerializer2, SisbenMainSerializer3
 from .models import SisbenMain, LocationType
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -22,7 +22,7 @@ from multiprocessing import cpu_count
 import time
 from twilio.base.exceptions import TwilioRestException
 from django.http import HttpResponse
-
+from django.db.models import Count
 
 # Create your views here.
 class CustomPagination(PageNumberPagination):
@@ -47,6 +47,21 @@ class get_sisben(ListCreateAPIView):
             queryset = queryset.filter(citizenship_card__icontains=citizenship_card)
    
         return queryset
+
+class FilterDuplicatesAPIView(ListCreateAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = SisbenMainSerializer2
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+         # Annotate the queryset with the count of each citizenship_card value
+        queryset = SisbenMain.objects.values('citizenship_card').annotate(count=Count('citizenship_card'))
+
+        # Filter the queryset to include only duplicate citizenship_card values
+        duplicate_cards = [obj['citizenship_card'] for obj in queryset if obj['count'] > 1]
+        
+        # Return queryset filtered by duplicate citizenship_card values
+        return SisbenMain.objects.filter(citizenship_card__in=duplicate_cards)
 
 
 class post_sisben(APIView):
@@ -78,11 +93,25 @@ class detail_update_sisben(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
 
-    # def delete(self, request, pk, format=None):
-    #     PqrsById = self.get_object(pk)
-    #     PqrsById.delete()
-    #     return Response(status= HTTP_204_NO_CONTENT)
+    def delete(self, request, pk, format=None):
+        queryset = self.get_object(pk)
+        queryset.delete()
+        return Response(status= HTTP_204_NO_CONTENT)
 
+# class FilterDuplicatesAPIView(APIView):
+#     def get(self, request):
+#         # Retrieve all objects from the database
+#         all_objects = SisbenMain.objects.all()
+        
+#         # Filter out duplicate entries based on the 'citizenship_card' field
+#         unique_objects = all_objects.distinct('citizenship_card')
+
+#         # Serialize the unique_objects
+#         serializer = SisbenMainSerializer3(unique_objects, many=True)
+
+#         # Return the serialized data
+#         return Response(serializer.data)
+    
 class get_all_location(ListAPIView):
     permission_classes = (AllowAny,)
     serializer_class = LocationTypeSerializer

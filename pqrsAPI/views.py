@@ -11,6 +11,7 @@ from .serializers import (PqrsMainSerializer, EntityTypeSerializer, PqrsNotifySe
 from .models import PqrsMain, EntityType, NameType, MediumResType, FileResNum, StatusType, PqrsNotifify, PqrsFileNum
 from Auth.models import Agent, Team
 from datetime import datetime
+from django.db.models import Count
 
 from rest_framework.views import APIView
 from django.http import Http404
@@ -247,9 +248,71 @@ class get_pqrs(ListCreateAPIView):
         if status_of_the_response:
             queryset = queryset.filter(status_of_the_response_id =status_of_the_response)
         
-   
         return queryset
+    
 
+# class DashboardView(APIView):
+#     def get(self, request, format=None):
+        queryset = PqrsMain.objects.all()
+
+        State_type_counts = queryset.values('entity_or_position__name').annotate(entity_or_position_count=Count('entity_or_position'))
+        summed_counts = {}
+
+        for item in State_type_counts:
+            entity_or_position_name = item["entity_or_position__name"]
+            entity_or_position_count = item["entity_or_position_count"]
+
+            if entity_or_position_name not in summed_counts:
+                summed_counts[entity_or_position_name] = entity_or_position_count
+            else:
+                summed_counts[entity_or_position_name] += entity_or_position_count
+
+        result = [{"entity_or_position__name": entity_or_position_name, "entity_or_position_count": count} for entity_or_position_name, count in summed_counts.items()]
+
+        response_data = {
+            'entity_or_position': result,
+        }
+        return Response(response_data)
+    
+
+class DashboardView(APIView):
+    def get(self, request, format=None):
+        # Get all distinct values from model
+        all_entity_types = EntityType.objects.values_list('name', flat=True)
+        all_name_types = NameType.objects.values_list('name', flat=True)
+        all_status_type = StatusType.objects.values_list('name', flat=True)
+
+        # Aggregate counts based on field
+        aggregated_counts = PqrsMain.objects.values('entity_or_position__name').annotate(count=Count('id'))
+        name_aggregated_counts = PqrsMain.objects.values('name__name').annotate(count=Count('id'))
+        status_aggregated_counts = PqrsMain.objects.values('status_of_the_response__name').annotate(count=Count('id'))
+
+        # Create a dictionary to store counts for each 
+        counts_dict = {item['entity_or_position__name']: item['count'] for item in aggregated_counts}
+        name_counts_dict = {item['name__name']: item['count'] for item in name_aggregated_counts}
+        status_counts_dict = {item['status_of_the_response__name']: item['count'] for item in status_aggregated_counts}
+
+        # Create a list of dictionaries with all values and their counts
+        result = [{"entity_or_position__name": entity_type, "entity_or_position_count": counts_dict.get(entity_type, 0)} for entity_type in all_entity_types]
+        result_name = [{"name__name": name_type, "mame_count": name_counts_dict.get(name_type, 0)} for name_type in all_name_types]
+        result_status = [{"status_name": status_type, "status_count": status_counts_dict.get(status_type, 0)} for status_type in all_status_type]
+
+
+
+
+        # Count instances where need_answer
+        yes_count = PqrsMain.objects.filter(need_answer="Sí").count()
+        no_count = PqrsMain.objects.filter(need_answer="No").count()
+
+        response_data = {
+            'entity_or_position': result,
+            'name': result_name,
+            'status_of_the_response': result_status,
+            'yes_count': yes_count,
+            'no_count': no_count,
+        }
+        return Response(response_data)
+    
 class get_details_pqrs(APIView):
     def get_object(self, pk):
         try:
