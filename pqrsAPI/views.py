@@ -66,6 +66,8 @@ class In_Form_pqrs(APIView):
         serializer = InnerFormPqrsMaintSerializer(PqrsById, data=request.data)
         if serializer.is_valid():
             serializer.validated_data['file_res'] = automated_number
+            serializer.validated_data['date_of_response'] = datetime.now().date()
+            print("as", datetime.now())
             serializer.save()
             self.save_automated_number(automated_number)
             return Response(serializer.data)
@@ -214,7 +216,7 @@ class get_pqrs(ListCreateAPIView):
             # print("User is_team", team_id)
             queryset = PqrsMain.objects.filter(responsible_for_the_response_id=team_id).order_by('-id')
         else:
-            print("User Unauthorise")
+            # print("User Unauthorise")
             queryset = None
 
 
@@ -250,28 +252,59 @@ class get_pqrs(ListCreateAPIView):
         
         return queryset
     
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
 
-# class DashboardView(APIView):
-#     def get(self, request, format=None):
-        queryset = PqrsMain.objects.all()
+        # Get all distinct values from model
+        all_entity_types = EntityType.objects.values_list('name', flat=True)
+        all_name_types = NameType.objects.values_list('name', flat=True)
+        all_status_type = StatusType.objects.values_list('name', flat=True)
 
-        State_type_counts = queryset.values('entity_or_position__name').annotate(entity_or_position_count=Count('entity_or_position'))
-        summed_counts = {}
+        # Aggregate counts based on field
+        aggregated_counts = queryset.values('entity_or_position__name').annotate(count=Count('id'))
+        name_aggregated_counts = queryset.values('name__name').annotate(count=Count('id'))
+        status_aggregated_counts = queryset.values('status_of_the_response__name').annotate(count=Count('id'))
 
-        for item in State_type_counts:
-            entity_or_position_name = item["entity_or_position__name"]
-            entity_or_position_count = item["entity_or_position_count"]
+        # Create a dictionary to store counts for each 
+        counts_dict = {item['entity_or_position__name']: item['count'] for item in aggregated_counts}
+        name_counts_dict = {item['name__name']: item['count'] for item in name_aggregated_counts}
+        status_counts_dict = {item['status_of_the_response__name']: item['count'] for item in status_aggregated_counts}
 
-            if entity_or_position_name not in summed_counts:
-                summed_counts[entity_or_position_name] = entity_or_position_count
-            else:
-                summed_counts[entity_or_position_name] += entity_or_position_count
+        # Create a list of dictionaries with all values and their counts
+        result = [{"entity_or_position__name": entity_type, "entity_or_position_count": counts_dict.get(entity_type, 0)} for entity_type in all_entity_types]
+        result_name = [{"name__name": name_type, "mame_count": name_counts_dict.get(name_type, 0)} for name_type in all_name_types]
+        result_status = [{"status_name": status_type, "status_count": status_counts_dict.get(status_type, 0)} for status_type in all_status_type]
 
-        result = [{"entity_or_position__name": entity_or_position_name, "entity_or_position_count": count} for entity_or_position_name, count in summed_counts.items()]
 
+         # Count instances where need_answer
+        yes_count = queryset.filter(need_answer="Sí").count()
+        no_count = queryset.filter(need_answer="No").count()
+
+
+        # Paginate the queryset
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            response_data = {
+                'results': serializer.data,
+                'entity_or_position': result,
+                'name': result_name,
+                'status_of_the_response': result_status,
+                'yes_count': yes_count,
+                'no_count': no_count,
+            }
+            return self.get_paginated_response(response_data)
+
+        serializer = self.get_serializer(queryset, many=True)
         response_data = {
+            'results': serializer.data,
             'entity_or_position': result,
+            'name': result_name,
+            'status_of_the_response': result_status,
+            'yes_count': yes_count,
+            'no_count': no_count,
         }
+
         return Response(response_data)
     
 
