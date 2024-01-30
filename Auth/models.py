@@ -26,6 +26,7 @@ class User(AbstractUser):
     is_team = models.BooleanField(default=False)
     is_pqrs = models.BooleanField(default=False)
     is_agent = models.BooleanField(default=False)
+    is_agent_org = models.BooleanField(default=False)
     is_hiring = models.BooleanField(default=False)
     is_hiring_org = models.BooleanField(default=False)
     is_sisben = models.BooleanField(default=False)

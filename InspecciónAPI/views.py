@@ -47,10 +47,7 @@ class PoliceCompliantView(APIView):
         # queryset = PoliceCompliant.objects.all()
 
         user = self.request.user
-        if user.is_organisor:
-            queryset = PoliceCompliant.objects.all().order_by('-id')
-            # print("User is_organisor", user.id)
-        elif user.is_consult:
+        if user.is_organisor or user.is_agent_org or user.is_consult:
             queryset = PoliceCompliant.objects.all().order_by('-id')
         elif user.is_agent:
             foundObject = Agent.objects.get(user_id=user.id)
@@ -151,12 +148,8 @@ class UrbanControlView(APIView):
         # queryset = UrbanControl.objects.all().order_by('-id')
 
         user = self.request.user
-        if user.is_organisor:
+        if user.is_organisor or user.is_agent_org or user.is_consult:
             queryset = UrbanControl.objects.all().order_by('-id')
-            # print("User is_organisor", user.id)
-        elif user.is_consult:
-            queryset = UrbanControl.objects.all().order_by('-id')
-            # print("User is_organisor", user.id)
         elif user.is_agent:
             foundObject = Agent.objects.get(user_id=user.id)
             agent_id = foundObject.id
@@ -230,12 +223,8 @@ class PoliceSubmissionLGGSView(APIView):
         # queryset = PoliceSubmissionLGGS.objects.all().order_by('-id')
 
         user = self.request.user
-        if user.is_organisor:
+        if user.is_organisor or user.is_agent_org or user.is_consult:
             queryset = PoliceSubmissionLGGS.objects.all().order_by('-id')
-            # print("User is_organisor", user.id)
-        elif user.is_consult:
-            queryset = PoliceSubmissionLGGS.objects.all().order_by('-id')
-            # print("User is_organisor", user.id)
         elif user.is_agent:
             foundObject = Agent.objects.get(user_id=user.id)
             agent_id = foundObject.id
@@ -308,12 +297,8 @@ class TrafficViolationComparedView(APIView):
         # queryset = TrafficViolationCompared.objects.all().order_by('-id')
 
         user = self.request.user
-        if user.is_organisor:
+        if user.is_organisor or user.is_agent_org or user.is_consult:
             queryset = TrafficViolationCompared.objects.all().order_by('-id')
-            # print("User is_organisor", user.id)
-        elif user.is_consult:
-            queryset = TrafficViolationCompared.objects.all().order_by('-id')
-            # print("User is_organisor", user.id)
         elif user.is_agent:
             foundObject = Agent.objects.get(user_id=user.id)
             agent_id = foundObject.id
@@ -386,12 +371,8 @@ class TrafficViolationComparedMyColissionView(APIView):
         # queryset = TrafficViolationComparedMyColission.objects.all().order_by('-id')
 
         user = self.request.user
-        if user.is_organisor:
+        if user.is_organisor or user.is_agent_org or user.is_consult:
             queryset = TrafficViolationComparedMyColission.objects.all().order_by('-id')
-            # print("User is_organisor", user.id)
-        elif user.is_consult:
-            queryset = TrafficViolationComparedMyColission.objects.all().order_by('-id')
-            # print("User is_organisor", user.id)
         elif user.is_agent:
             foundObject = Agent.objects.get(user_id=user.id)
             agent_id = foundObject.id
@@ -465,12 +446,8 @@ class ComplaintAndOfficeToAttendView(APIView):
         # queryset = ComplaintAndOfficeToAttend.objects.all().order_by('-id')
 
         user = self.request.user
-        if user.is_organisor:
+        if user.is_organisor or user.is_agent_org or user.is_consult:
             queryset = ComplaintAndOfficeToAttend.objects.all().order_by('-id')
-            # print("User is_organisor", user.id)
-        elif user.is_consult:
-            queryset = ComplaintAndOfficeToAttend.objects.all().order_by('-id')
-            # print("User is_organisor", user.id)
         elif user.is_agent:
             foundObject = Agent.objects.get(user_id=user.id)
             agent_id = foundObject.id
@@ -544,12 +521,8 @@ class File2Return2dOfficeView(APIView):
         # queryset = File2Return2dOffice.objects.all().order_by('-id')
 
         user = self.request.user
-        if user.is_organisor:
+        if user.is_organisor or user.is_agent_org or user.is_consult:
             queryset = File2Return2dOffice.objects.all().order_by('-id')
-            # print("User is_organisor", user.id)
-        elif user.is_consult:
-            queryset = File2Return2dOffice.objects.all().order_by('-id')
-            # print("User is_organisor", user.id)
         elif user.is_agent:
             foundObject = Agent.objects.get(user_id=user.id)
             agent_id = foundObject.id
@@ -624,12 +597,8 @@ class InspNotifyView(APIView):
         # queryset = InspNotifify.objects.all()
 
         user = self.request.user
-        if user.is_organisor:
+        if user.is_organisor or user.is_agent_org or user.is_consult:
             queryset = InspNotifify.objects.all().order_by('-id')
-            # print("User is_organisor", user.id)
-        elif user.is_consult:
-            queryset = InspNotifify.objects.all().order_by('-id')
-            # print("User is_organisor", user.id)
         elif user.is_agent:
             foundObject = Agent.objects.get(user_id=user.id)
             agent_id = foundObject.id
@@ -697,7 +666,7 @@ class InspUserListView(ListCreateAPIView):
 
     def get_queryset(self):
         # queryset = Agent.objects.all().order_by('-id')
-        if self.request.user.is_organisor:
+        if self.request.user.is_organisor or self.request.user.is_agent_org:
             queryset = Agent.objects.all().order_by('-id')
         else:
             queryset = None
@@ -718,7 +687,7 @@ class ListSelectedFilteredData(ListCreateAPIView):
     pagination_class = CustomPageNumberPagination
 
     def get_queryset(self):
-        if self.request.user.is_organisor:
+        if self.request.user.is_organisor or self.request.user.is_agent_org:
             queryset = FilterSelection.objects.all().order_by('-id')
         else:
             queryset = FilterSelection.objects.filter(assign_team__user=self.request.user).order_by('-id')

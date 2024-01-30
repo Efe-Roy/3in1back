@@ -11,9 +11,12 @@ class PoliceSubmissionLGGS(models.Model):
     act_num = models.CharField(max_length=2300, null=True)
     type_of_identification = models.CharField(max_length=2300, null=True)
 
+    # Respone Feedback
     comment = models.CharField(max_length=2300, blank=True, null=True)
     file_res = models.CharField(max_length=2300, blank=True, null=True)
     pdf = models.FileField(null=True, blank=True, upload_to='pdfs/PoliceSubmissionLGGS/')
+    insp_res = models.CharField(max_length=2300, blank=True, null=True)
+    
 
     status_track = models.BooleanField(default=False)
 
@@ -26,9 +29,11 @@ class UrbanControl(models.Model):
     Involved_applicant = models.CharField(max_length=2300, null=True)
     res_report = models.CharField(max_length=2300, null=True)
 
+    # Respone Feedback
     comment = models.CharField(max_length=2300, blank=True, null=True)
     file_res = models.CharField(max_length=2300, blank=True, null=True)
     pdf = models.FileField(null=True, blank=True, upload_to='pdfs/urbancontrol/')
+    insp_res = models.CharField(max_length=2300, blank=True, null=True)
 
     status_track = models.BooleanField(default=False)
 
@@ -41,9 +46,11 @@ class PoliceCompliant(models.Model):
     complainants = models.CharField(max_length=2300, null=True)
     defendants = models.CharField(max_length=2300, null=True)
 
+    # Respone Feedback
     comment = models.CharField(max_length=2300, blank=True, null=True)
     file_res = models.CharField(max_length=2300, blank=True, null=True)
     pdf = models.FileField(null=True, blank=True, upload_to='pdfs/PoliceCompliant/')
+    insp_res = models.CharField(max_length=2300, blank=True, null=True)
 
     status_track = models.BooleanField(default=False)
 
@@ -59,9 +66,11 @@ class TrafficViolationCompared(models.Model):
     res_procedure = models.CharField(max_length=2300, null=True)
     compare_number = models.CharField(max_length=2300, null=True) #new....
 
+    # Respone Feedback
     comment = models.CharField(max_length=2300, blank=True, null=True)
     file_res = models.CharField(max_length=2300, blank=True, null=True)
     pdf = models.FileField(null=True, blank=True, upload_to='pdfs/TrafficViolationCompared/')
+    insp_res = models.CharField(max_length=2300, blank=True, null=True)
 
     status_track = models.BooleanField(default=False)
 
@@ -73,9 +82,11 @@ class TrafficViolationComparedMyColission(models.Model):
     involved = models.CharField(max_length=2300, null=True)
     res_procedure = models.CharField(max_length=2300, null=True)
 
+    # Respone Feedback
     comment = models.CharField(max_length=2300, blank=True, null=True)
     file_res = models.CharField(max_length=2300, blank=True, null=True)
     pdf = models.FileField(null=True, blank=True, upload_to='pdfs/TrafficViolationComparedMyColission/')
+    insp_res = models.CharField(max_length=2300, blank=True, null=True)
 
     status_track = models.BooleanField(default=False)
 
@@ -87,9 +98,11 @@ class ComplaintAndOfficeToAttend(models.Model):
     date_received = models.DateField(null=True, blank=True)
     affair = models.CharField(max_length=2300, null=True)
 
+    # Respone Feedback
     comment = models.CharField(max_length=2300, blank=True, null=True)
     file_res = models.CharField(max_length=2300, blank=True, null=True)
     pdf = models.FileField(null=True, blank=True, upload_to='pdfs/ComplaintAndOfficeToAttend/')
+    insp_res = models.CharField(max_length=2300, blank=True, null=True)
 
     status_track = models.BooleanField(default=False)
 
@@ -101,9 +114,11 @@ class File2Return2dOffice(models.Model):
     guy = models.DateField(null=True, blank=True)
     involved = models.CharField(max_length=2300, null=True)
 
+    # Respone Feedback
     comment = models.CharField(max_length=2300, blank=True, null=True)
     file_res = models.CharField(max_length=2300, blank=True, null=True)
     pdf = models.FileField(null=True, blank=True, upload_to='pdfs/File2Return2dOffice/')
+    insp_res = models.CharField(max_length=2300, blank=True, null=True)
 
     status_track = models.BooleanField(default=False)
 

@@ -128,6 +128,7 @@ class CustomAuthToken(ObtainAuthToken):
             "is_organisor": user.is_organisor,
             "is_team": user.is_team,
             "is_agent": user.is_agent,
+            "is_agent_org": user.is_agent_org,
             "is_pqrs": user.is_pqrs,
             "is_hiring": user.is_hiring,
             "is_hiring_org": user.is_hiring_org,

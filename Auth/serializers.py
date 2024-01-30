@@ -22,7 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields=['id', 'username', 'first_name', 'last_name', 'email', 
                 'responsible_secretary',
                 'position', 'image', 'signature', 'approve_signature', 
-                'is_organisor', 'is_team', 'is_agent', 'is_pqrs', 
+                'is_organisor', 'is_team', 'is_agent', 'is_agent_org', 'is_pqrs', 
                 'is_hiring', 'is_hiring_org', 'is_sisben', 'is_consult', 
                 'is_ticket_admin', 'is_ticket_agent', 'is_lawyer', 'is_active']
         
@@ -70,7 +70,7 @@ class SignupSerializer(serializers.ModelSerializer):
 class OperatorSignUpSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'is_agent', 
+        fields = ['username', 'email', 'password', 'is_agent', 'is_agent_org',
                   'is_team', 'is_pqrs', 'is_hiring', 'is_consult',
                   'responsible_secretary', 'is_hiring_org', 'is_sisben',
                   'is_ticket_admin', 'is_ticket_agent', 'is_lawyer'
@@ -91,6 +91,7 @@ class OperatorSignUpSerializer(serializers.ModelSerializer):
             responsible_secretary=self.validated_data['responsible_secretary'],
             email=email,
             is_agent=self.validated_data['is_agent'],
+            is_agent_org=self.validated_data['is_agent_org'],
             is_team=self.validated_data['is_team'],
             is_pqrs=self.validated_data['is_pqrs'],
             is_hiring=self.validated_data['is_hiring'],
