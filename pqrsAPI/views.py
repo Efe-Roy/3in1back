@@ -118,15 +118,19 @@ class get_post_pqrs(APIView):
         # queryset = PqrsMain.objects.all()
         user = self.request.user
         if user.is_organisor or user.is_pqrs or user.is_consult:
-            queryset = PqrsMain.objects.all().order_by('-id')
+            queryset = PqrsMain.objects.all()
         elif user.is_team:
             foundObject = Team.objects.get(user_id=user.id)
             team_id = foundObject.id
             # print("User is_team", team_id)
-            queryset = PqrsMain.objects.filter(responsible_for_the_response_id=team_id).order_by('-id')
+            queryset = PqrsMain.objects.filter(responsible_for_the_response_id=team_id)
         else:
             print("User Unauthorise")
             queryset = None
+
+
+        # Order the queryset by id
+        queryset = queryset.order_by('-id')
 
         serializerPqrs = AllPqrsSerializer(queryset, many=True)
         return Response( serializerPqrs.data)
@@ -209,12 +213,12 @@ class get_pqrs(ListCreateAPIView):
 
         user = self.request.user
         if user.is_organisor or user.is_pqrs or user.is_consult:
-            queryset = PqrsMain.objects.all().order_by('-id')
+            queryset = PqrsMain.objects.all()
         elif user.is_team:
             foundObject = Team.objects.get(user_id=user.id)
             team_id = foundObject.id
             # print("User is_team", team_id)
-            queryset = PqrsMain.objects.filter(responsible_for_the_response_id=team_id).order_by('-id')
+            queryset = PqrsMain.objects.filter(responsible_for_the_response_id=team_id)
         else:
             # print("User Unauthorise")
             queryset = None
@@ -280,6 +284,9 @@ class get_pqrs(ListCreateAPIView):
         yes_count = queryset.filter(need_answer="Sí").count()
         no_count = queryset.filter(need_answer="No").count()
 
+
+        # Order the queryset by id
+        queryset = queryset.order_by('-id')
 
         # Paginate the queryset
         page = self.paginate_queryset(queryset)
