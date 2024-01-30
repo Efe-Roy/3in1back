@@ -3,8 +3,8 @@ from django.db import models
 # Create your models here.
 
 class SisbenMain(models.Model):
-    # citizenship_card = models.CharField(max_length=100, unique=True, null=True, blank=True)
-    citizenship_card = models.CharField(max_length=100, null=True, blank=True)
+    citizenship_card = models.CharField(max_length=100, unique=True, null=True, blank=True)
+    # citizenship_card = models.CharField(max_length=100, null=True, blank=True)
     full_name = models.CharField(max_length=150, null=True, blank=True)
     cell_phone = models.CharField(max_length=20, null=True, blank=True)
     location = models.ForeignKey("LocationType", null=True, blank=True, on_delete=models.SET_NULL)
