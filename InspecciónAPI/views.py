@@ -39,6 +39,7 @@ from django.utils import timezone
 from django.shortcuts import get_object_or_404
 import pytz
 from datetime import datetime
+from django.core.files.base import ContentFile
 
 # Create your views here.   
 class PoliceCompliantView(APIView):
@@ -878,19 +879,19 @@ class FilterDataView(APIView):
             pdf_filename1 = f'AUTO_DE_REPARTO_{carNum}.pdf'
             pdf_filename2 = f'NOTIFICACIÓN_{carNum}.pdf'
 
-            # Save the PDF1 to the media directory 1
-            pdf_file_path = os.path.join(settings.MEDIA_ROOT, 'AUTO_DE_REPARTO_pdfs', pdf_filename1)
-            os.makedirs(os.path.dirname(pdf_file_path), exist_ok=True)
+            # # Save the PDF1 to the media directory 1
+            # pdf_file_path = os.path.join(settings.MEDIA_ROOT, 'AUTO_DE_REPARTO_pdfs', pdf_filename1)
+            # os.makedirs(os.path.dirname(pdf_file_path), exist_ok=True)
 
-            with open(pdf_file_path, 'wb') as pdf_file:
-                pdf_file.write(result.getvalue())
+            # with open(pdf_file_path, 'wb') as pdf_file:
+            #     pdf_file.write(result.getvalue())
 
-            # Save the PDF2 to the media directory 2
-            pdf_file_path2 = os.path.join(settings.MEDIA_ROOT, 'NOTIFICACIÓN_pdfs', pdf_filename2)
-            os.makedirs(os.path.dirname(pdf_file_path2), exist_ok=True)
+            # # Save the PDF2 to the media directory 2
+            # pdf_file_path2 = os.path.join(settings.MEDIA_ROOT, 'NOTIFICACIÓN_pdfs', pdf_filename2)
+            # os.makedirs(os.path.dirname(pdf_file_path2), exist_ok=True)
 
-            with open(pdf_file_path2, 'wb') as pdf_file2:
-                pdf_file2.write(result2.getvalue())
+            # with open(pdf_file_path2, 'wb') as pdf_file2:
+            #     pdf_file2.write(result2.getvalue())
 
 
             # Send the PDF via email
@@ -910,9 +911,11 @@ class FilterDataView(APIView):
             filter_selection = FilterSelection(
                 car_num= carNum,
                 assign_team= agent,
-                creator=request.user,  # Set this to the current user
+                creator=request.user, 
                 filename= pdf_filename1,
+                pdf_fn1= ContentFile(result.getvalue(), name=pdf_filename1),
                 filename2= pdf_filename2,
+                pdf_fn2= ContentFile(result.getvalue(), name=pdf_filename2),
                 selected_urban_control_ids=','.join(map(str, urbanControl_ids)),
                 selected_police_compliant_ids=','.join(map(str, policeCompliant_ids)),
                 selected_policeSubmissionLGGS_ids=','.join(map(str, policeSubmissionLGGS_ids)),
