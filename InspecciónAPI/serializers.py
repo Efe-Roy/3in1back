@@ -197,7 +197,7 @@ class FilterSelectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = FilterSelection
         fields = [
-            'id', 'car_num', 'assign_team', 'creator', 
+            'id', 'car_num', 'assign_team', 'creator', 'pdf_fn1', 'pdf_fn2',
             'filename', 'filename2', 'selected_urban_control_ids', 'selected_police_compliant_ids', 
             'selected_policeSubmissionLGGS_ids', 'selected_trafficViolationCompared_ids', 
             'selected_trafficViolationComparedMyColission_ids', 'selected_complaintAndOfficeToAttend_ids', 
