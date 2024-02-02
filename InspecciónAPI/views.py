@@ -1284,7 +1284,7 @@ class FilteredDataDetailUpdateView(APIView):
 
                 # Update seleted data
                 filter_selection.pdf_fn1 = ContentFile(result.getvalue(), name=pdf_filename1)
-                filter_selection.pdf_fn2= ContentFile(result.getvalue(), name=pdf_filename2)
+                filter_selection.pdf_fn2= ContentFile(result2.getvalue(), name=pdf_filename2)
                 filter_selection.filename= pdf_filename1
                 filter_selection.filename2= pdf_filename2
                 filter_selection.save()
