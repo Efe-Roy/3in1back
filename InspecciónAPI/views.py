@@ -697,6 +697,8 @@ class ListSelectedFilteredData(ListCreateAPIView):
 
 class UltimateView(APIView):
     def get(self, request, pk, format=None):
+        carNum = self.fetch_CarNum()
+
         # Filter and serialize each queryset separately
         queryset1 = UrbanControl.objects.filter(assign_team_id=pk)
         serializer1 = UrbanControlSerializer2(queryset1, many=True)
@@ -728,6 +730,7 @@ class UltimateView(APIView):
             'traffic_violation_compared_my_colission': serializer5.data,
             'complaint_and_office_to_attend': serializer6.data,
             'file_2_return_2d_office': serializer7.data,
+            'carnum': carNum
         }
 
         return Response(serialized_data)
@@ -763,6 +766,31 @@ class UltimateView(APIView):
 
         return Response(status=status.HTTP_204_NO_CONTENT)
     
+    def fetch_CarNum(self):
+        get_num_file = CarNumber.objects.all()
+        year = datetime.now().year
+
+        if get_num_file.exists():
+            last_file = CarNumber.objects.all().order_by('-id')[0]
+            string = last_file.name
+
+            if "-" in string:
+                year_part = int(string.split('-')[-1])
+                if year_part >= year:
+                    numeric_part = int(string.split('-')[-2])
+                    plus_1 = numeric_part + 1
+                    count_str = str(plus_1).zfill(3)
+                    return f'{count_str}-{year}'
+                else:
+                    file_num = 1
+                    ed = "%04d" % ( file_num, )
+                    return f'{ed}-{year}'
+            else:
+                file_num = 1
+                ed = "%04d" % ( file_num, )
+                return f'{ed}-{year}'
+        
+    
 month_mapping = {
     'January': 'enero',
     'February': 'febrero',
@@ -778,6 +806,107 @@ month_mapping = {
     'December': 'diciembre',
 }
 
+class FilterSelectCreateView(APIView):
+    def post(self, request, *args, **kwargs):
+        carNum = self.fetch_CarNum()
+        assign_agent_id = request.data.get('assign_agent_id', None)
+        agent = Agent.objects.get(id=assign_agent_id)
+
+        urbanControl_ids = request.data.get('urbanControl_IDs', [])
+        policeCompliant_ids = request.data.get('policeCompliant_IDs', [])
+        policeSubmissionLGGS_ids = request.data.get('policeSubmissionLGGS_IDs', [])
+        trafficViolationCompared_ids = request.data.get('trafficViolationCompared_IDs', [])
+        trafficViolationComparedMyColission_ids = request.data.get('trafficViolationComparedMyColission_IDs', [])
+        complaintAndOfficeToAttend_ids = request.data.get('complaintAndOfficeToAttend_IDs', [])
+        file2Return2dOffice_ids = request.data.get('file2Return2dOffice_IDs', [])
+
+        # Save track selected data
+        filter_selection = FilterSelection(
+            car_num= carNum,
+            assign_team= agent,
+            creator=request.user, 
+            # filename= pdf_filename1,
+            # pdf_fn1= ContentFile(result.getvalue(), name=pdf_filename1),
+            # filename2= pdf_filename2,
+            # pdf_fn2= ContentFile(result.getvalue(), name=pdf_filename2),
+            selected_urban_control_ids=','.join(map(str, urbanControl_ids)),
+            selected_police_compliant_ids=','.join(map(str, policeCompliant_ids)),
+            selected_policeSubmissionLGGS_ids=','.join(map(str, policeSubmissionLGGS_ids)),
+            selected_trafficViolationCompared_ids=','.join(map(str, trafficViolationCompared_ids)),
+            selected_trafficViolationComparedMyColission_ids=','.join(map(str, trafficViolationComparedMyColission_ids)),
+            selected_complaintAndOfficeToAttend_ids=','.join(map(str, complaintAndOfficeToAttend_ids)),
+            selected_file2Return2dOffice_ids =','.join(map(str, file2Return2dOffice_ids)),
+        )
+        filter_selection.save()
+
+        # UPDATE CarNum
+        self.update_CarNum()
+
+        return Response({'msg': 'Create Successfully'}, status=status.HTTP_200_OK)
+    
+    def fetch_CarNum(self):
+        get_num_file = CarNumber.objects.all()
+        year = datetime.now().year
+
+        if get_num_file.exists():
+            last_file = CarNumber.objects.all().order_by('-id')[0]
+            string = last_file.name
+
+            if "-" in string:
+                year_part = int(string.split('-')[-1])
+                if year_part >= year:
+                    numeric_part = int(string.split('-')[-2])
+                    plus_1 = numeric_part + 1
+                    count_str = str(plus_1).zfill(3)
+                    return f'{count_str}-{year}'
+                else:
+                    file_num = 1
+                    ed = "%04d" % ( file_num, )
+                    return f'{ed}-{year}'
+            else:
+                file_num = 1
+                ed = "%04d" % ( file_num, )
+                return f'{ed}-{year}'
+        
+    def update_CarNum(self):
+        get_num_file = CarNumber.objects.all()
+        year = datetime.now().year
+
+        if get_num_file.exists():
+            last_file = CarNumber.objects.all().order_by('-id')[0]
+            string = last_file.name
+            upId = last_file.id
+
+            if "-" in string:
+                year_part = int(string.split('-')[-1])
+                if year_part >= year:
+                    numeric_part = int(string.split('-')[-2])
+                    plus_1 = numeric_part + 1
+                    count_str = str(plus_1).zfill(3)
+                    d = f'{count_str}-{year}'
+                
+                    newCar_num = CarNumber.objects.get(id=upId)
+                    newCar_num.name = d
+                    newCar_num.save()
+                else:
+                    file_num = 1
+                    ed = "%04d" % ( file_num, )
+                    d = f'{ed}-{year}'
+
+                    newCar_num = CarNumber.objects.get(id=upId)
+                    newCar_num.name = d
+                    newCar_num.save()
+            else:
+                file_num = 1
+                ed = "%04d" % ( file_num, )
+                d = f'{ed}-{year}'
+
+                newCar_num = CarNumber.objects.get(id=upId)
+                newCar_num.name = d
+                newCar_num.save()
+        
+
+# original logic
 class FilterDataView(APIView):
     def post(self, request, *args, **kwargs):
         carNum = self.fetch_CarNum()
@@ -878,21 +1007,6 @@ class FilterDataView(APIView):
             # Generate a dynamic filename
             pdf_filename1 = f'AUTO_DE_REPARTO_{carNum}.pdf'
             pdf_filename2 = f'NOTIFICACIÓN_{carNum}.pdf'
-
-            # # Save the PDF1 to the media directory 1
-            # pdf_file_path = os.path.join(settings.MEDIA_ROOT, 'AUTO_DE_REPARTO_pdfs', pdf_filename1)
-            # os.makedirs(os.path.dirname(pdf_file_path), exist_ok=True)
-
-            # with open(pdf_file_path, 'wb') as pdf_file:
-            #     pdf_file.write(result.getvalue())
-
-            # # Save the PDF2 to the media directory 2
-            # pdf_file_path2 = os.path.join(settings.MEDIA_ROOT, 'NOTIFICACIÓN_pdfs', pdf_filename2)
-            # os.makedirs(os.path.dirname(pdf_file_path2), exist_ok=True)
-
-            # with open(pdf_file_path2, 'wb') as pdf_file2:
-            #     pdf_file2.write(result2.getvalue())
-
 
             # Send the PDF via email
             subject = 'PDF Report'
@@ -1038,6 +1152,8 @@ class FilteredDataDetailUpdateView(APIView):
 
 
             response_data = {
+                'car_num': filter_selection.car_num,
+                'assign_team': filter_selection.assign_team.user.username,
                 'agent_signature': filter_selection.agent_signature,
                 'organizer_signature': filter_selection.organizer_signature,
                 'urban_control': serializer_urban_control.data,
@@ -1053,7 +1169,132 @@ class FilteredDataDetailUpdateView(APIView):
 
         except FilterSelection.DoesNotExist:
             return Response({'error': 'Filter selection not found for the user'}, status=status.HTTP_404_NOT_FOUND)
+    
+    def put(self, request, selection_id, format=None):
+        try:
+            filter_selection = FilterSelection.objects.get(id=selection_id)
+            current_date = timezone.now()
+            month_in_spanish = month_mapping[current_date.strftime('%B')]
+            userOrg = User.objects.get(id=request.user.id)
 
+            urban_control_ids = filter_selection.selected_urban_control_ids.split(',')
+            id_list1 = [int(id_str) for id_str in urban_control_ids if id_str.isdigit()]
+            queryset_urban_control = UrbanControl.objects.filter(id__in=id_list1)
+            # serializer_urban_control = UrbanControlSerializer(queryset_urban_control, many=True)
+
+            police_compliant_ids = filter_selection.selected_police_compliant_ids.split()
+            id_list2 = [int(id_str) for id_str in police_compliant_ids if id_str.isdigit()]
+            queryset_police_compliant = PoliceCompliant.objects.filter(id__in=id_list2)
+            # serializer_police_compliant = PoliceCompliantSerializer(queryset_police_compliant, many=True)
+            
+            policeSubmissionLGGS_ids = filter_selection.selected_policeSubmissionLGGS_ids.split()
+            id_list3 = [int(id_str) for id_str in policeSubmissionLGGS_ids if id_str.isdigit()]
+            queryset_policeSubmissionLGGS = PoliceSubmissionLGGS.objects.filter(id__in=id_list3)
+            # serializer_policeSubmissionLGGS = PoliceSubmissionLGGSSerializer2(queryset_policeSubmissionLGGS, many=True)
+
+            trafficViolationCompared_ids = filter_selection.selected_trafficViolationCompared_ids.split(',')
+            id_list4 = [int(id_str) for id_str in trafficViolationCompared_ids if id_str.isdigit()]
+            queryset_trafficViolationCompared = TrafficViolationCompared.objects.filter(id__in=id_list4)
+            # serializer_trafficViolationCompared = TrafficViolationComparedSerializer2(queryset_trafficViolationCompared, many=True)
+
+            trafficViolationComparedMyColission_ids = filter_selection.selected_trafficViolationComparedMyColission_ids.split()
+            id_list5 = [int(id_str) for id_str in trafficViolationComparedMyColission_ids if id_str.isdigit()]
+            queryset_trafficViolationComparedMyColission = TrafficViolationComparedMyColission.objects.filter(id__in=id_list5)
+            # serializer_trafficViolationComparedMyColission = TrafficViolationComparedMyColissionSerializer2(queryset_trafficViolationComparedMyColission, many=True)
+       
+            complaintAndOfficeToAttend_ids = filter_selection.selected_complaintAndOfficeToAttend_ids.split()
+            id_list6 = [int(id_str) for id_str in complaintAndOfficeToAttend_ids if id_str.isdigit()]
+            queryset_complaintAndOfficeToAttend = ComplaintAndOfficeToAttend.objects.filter(id__in=id_list6)
+            # serializer_complaintAndOfficeToAttend = ComplaintAndOfficeToAttendSerializer2(queryset_complaintAndOfficeToAttend, many=True)
+
+            file2Return2dOffice_ids = filter_selection.selected_file2Return2dOffice_ids.split()
+            id_list7 = [int(id_str) for id_str in file2Return2dOffice_ids if id_str.isdigit()]
+            queryset_file2Return2dOffice = File2Return2dOffice.objects.filter(id__in=id_list7)
+            # serializer_file2Return2dOffice = File2Return2dOfficeSerializer2(queryset_file2Return2dOffice, many=True)
+
+
+            # response_data = {
+            #     'agent_signature': filter_selection.agent_signature,
+            #     'organizer_signature': filter_selection.organizer_signature,
+            #     'urban_control': serializer_urban_control.data,
+            #     'police_compliant': serializer_police_compliant.data,
+            #     'police_submission_lggs': serializer_policeSubmissionLGGS.data, 
+            #     'traffic_violation_compared': serializer_trafficViolationCompared.data, 
+            #     'traffic_violation_compared_my_colission': serializer_trafficViolationComparedMyColission.data, 
+            #     'complaint_and_office_to_attend': serializer_complaintAndOfficeToAttend.data, 
+            #     'file_2_return_2d_office': serializer_file2Return2dOffice.data, 
+            # }
+            
+            # Create an HTML template1
+            template = get_template('insp/mail.html')
+            context = {
+                'urban_control': queryset_urban_control,
+                'police_compliant': queryset_police_compliant,
+                'police_submission_lggs': queryset_policeSubmissionLGGS,
+                'traffic_violation_compared': queryset_trafficViolationCompared,
+                'traffic_violation_compared_my_colission': queryset_trafficViolationComparedMyColission,
+                'complaint_and_office_to_attend': queryset_complaintAndOfficeToAttend,
+                'file_2_return_2d_office': queryset_file2Return2dOffice,
+                'carNum': filter_selection.car_num,
+                'current_date': current_date,
+                'month_in_spanish': month_in_spanish,
+                'agent': filter_selection.assign_team,
+                'userOrg': userOrg
+            }
+            html = template.render(context)
+
+            # Generate the PDF1
+            result = io.BytesIO()
+            pdf = pisa.pisaDocument(io.BytesIO(html.encode("UTF-8")), result)
+
+
+            # Create an HTML template2
+            template2 = get_template('insp/notification.html')
+            context2 = {
+                'carNum': filter_selection.car_num,
+                'current_date': current_date,
+                'month_in_spanish': month_in_spanish,
+                'agent': filter_selection.assign_team,
+                'userOrg': userOrg,
+            }
+            html2 = template2.render(context2)
+
+            # Generate the PDF2
+            result2 = io.BytesIO()
+            pdf2 = pisa.pisaDocument(io.BytesIO(html2.encode("UTF-8")), result2)
+
+
+            if not pdf.err and not pdf2.err:
+                # Generate a dynamic filename
+                pdf_filename1 = f'AUTO_DE_REPARTO_{filter_selection.car_num}.pdf'
+                pdf_filename2 = f'NOTIFICACIÓN_{filter_selection.car_num}.pdf'
+
+                # Send the PDF via email
+                subject = 'PDF Report'
+                message = 'Please find attached your PDF report.'
+                from_email = settings.EMAIL_HOST_USER
+                # recipient_list = ['dakaraefe3@gmail.com', 'dakaraefe@gmail.com']
+                recipient_list = [filter_selection.assign_team.user.email, userOrg.email]
+
+                email = EmailMessage(subject, message, from_email, recipient_list)
+                email.content_subtype = "html"
+                email.attach(pdf_filename1, result.getvalue(), 'application/pdf')
+                email.attach(pdf_filename2, result2.getvalue(), 'application/pdf')
+                email.send()
+
+                # Update seleted data
+                filter_selection.pdf_fn1 = ContentFile(result.getvalue(), name=pdf_filename1)
+                filter_selection.pdf_fn2= ContentFile(result.getvalue(), name=pdf_filename2)
+                filter_selection.filename= pdf_filename1
+                filter_selection.filename2= pdf_filename2
+                filter_selection.save()
+                
+                return Response({'msg': 'PDF generado y guardado exitosamente'}, status=status.HTTP_200_OK)
+
+        except FilterSelection.DoesNotExist:
+            return Response({'error': 'Filter selection not found for the user'}, status=status.HTTP_404_NOT_FOUND)
+    
+    
 class CarNum(APIView):
     def get(self, request):
         get_num_file = CarNumber.objects.all()
@@ -1081,19 +1322,20 @@ class CarNum(APIView):
         
     
 class ToggleSignature(APIView):
-    def post(self, request, selection_id, user_id):
-        user_instance = get_object_or_404(User, id=user_id)
+    def post(self, request, selection_id):
         selection_instance = get_object_or_404(FilterSelection, id=selection_id)
-        
+
         # Toggle the value
-        if user_instance.is_organisor:
+        user = self.request.user
+        if user.is_organisor:
             selection_instance.organizer_signature = not selection_instance.organizer_signature
-        elif user_instance.is_agent:
+        elif user.is_agent:
             selection_instance.agent_signature = not selection_instance.agent_signature
         else:
             print("User Unauthorise")
-        
+
         selection_instance.save()
+        
         return Response({
             "success": "Field updated successfully",
             "status_organizer": selection_instance.organizer_signature,
