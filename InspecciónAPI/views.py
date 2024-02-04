@@ -40,8 +40,80 @@ from django.shortcuts import get_object_or_404
 import pytz
 from datetime import datetime
 from django.core.files.base import ContentFile
+from rest_framework.pagination import PageNumberPagination
 
 # Create your views here.   
+class CustomPagination(PageNumberPagination):
+    page_size_query_param = 'PageSize'
+
+class PoliceCompliantListView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = PoliceCompliantSerializer2
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_organisor or user.is_agent_org or user.is_consult:
+            queryset = PoliceCompliant.objects.all().order_by('-id')
+        elif user.is_agent:
+            foundObject = Agent.objects.get(user_id=user.id)
+            agent_id = foundObject.id
+            # print("User is_team", agent_id)
+            queryset = PoliceCompliant.objects.filter(assign_team_id=agent_id)
+        else:
+            print("User Unauthorise")
+            queryset = None
+
+
+        # Filter based on request parameters
+        insp_res = self.request.query_params.get('insp_res', None)
+        if insp_res:
+            queryset = queryset.filter(insp_res__icontains=insp_res)
+
+        return queryset
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+
+         # Count instances where insp respons
+        En_estudio = queryset.filter(insp_res="En estudio").count()
+        En_audiencia = queryset.filter(insp_res="En audiencia").count()
+        Pendiente_de_fallo = queryset.filter(insp_res="Pendiente de fallo").count()
+        Decisión_de_fondo = queryset.filter(insp_res="Decisión de fondo").count()
+        Apelación = queryset.filter(insp_res="Apelación").count()
+        Archivo = queryset.filter(insp_res="Archivo").count()
+
+        # Order the queryset by id
+        queryset = queryset.order_by('-id')
+
+        # Paginate the queryset
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            response_data = {
+                'results': serializer.data,
+                'En_estudio': En_estudio,
+                'En_audiencia': En_audiencia,
+                'Pendiente_de_fallo': Pendiente_de_fallo,
+                'Decisión_de_fondo': Decisión_de_fondo,
+                'Apelación': Apelación,
+                'Archivo': Archivo,
+            }
+            return self.get_paginated_response(response_data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        response_data = {
+            'results': serializer.data,
+            'En_estudio': En_estudio,
+            'En_audiencia': En_audiencia,
+            'Pendiente_de_fallo': Pendiente_de_fallo,
+            'Decisión_de_fondo': Decisión_de_fondo,
+            'Apelación': Apelación,
+            'Archivo': Archivo,
+        }
+
+        return Response(response_data)
+    
 class PoliceCompliantView(APIView):
     authentication_classes = [TokenAuthentication]
     def get(self, request, format=None):
@@ -141,8 +213,77 @@ class PoliceCompliantPrivateView(UpdateAPIView):
     queryset = PoliceCompliant.objects.all()
 
 
+class UrbanControlListView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = UrbanControlSerializer2
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_organisor or user.is_agent_org or user.is_consult:
+            queryset = UrbanControl.objects.all().order_by('-id')
+        elif user.is_agent:
+            foundObject = Agent.objects.get(user_id=user.id)
+            agent_id = foundObject.id
+            # print("User is_team", agent_id)
+            queryset = UrbanControl.objects.filter(assign_team_id=agent_id)
+        else:
+            print("User Unauthorise")
+            queryset = None
+
+
+        # Filter based on request parameters
+        insp_res = self.request.query_params.get('insp_res', None)
+        if insp_res:
+            queryset = queryset.filter(insp_res__icontains=insp_res)
+
+        return queryset
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+
+         # Count instances where insp respons
+        En_estudio = queryset.filter(insp_res="En estudio").count()
+        En_audiencia = queryset.filter(insp_res="En audiencia").count()
+        Pendiente_de_fallo = queryset.filter(insp_res="Pendiente de fallo").count()
+        Decisión_de_fondo = queryset.filter(insp_res="Decisión de fondo").count()
+        Apelación = queryset.filter(insp_res="Apelación").count()
+        Archivo = queryset.filter(insp_res="Archivo").count()
+
+        # Order the queryset by id
+        queryset = queryset.order_by('-id')
+
+        # Paginate the queryset
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            response_data = {
+                'results': serializer.data,
+                'En_estudio': En_estudio,
+                'En_audiencia': En_audiencia,
+                'Pendiente_de_fallo': Pendiente_de_fallo,
+                'Decisión_de_fondo': Decisión_de_fondo,
+                'Apelación': Apelación,
+                'Archivo': Archivo,
+            }
+            return self.get_paginated_response(response_data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        response_data = {
+            'results': serializer.data,
+            'En_estudio': En_estudio,
+            'En_audiencia': En_audiencia,
+            'Pendiente_de_fallo': Pendiente_de_fallo,
+            'Decisión_de_fondo': Decisión_de_fondo,
+            'Apelación': Apelación,
+            'Archivo': Archivo,
+        }
+
+        return Response(response_data)
+    
 class UrbanControlView(APIView):
-    authentication_classes = [TokenAuthentication]
+    # permission_classes = [IsAuthenticated]
+    # pagination_class = CustomPagination
 
     def get(self, request, format=None):
         # queryset = UrbanControl.objects.all()
@@ -217,6 +358,74 @@ class UrbanControlPrivateView(UpdateAPIView):
     queryset = UrbanControl.objects.all()
     
 
+class PoliceSubmissionLGGSListView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = PoliceSubmissionLGGSSerializer2
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_organisor or user.is_agent_org or user.is_consult:
+            queryset = PoliceSubmissionLGGS.objects.all().order_by('-id')
+        elif user.is_agent:
+            foundObject = Agent.objects.get(user_id=user.id)
+            agent_id = foundObject.id
+            # print("User is_team", agent_id)
+            queryset = PoliceSubmissionLGGS.objects.filter(assign_team_id=agent_id)
+        else:
+            print("User Unauthorise")
+            queryset = None
+
+
+        # Filter based on request parameters
+        insp_res = self.request.query_params.get('insp_res', None)
+        if insp_res:
+            queryset = queryset.filter(insp_res__icontains=insp_res)
+
+        return queryset
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+
+         # Count instances where insp respons
+        En_estudio = queryset.filter(insp_res="En estudio").count()
+        En_audiencia = queryset.filter(insp_res="En audiencia").count()
+        Pendiente_de_fallo = queryset.filter(insp_res="Pendiente de fallo").count()
+        Decisión_de_fondo = queryset.filter(insp_res="Decisión de fondo").count()
+        Apelación = queryset.filter(insp_res="Apelación").count()
+        Archivo = queryset.filter(insp_res="Archivo").count()
+
+        # Order the queryset by id
+        queryset = queryset.order_by('-id')
+
+        # Paginate the queryset
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            response_data = {
+                'results': serializer.data,
+                'En_estudio': En_estudio,
+                'En_audiencia': En_audiencia,
+                'Pendiente_de_fallo': Pendiente_de_fallo,
+                'Decisión_de_fondo': Decisión_de_fondo,
+                'Apelación': Apelación,
+                'Archivo': Archivo,
+            }
+            return self.get_paginated_response(response_data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        response_data = {
+            'results': serializer.data,
+            'En_estudio': En_estudio,
+            'En_audiencia': En_audiencia,
+            'Pendiente_de_fallo': Pendiente_de_fallo,
+            'Decisión_de_fondo': Decisión_de_fondo,
+            'Apelación': Apelación,
+            'Archivo': Archivo,
+        }
+
+        return Response(response_data)
+    
 class PoliceSubmissionLGGSView(APIView):
     authentication_classes = [TokenAuthentication]
 
@@ -291,6 +500,74 @@ class PoliceSubmissionLGGSPrivateView(UpdateAPIView):
     queryset = PoliceSubmissionLGGS.objects.all()
 
 
+class TrafficViolationComparedListView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = TrafficViolationComparedSerializer2
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_organisor or user.is_agent_org or user.is_consult:
+            queryset = TrafficViolationCompared.objects.all().order_by('-id')
+        elif user.is_agent:
+            foundObject = Agent.objects.get(user_id=user.id)
+            agent_id = foundObject.id
+            # print("User is_team", agent_id)
+            queryset = TrafficViolationCompared.objects.filter(assign_team_id=agent_id)
+        else:
+            print("User Unauthorise")
+            queryset = None
+
+
+        # Filter based on request parameters
+        insp_res = self.request.query_params.get('insp_res', None)
+        if insp_res:
+            queryset = queryset.filter(insp_res__icontains=insp_res)
+
+        return queryset
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+
+         # Count instances where insp respons
+        En_estudio = queryset.filter(insp_res="En estudio").count()
+        En_audiencia = queryset.filter(insp_res="En audiencia").count()
+        Pendiente_de_fallo = queryset.filter(insp_res="Pendiente de fallo").count()
+        Decisión_de_fondo = queryset.filter(insp_res="Decisión de fondo").count()
+        Apelación = queryset.filter(insp_res="Apelación").count()
+        Archivo = queryset.filter(insp_res="Archivo").count()
+
+        # Order the queryset by id
+        queryset = queryset.order_by('-id')
+
+        # Paginate the queryset
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            response_data = {
+                'results': serializer.data,
+                'En_estudio': En_estudio,
+                'En_audiencia': En_audiencia,
+                'Pendiente_de_fallo': Pendiente_de_fallo,
+                'Decisión_de_fondo': Decisión_de_fondo,
+                'Apelación': Apelación,
+                'Archivo': Archivo,
+            }
+            return self.get_paginated_response(response_data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        response_data = {
+            'results': serializer.data,
+            'En_estudio': En_estudio,
+            'En_audiencia': En_audiencia,
+            'Pendiente_de_fallo': Pendiente_de_fallo,
+            'Decisión_de_fondo': Decisión_de_fondo,
+            'Apelación': Apelación,
+            'Archivo': Archivo,
+        }
+
+        return Response(response_data)
+    
 class TrafficViolationComparedView(APIView):
     authentication_classes = [TokenAuthentication]
 
@@ -365,6 +642,74 @@ class TrafficViolationComparedPrivateView(UpdateAPIView):
     queryset = TrafficViolationCompared.objects.all()
 
 
+class TrafficViolationComparedMyColissionListView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = TrafficViolationComparedMyColissionSerializer2
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_organisor or user.is_agent_org or user.is_consult:
+            queryset = TrafficViolationComparedMyColission.objects.all().order_by('-id')
+        elif user.is_agent:
+            foundObject = Agent.objects.get(user_id=user.id)
+            agent_id = foundObject.id
+            # print("User is_team", agent_id)
+            queryset = TrafficViolationComparedMyColission.objects.filter(assign_team_id=agent_id)
+        else:
+            print("User Unauthorise")
+            queryset = None
+
+
+        # Filter based on request parameters
+        insp_res = self.request.query_params.get('insp_res', None)
+        if insp_res:
+            queryset = queryset.filter(insp_res__icontains=insp_res)
+
+        return queryset
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+
+         # Count instances where insp respons
+        En_estudio = queryset.filter(insp_res="En estudio").count()
+        En_audiencia = queryset.filter(insp_res="En audiencia").count()
+        Pendiente_de_fallo = queryset.filter(insp_res="Pendiente de fallo").count()
+        Decisión_de_fondo = queryset.filter(insp_res="Decisión de fondo").count()
+        Apelación = queryset.filter(insp_res="Apelación").count()
+        Archivo = queryset.filter(insp_res="Archivo").count()
+
+        # Order the queryset by id
+        queryset = queryset.order_by('-id')
+
+        # Paginate the queryset
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            response_data = {
+                'results': serializer.data,
+                'En_estudio': En_estudio,
+                'En_audiencia': En_audiencia,
+                'Pendiente_de_fallo': Pendiente_de_fallo,
+                'Decisión_de_fondo': Decisión_de_fondo,
+                'Apelación': Apelación,
+                'Archivo': Archivo,
+            }
+            return self.get_paginated_response(response_data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        response_data = {
+            'results': serializer.data,
+            'En_estudio': En_estudio,
+            'En_audiencia': En_audiencia,
+            'Pendiente_de_fallo': Pendiente_de_fallo,
+            'Decisión_de_fondo': Decisión_de_fondo,
+            'Apelación': Apelación,
+            'Archivo': Archivo,
+        }
+
+        return Response(response_data)
+    
 class TrafficViolationComparedMyColissionView(APIView):
     authentication_classes = [TokenAuthentication]
 
@@ -440,6 +785,74 @@ class TrafficViolationComparedMyColissionPrivateView(UpdateAPIView):
     queryset = TrafficViolationComparedMyColission.objects.all()
 
 
+class ComplaintAndOfficeToAttendListView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ComplaintAndOfficeToAttendSerializer2
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_organisor or user.is_agent_org or user.is_consult:
+            queryset = ComplaintAndOfficeToAttend.objects.all().order_by('-id')
+        elif user.is_agent:
+            foundObject = Agent.objects.get(user_id=user.id)
+            agent_id = foundObject.id
+            # print("User is_team", agent_id)
+            queryset = ComplaintAndOfficeToAttend.objects.filter(assign_team_id=agent_id)
+        else:
+            print("User Unauthorise")
+            queryset = None
+
+
+        # Filter based on request parameters
+        insp_res = self.request.query_params.get('insp_res', None)
+        if insp_res:
+            queryset = queryset.filter(insp_res__icontains=insp_res)
+
+        return queryset
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+
+         # Count instances where insp respons
+        En_estudio = queryset.filter(insp_res="En estudio").count()
+        En_audiencia = queryset.filter(insp_res="En audiencia").count()
+        Pendiente_de_fallo = queryset.filter(insp_res="Pendiente de fallo").count()
+        Decisión_de_fondo = queryset.filter(insp_res="Decisión de fondo").count()
+        Apelación = queryset.filter(insp_res="Apelación").count()
+        Archivo = queryset.filter(insp_res="Archivo").count()
+
+        # Order the queryset by id
+        queryset = queryset.order_by('-id')
+
+        # Paginate the queryset
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            response_data = {
+                'results': serializer.data,
+                'En_estudio': En_estudio,
+                'En_audiencia': En_audiencia,
+                'Pendiente_de_fallo': Pendiente_de_fallo,
+                'Decisión_de_fondo': Decisión_de_fondo,
+                'Apelación': Apelación,
+                'Archivo': Archivo,
+            }
+            return self.get_paginated_response(response_data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        response_data = {
+            'results': serializer.data,
+            'En_estudio': En_estudio,
+            'En_audiencia': En_audiencia,
+            'Pendiente_de_fallo': Pendiente_de_fallo,
+            'Decisión_de_fondo': Decisión_de_fondo,
+            'Apelación': Apelación,
+            'Archivo': Archivo,
+        }
+
+        return Response(response_data)
+    
 class ComplaintAndOfficeToAttendView(APIView):
     authentication_classes = [TokenAuthentication]
 
@@ -515,6 +928,74 @@ class ComplaintAndOfficeToAttendPrivateView(UpdateAPIView):
     queryset = ComplaintAndOfficeToAttend.objects.all()
 
 
+class File2Return2dOfficeListView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = File2Return2dOfficeSerializer2
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_organisor or user.is_agent_org or user.is_consult:
+            queryset = File2Return2dOffice.objects.all().order_by('-id')
+        elif user.is_agent:
+            foundObject = Agent.objects.get(user_id=user.id)
+            agent_id = foundObject.id
+            # print("User is_team", agent_id)
+            queryset = File2Return2dOffice.objects.filter(assign_team_id=agent_id)
+        else:
+            print("User Unauthorise")
+            queryset = None
+
+
+        # Filter based on request parameters
+        insp_res = self.request.query_params.get('insp_res', None)
+        if insp_res:
+            queryset = queryset.filter(insp_res__icontains=insp_res)
+
+        return queryset
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+
+         # Count instances where insp respons
+        En_estudio = queryset.filter(insp_res="En estudio").count()
+        En_audiencia = queryset.filter(insp_res="En audiencia").count()
+        Pendiente_de_fallo = queryset.filter(insp_res="Pendiente de fallo").count()
+        Decisión_de_fondo = queryset.filter(insp_res="Decisión de fondo").count()
+        Apelación = queryset.filter(insp_res="Apelación").count()
+        Archivo = queryset.filter(insp_res="Archivo").count()
+
+        # Order the queryset by id
+        queryset = queryset.order_by('-id')
+
+        # Paginate the queryset
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            response_data = {
+                'results': serializer.data,
+                'En_estudio': En_estudio,
+                'En_audiencia': En_audiencia,
+                'Pendiente_de_fallo': Pendiente_de_fallo,
+                'Decisión_de_fondo': Decisión_de_fondo,
+                'Apelación': Apelación,
+                'Archivo': Archivo,
+            }
+            return self.get_paginated_response(response_data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        response_data = {
+            'results': serializer.data,
+            'En_estudio': En_estudio,
+            'En_audiencia': En_audiencia,
+            'Pendiente_de_fallo': Pendiente_de_fallo,
+            'Decisión_de_fondo': Decisión_de_fondo,
+            'Apelación': Apelación,
+            'Archivo': Archivo,
+        }
+
+        return Response(response_data)
+    
 class File2Return2dOfficeView(APIView):
     authentication_classes = [TokenAuthentication]
 
@@ -590,6 +1071,93 @@ class File2Return2dOfficePrivateView(UpdateAPIView):
     serializer_class = ByIdFile2Return2dOfficeSerializer
     queryset = File2Return2dOffice.objects.all()
 
+
+class CountAllInspResView(APIView):
+    def get(self, request, format=None):
+        # Filter and serialize each queryset separately
+        queryset1 = UrbanControl.objects.all()
+        urban_control = {
+            'En_estudio' : queryset1.filter(insp_res="En estudio").count(),
+            'En_audiencia' : queryset1.filter(insp_res="En audiencia").count(),
+            'Pendiente_de_fallo' : queryset1.filter(insp_res="Pendiente de fallo").count(),
+            'Decisión_de_fondo' : queryset1.filter(insp_res="Decisión de fondo").count(),
+            'Apelación' : queryset1.filter(insp_res="Apelación").count(),
+            'Archivo' : queryset1.filter(insp_res="Archivo").count()
+        }
+        
+        queryset2 = PoliceCompliant.objects.all()
+        police_compliant = {
+            'En_estudio' : queryset2.filter(insp_res="En estudio").count(),
+            'En_audiencia' : queryset2.filter(insp_res="En audiencia").count(),
+            'Pendiente_de_fallo' : queryset2.filter(insp_res="Pendiente de fallo").count(),
+            'Decisión_de_fondo' : queryset2.filter(insp_res="Decisión de fondo").count(),
+            'Apelación' : queryset2.filter(insp_res="Apelación").count(),
+            'Archivo' : queryset2.filter(insp_res="Archivo").count()
+        }
+
+        queryset3 = PoliceSubmissionLGGS.objects.all()
+        police_submission_lggs = {
+            'En_estudio' : queryset3.filter(insp_res="En estudio").count(),
+            'En_audiencia' : queryset3.filter(insp_res="En audiencia").count(),
+            'Pendiente_de_fallo' : queryset3.filter(insp_res="Pendiente de fallo").count(),
+            'Decisión_de_fondo' : queryset3.filter(insp_res="Decisión de fondo").count(),
+            'Apelación' : queryset3.filter(insp_res="Apelación").count(),
+            'Archivo' : queryset3.filter(insp_res="Archivo").count()
+        }
+
+        queryset4 = TrafficViolationCompared.objects.all()
+        traffic_violation_compared = {
+            'En_estudio' : queryset4.filter(insp_res="En estudio").count(),
+            'En_audiencia' : queryset4.filter(insp_res="En audiencia").count(),
+            'Pendiente_de_fallo' : queryset4.filter(insp_res="Pendiente de fallo").count(),
+            'Decisión_de_fondo' : queryset4.filter(insp_res="Decisión de fondo").count(),
+            'Apelación' : queryset4.filter(insp_res="Apelación").count(),
+            'Archivo' : queryset4.filter(insp_res="Archivo").count()
+        }
+
+        queryset5 = TrafficViolationComparedMyColission.objects.all()
+        traffic_violation_compared_my_colission = {
+            'En_estudio' : queryset5.filter(insp_res="En estudio").count(),
+            'En_audiencia' : queryset5.filter(insp_res="En audiencia").count(),
+            'Pendiente_de_fallo' : queryset5.filter(insp_res="Pendiente de fallo").count(),
+            'Decisión_de_fondo' : queryset5.filter(insp_res="Decisión de fondo").count(),
+            'Apelación' : queryset5.filter(insp_res="Apelación").count(),
+            'Archivo' : queryset5.filter(insp_res="Archivo").count()
+        }
+
+        queryset6 = ComplaintAndOfficeToAttend.objects.all()
+        complaint_and_office_to_attend = {
+            'En_estudio' : queryset6.filter(insp_res="En estudio").count(),
+            'En_audiencia' : queryset6.filter(insp_res="En audiencia").count(),
+            'Pendiente_de_fallo' : queryset6.filter(insp_res="Pendiente de fallo").count(),
+            'Decisión_de_fondo' : queryset6.filter(insp_res="Decisión de fondo").count(),
+            'Apelación' : queryset6.filter(insp_res="Apelación").count(),
+            'Archivo' : queryset6.filter(insp_res="Archivo").count()
+        }
+
+        queryset7 = File2Return2dOffice.objects.all()
+        file_2_return_2d_office = {
+            'En_estudio' : queryset7.filter(insp_res="En estudio").count(),
+            'En_audiencia' : queryset7.filter(insp_res="En audiencia").count(),
+            'Pendiente_de_fallo' : queryset7.filter(insp_res="Pendiente de fallo").count(),
+            'Decisión_de_fondo' : queryset7.filter(insp_res="Decisión de fondo").count(),
+            'Apelación' : queryset7.filter(insp_res="Apelación").count(),
+            'Archivo' : queryset7.filter(insp_res="Archivo").count()
+        }
+
+        # Combine the serialized data from all querysets
+        serialized_data = {
+            'urban_control': urban_control,
+            'police_compliant': police_compliant,
+            'police_submission_lggs': police_submission_lggs,
+            'traffic_violation_compared': traffic_violation_compared,
+            'traffic_violation_compared_my_colission': traffic_violation_compared_my_colission,
+            'complaint_and_office_to_attend': complaint_and_office_to_attend,
+            'file_2_return_2d_office': file_2_return_2d_office,
+        }
+
+        return Response(serialized_data)
+    
 
 class InspNotifyView(APIView):
     authentication_classes = [TokenAuthentication]
@@ -1154,6 +1722,7 @@ class FilteredDataDetailUpdateView(APIView):
             response_data = {
                 'car_num': filter_selection.car_num,
                 'assign_team': filter_selection.assign_team.user.username,
+                'organizer_signature': filter_selection.organizer_signature,
                 'agent_signature': filter_selection.agent_signature,
                 'organizer_signature': filter_selection.organizer_signature,
                 'urban_control': serializer_urban_control.data,
@@ -1180,51 +1749,31 @@ class FilteredDataDetailUpdateView(APIView):
             urban_control_ids = filter_selection.selected_urban_control_ids.split(',')
             id_list1 = [int(id_str) for id_str in urban_control_ids if id_str.isdigit()]
             queryset_urban_control = UrbanControl.objects.filter(id__in=id_list1)
-            # serializer_urban_control = UrbanControlSerializer(queryset_urban_control, many=True)
 
             police_compliant_ids = filter_selection.selected_police_compliant_ids.split()
             id_list2 = [int(id_str) for id_str in police_compliant_ids if id_str.isdigit()]
             queryset_police_compliant = PoliceCompliant.objects.filter(id__in=id_list2)
-            # serializer_police_compliant = PoliceCompliantSerializer(queryset_police_compliant, many=True)
             
             policeSubmissionLGGS_ids = filter_selection.selected_policeSubmissionLGGS_ids.split()
             id_list3 = [int(id_str) for id_str in policeSubmissionLGGS_ids if id_str.isdigit()]
             queryset_policeSubmissionLGGS = PoliceSubmissionLGGS.objects.filter(id__in=id_list3)
-            # serializer_policeSubmissionLGGS = PoliceSubmissionLGGSSerializer2(queryset_policeSubmissionLGGS, many=True)
 
             trafficViolationCompared_ids = filter_selection.selected_trafficViolationCompared_ids.split(',')
             id_list4 = [int(id_str) for id_str in trafficViolationCompared_ids if id_str.isdigit()]
             queryset_trafficViolationCompared = TrafficViolationCompared.objects.filter(id__in=id_list4)
-            # serializer_trafficViolationCompared = TrafficViolationComparedSerializer2(queryset_trafficViolationCompared, many=True)
 
             trafficViolationComparedMyColission_ids = filter_selection.selected_trafficViolationComparedMyColission_ids.split()
             id_list5 = [int(id_str) for id_str in trafficViolationComparedMyColission_ids if id_str.isdigit()]
             queryset_trafficViolationComparedMyColission = TrafficViolationComparedMyColission.objects.filter(id__in=id_list5)
-            # serializer_trafficViolationComparedMyColission = TrafficViolationComparedMyColissionSerializer2(queryset_trafficViolationComparedMyColission, many=True)
        
             complaintAndOfficeToAttend_ids = filter_selection.selected_complaintAndOfficeToAttend_ids.split()
             id_list6 = [int(id_str) for id_str in complaintAndOfficeToAttend_ids if id_str.isdigit()]
             queryset_complaintAndOfficeToAttend = ComplaintAndOfficeToAttend.objects.filter(id__in=id_list6)
-            # serializer_complaintAndOfficeToAttend = ComplaintAndOfficeToAttendSerializer2(queryset_complaintAndOfficeToAttend, many=True)
 
             file2Return2dOffice_ids = filter_selection.selected_file2Return2dOffice_ids.split()
             id_list7 = [int(id_str) for id_str in file2Return2dOffice_ids if id_str.isdigit()]
             queryset_file2Return2dOffice = File2Return2dOffice.objects.filter(id__in=id_list7)
-            # serializer_file2Return2dOffice = File2Return2dOfficeSerializer2(queryset_file2Return2dOffice, many=True)
-
-
-            # response_data = {
-            #     'agent_signature': filter_selection.agent_signature,
-            #     'organizer_signature': filter_selection.organizer_signature,
-            #     'urban_control': serializer_urban_control.data,
-            #     'police_compliant': serializer_police_compliant.data,
-            #     'police_submission_lggs': serializer_policeSubmissionLGGS.data, 
-            #     'traffic_violation_compared': serializer_trafficViolationCompared.data, 
-            #     'traffic_violation_compared_my_colission': serializer_trafficViolationComparedMyColission.data, 
-            #     'complaint_and_office_to_attend': serializer_complaintAndOfficeToAttend.data, 
-            #     'file_2_return_2d_office': serializer_file2Return2dOffice.data, 
-            # }
-            
+          
             # Create an HTML template1
             template = get_template('insp/mail.html')
             context = {

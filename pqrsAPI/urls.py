@@ -21,5 +21,5 @@ urlpatterns = [
 
     path('dashboard', DashboardView.as_view()),
 
-    path('pqrs_notify', PqrsNotifyView.as_view()),
+    path('pqrs_notify/', PqrsNotifyView.as_view()),
 ]

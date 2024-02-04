@@ -446,4 +446,5 @@ class FileResNumView(APIView):
 class PqrsNotifyView(ListAPIView):
     permission_classes = (AllowAny,)
     serializer_class = PqrsNotifySerializer
-    queryset = PqrsNotifify.objects.all()
+    pagination_class = CustomPagination
+    queryset = PqrsNotifify.objects.all().order_by("-id")
