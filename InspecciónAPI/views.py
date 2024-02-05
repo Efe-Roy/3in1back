@@ -1158,13 +1158,12 @@ class CountAllInspResView(APIView):
 
         return Response(serialized_data)
     
+class InspNotifyView(ListAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = InspNotifySerializer
+    pagination_class = CustomPagination
 
-class InspNotifyView(APIView):
-    authentication_classes = [TokenAuthentication]
-
-    def get(self, request, format=None):
-        # queryset = InspNotifify.objects.all()
-
+    def get_queryset(self):
         user = self.request.user
         if user.is_organisor or user.is_agent_org or user.is_consult:
             queryset = InspNotifify.objects.all().order_by('-id')
@@ -1177,8 +1176,29 @@ class InspNotifyView(APIView):
             print("User Unauthorise")
             queryset = None
 
-        serializer = InspNotifySerializer(queryset, many=True)
-        return Response( serializer.data)
+        return queryset
+    
+
+# class InspNotifyView(APIView):
+#     authentication_classes = [TokenAuthentication]
+
+#     def get(self, request, format=None):
+#         # queryset = InspNotifify.objects.all()
+
+#         user = self.request.user
+#         if user.is_organisor or user.is_agent_org or user.is_consult:
+#             queryset = InspNotifify.objects.all().order_by('-id')
+#         elif user.is_agent:
+#             foundObject = Agent.objects.get(user_id=user.id)
+#             agent_id = foundObject.id
+#             # print("User is_team", agent_id)
+#             queryset = InspNotifify.objects.filter(assign_team_id=agent_id)
+#         else:
+#             print("User Unauthorise")
+#             queryset = None
+
+#         serializer = InspNotifySerializer(queryset, many=True)
+#         return Response( serializer.data)
     
 
 

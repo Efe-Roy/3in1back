@@ -1,13 +1,10 @@
 from django.urls import path
 from .views import (
-    # AutomatedNumberAPIView
     get_all_processType, get_all_acroymsType, get_all_typologyType, 
     get_all_resSecType, get_all_StateType, get_post_contratacion, 
     get_details_contratacion, get_contratacion,get_filtered_contratacion, 
     NotificationView, ListUnusedValueAdded, get_prerequisite, LawFirmView,
-    create_contratacion, get_base
-    # ,
-    # jsonRoy
+    create_contratacion, get_base, update_prerequisite
 )
 
 urlpatterns = [
@@ -20,6 +17,7 @@ urlpatterns = [
     path('get_contratacion/', get_contratacion.as_view()),
     path('get_filtered_contratacion/', get_filtered_contratacion.as_view()),
     path('get_prerequisite/<ptR>/<acR>/<rscR>/', get_prerequisite.as_view()),
+    path('update_prerequisite/<ptR>/<acR>/<rscR>/<int:pk>/', update_prerequisite.as_view()),
     path('get_base/<ptR>/<rscR>/', get_base.as_view()),
     
     path('create_contratacion', create_contratacion.as_view()),
@@ -30,7 +28,6 @@ urlpatterns = [
     path('list-value-added/', ListUnusedValueAdded.as_view()),
 
     path('lawfirm/<pk>/', LawFirmView.as_view()),
-    # path('automated-number/', AutomatedNumberAPIView.as_view())
 
 ]
 

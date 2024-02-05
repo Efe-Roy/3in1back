@@ -62,7 +62,86 @@ class get_all_StateType(ListAPIView):
     serializer_class = StateTypeSerializer
     queryset = StateType.objects.all()
     
+# ======Start One Family type of logic but different purpose =======
+class update_prerequisite(APIView):
+    def get(self, request, ptR, acR, rscR, pk):
+        pt = processType.objects.get(id=ptR)
+        ac = acroymsType.objects.get(id=acR)
+        rsc = resSecType.objects.get(id=rscR)
+        instance_obj = ContratacionMain.objects.get(id=pk)
+        # print("pk pk:-", pk)
 
+        rsc_order = {
+            'AMS': "ALCALDÍA MUNICIPAL",
+            'SGG': "SECRETARÍA GENERAL Y DE GOBIERNO",
+            'SPO': "SECRETARÍA DE PLANEACIÓN Y ORDENAMIENTO TERRITORIAL",
+            'SHB': "SECRETARÍA DE HACIENDA Y BIENES",
+            'SIE': "SECRETARÍA DE INNOVACIÓN Y EMPRENDIMIENTO",
+            'SPD': "SECRETARÍA DE PROTECCIÓN SOCIAL Y DESARROLLO COMUNITARIO",
+            'SSP': "SECRETARÍA DE SERVICIOS PÚBLICOS Y MEDIO AMBIENTE",
+        }
+
+        pt_order = {
+            'MC': "CONTRATACIÓN MÍNIMA CUANTÍA.",
+            'SAMC': "SELECCIÓN ABREVIADA DE MENOR CUANTÍA",
+            'SI': "SUBASTA INVERSA",
+            'LP': "LICITACIÓN PÚBLICA",
+            'CM': "CONCURSO DE MÉRITOS",
+            'CD': "CONTRATACIÓN DIRECTA",
+        }
+        
+        result = "Unknown"
+        if rsc.name in rsc_order.values():
+            # Find the key for the given name
+            result = next(key for key, value in rsc_order.items() if value == rsc.name)
+        
+        result_pt = "Unknown"
+        if pt.name in pt_order.values():
+            # Find the key for the given name
+            result_pt = next(key for key, value in pt_order.items() if value == pt.name)
+
+        if pt.name == "CONTRATACIÓN DIRECTA":
+            initial_part = f'{result_pt}-{ac.name}-{result}'
+        else:
+            initial_part = f'{result_pt}-{result}'
+        
+        automated_number = self.update_automated_number(initial_part, instance_obj)
+
+        return Response(automated_number)
+    
+    def update_automated_number(cls, initial_part, instance_obj):
+        # print("inside auto", instance_obj.id)
+        year = datetime.now().year
+        filtered_objects = ContratacionMain.objects.filter(process_num__startswith=initial_part)
+        if filtered_objects.exists():
+            highest_value = filtered_objects.aggregate(Max('process_num'))['process_num__max']
+            print("highest_value", highest_value.split('-')[-1])
+
+            if highest_value is not None:
+                # Extract the numeric part from the 'process_num' field
+                year_part = int(highest_value.split('-')[-1])
+                if year_part >= year:
+                    numeric_part = int(highest_value.split('-')[-2])
+                    count_str_0 = str(numeric_part).zfill(3)
+                    plus_1 = numeric_part + 1
+                    count_str_1 = str(plus_1).zfill(3)
+
+                    d_d = f'{initial_part}-{count_str_0}-{year}'
+                    objjj = ContratacionMain.objects.get(process_num=d_d)
+                    # return f'{instance_obj.process_num}'
+                    if objjj is not None and instance_obj.process_num == d_d:
+                        return f'{initial_part}-{count_str_0}-{year}'
+                    else:
+                        return f'{initial_part}-{count_str_1}-{year}'
+
+                    # return f'{initial_part}-{count_str_1}-{year}'
+                else:
+                    return f'{initial_part}-001-{year}'
+            else:
+                return f'{initial_part}-001-{year}'
+        else:
+            return f'{initial_part}-001-{year}'
+        
 class get_prerequisite(APIView):
     def get(self, request, ptR, acR, rscR):
         pt = processType.objects.get(id=ptR)
@@ -129,7 +208,6 @@ class get_prerequisite(APIView):
         else:
             return f'{initial_part}-001-{year}'
         
-
 class get_base(APIView):
     def get(self, request, ptR, rscR):
         pt = processType.objects.get(id=ptR)
@@ -198,6 +276,7 @@ class get_base(APIView):
         else:
             return f'{initial_part}-001-{year}'
         
+# ====== End One Family type of logic but different purpose =======
 
 class create_contratacion(APIView):
     authentication_classes = [TokenAuthentication]
@@ -794,7 +873,6 @@ class get_filtered_contratacion(ListCreateAPIView):
         return Response(response_data)
 
 
-
 class get_details_contratacion(APIView):
     authentication_classes = [TokenAuthentication]
     
@@ -893,7 +971,6 @@ class LawFirmView(APIView):
         serializer = LawFirmSerializer(objLaw_queryset, many=True)
         return Response(serializer.data)
 
-    
     def post(self, request, pk, format=None):
         objCon = ContratacionMain.objects.get(id=pk)
 

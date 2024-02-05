@@ -54,7 +54,7 @@ urlpatterns = [
 
 
     path('count_all_insp_res', CountAllInspResView.as_view()),
-    path('insp_notify', InspNotifyView.as_view()),
+    path('insp_notify/', InspNotifyView.as_view()),
     path('ultimate/<int:pk>/', UltimateView.as_view(), name='ultimate-view'),
 
     path('upload/', UploadPDFView.as_view(), name='upload-pdf'),
