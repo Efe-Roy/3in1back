@@ -1,25 +1,16 @@
 import random
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
 from .serializers import (
     UserSerializer, UserProfileSerializer, SignupSerializer, 
     TeamSerializer, AgentSerializer, OperatorSignUpSerializer,
-    ResetPasswordEmailRequestSerializer,SetNewPasswordSerializer
+    ResetPasswordEmailRequestSerializer,SetNewPasswordSerializer,
+    ActivityTrackerSerializer
 )
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from .models import User, Team, Agent, UserProfile
-from rest_framework.generics import (
-    ListAPIView, RetrieveAPIView, CreateAPIView,
-    UpdateAPIView, DestroyAPIView
-)
-from rest_framework.parsers import MultiPartParser, FormParser
-from django.dispatch import receiver
-from rest_framework.status import (
-    HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_201_CREATED,
-    HTTP_204_NO_CONTENT
-)
+from .models import User, Team, Agent, ActivityTracker, TicketUserAgent
 from rest_framework.views import APIView
 from django.http import Http404
 from django.core.mail import send_mail
@@ -30,6 +21,20 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 
+
+class CheckAuthenticatedView(APIView):
+    def get(self, request, format=None):
+        user = self.request.user
+
+        try:
+            isAuthenticated = user.is_authenticated
+
+            if isAuthenticated:
+                return Response({ 'isAuthenticated': 'success' })
+            else:
+                return Response({ 'isAuthenticated': 'error' })
+        except:
+            return Response({ 'error': 'Something went wrong when checking authentication status' })
 
 class SignupView(generics.GenericAPIView):
     serializer_class = SignupSerializer
@@ -75,6 +80,8 @@ class CreateOperatorView(generics.GenericAPIView):
             user=user,
             organisation= self.request.user.userprofile
         )
+        if user.is_ticket_agent == True:
+            TicketUserAgent.objects.create(user=user)
             
         return Response({
             "user": OperatorSignUpSerializer(user, context=self.get_serializer_context()).data,
@@ -121,8 +128,14 @@ class CustomAuthToken(ObtainAuthToken):
             "is_organisor": user.is_organisor,
             "is_team": user.is_team,
             "is_agent": user.is_agent,
+            "is_agent_org": user.is_agent_org,
             "is_pqrs": user.is_pqrs,
             "is_hiring": user.is_hiring,
+            "is_hiring_org": user.is_hiring_org,
+            "is_consult": user.is_consult,
+            "is_sisben": user.is_sisben,
+            "is_ticket_admin": user.is_ticket_admin,
+            "is_ticket_agent": user.is_ticket_agent,
             "username": user.username,
             "email": user.email,
         })
@@ -141,50 +154,199 @@ class UserProfileDetail(APIView):
     
     def put(self, request, pk, format=None):
         UserById = self.get_object(pk)
-        print(request.FILES)  # Print the uploaded files for debugging
-        
-        # Get the image data using the correct field name 'image[]'
         image_files = request.FILES.getlist('image[]')
+        signature_files = request.FILES.getlist('signature[]')
         
-        if image_files:
-            serializer = UserProfileSerializer(UserById, data=request.data, partial=True)
-            if serializer.is_valid():
-                serializer.save()
-                
-                # Save each image file
+        serializer = UserProfileSerializer(UserById, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+
+            if image_files:
                 for image_file in image_files:
                     UserById.image.save(image_file.name, image_file)
+
+            if signature_files:
+                for signature_file in signature_files:
+                    UserById.signature.save(signature_file.name, signature_file)
+
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+        # if image_files:
+        #     serializer = UserProfileSerializer(UserById, data=request.data, partial=True)
+        #     if serializer.is_valid():
+        #         serializer.save()
                 
-                return Response(serializer.data)
-            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
-        return Response({'error': 'Image data not found in the request.'}, status=HTTP_400_BAD_REQUEST)
+        #         # Save each image file
+        #         for image_file in image_files:
+        #             UserById.image.save(image_file.name, image_file)
+                
+        #         return Response(serializer.data)
+        #     return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+        # else:
+        #     serializer = UserProfileSerializer(UserById, data=request.data, partial=True)
+        #     if serializer.is_valid():
+        #         serializer.save()
+        #         return Response(serializer.data)
+        #     return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
 class CustomPageNumberPagination(PageNumberPagination):
     page_size_query_param = 'PageSize'
-    # max_page_size = 100  # Set the maximum page size if needed
 
-class UserListView(generics.ListAPIView):
-    permission_classes = (AllowAny,)
-    serializer_class = UserSerializer
-    # queryset = User.objects.all()
-    queryset = User.objects.all().order_by('-date_joined')
+class ActivityTrackerView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ActivityTrackerSerializer
     pagination_class = CustomPageNumberPagination
 
+    def get_queryset(self):
+        queryset = ActivityTracker.objects.all().order_by('-id')
+
+        # Filter based on request parameters
+        username = self.request.query_params.get('username', None)
+        if username:
+            queryset = queryset.filter(user__username__icontains=username)
+
+        first_name = self.request.query_params.get('first_name', None)
+        if first_name:
+            queryset = queryset.filter(user__first_name__icontains=first_name)
+
+        created_at = self.request.query_params.get('created_at', None)
+        if created_at:
+            # Assuming createdAt is in the format YYYY-MM-DD, you may need to adjust this based on your actual date format
+            queryset = queryset.filter(createdAt__startswith=created_at)
+   
+        return queryset
+
+
+class UserListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
+    # queryset = User.objects.filter(is_staff=False).order_by('-date_joined')
+    pagination_class = CustomPageNumberPagination
+
+    def get_queryset(self):
+        queryset = User.objects.filter(is_staff=False, is_organisor=False).order_by('-date_joined')
+
+        # Filter based on request parameters
+        username = self.request.query_params.get('username', None)
+        if username:
+            queryset = queryset.filter(username__icontains=username)
+
+        is_ticket_agent = self.request.query_params.get('is_ticket_agent', False)
+        if is_ticket_agent:
+            queryset = queryset.filter(is_ticket_agent=is_ticket_agent)
+   
+        is_team = self.request.query_params.get('is_team', False)
+        if is_team:
+            queryset = queryset.filter(is_team=is_team)
+   
+        is_agent = self.request.query_params.get('is_agent', False)
+        if is_agent:
+            queryset = queryset.filter(is_agent=is_agent)
+   
+        is_lawyer = self.request.query_params.get('is_lawyer', False)
+        if is_lawyer:
+            queryset = queryset.filter(is_lawyer=is_lawyer)
+   
+        is_active = self.request.query_params.get('is_active', False)
+        if is_active:
+            queryset = queryset.filter(is_active=is_active)
+   
+        return queryset
+
+
 class UserDetail(generics.RetrieveAPIView):
-    permission_classes = (AllowAny,)
+    permission_classes = [IsAuthenticated]
+    # permission_classes = (AllowAny,)
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-class get_all_team(ListAPIView):
-    permission_classes = (AllowAny,)
-    serializer_class = TeamSerializer
-    queryset = Team.objects.all()
+# class get_all_team(generics.ListAPIView):
+#     permission_classes = [IsAuthenticated]
+#     # permission_classes = (AllowAny,)
+#     serializer_class = TeamSerializer
+#     # queryset = Team.objects.all()
+#     queryset = Team.objects.filter(user__is_active=False)
 
-class get_all_agent(ListAPIView):
-    permission_classes = (AllowAny,)
+class ChangePasswordView(APIView):
+    # authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        # current_password = request.data.get('current_password')
+        new_password = request.data.get('new_password')
+
+        # Check if the current password is correct
+        # if not user.check_password(current_password):
+        #     return Response({'error': 'Current password is incorrect.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Set the new password and save the user
+        user.set_password(new_password)
+        user.save()
+
+        return Response({'message': 'Password successfully changed.'}, status=status.HTTP_200_OK)
+    
+class LogoutView(APIView):
+    def post(self, request, format=None):
+        try:
+            # auth.logout(request)
+            request.auth.delete()
+            return Response({ 'success': 'Loggout Out' })
+        except:
+            return Response({ 'error': 'Something went wrong when logging out' })
+        
+class DeleteAccountView(APIView):
+    def delete(self, request, format=None):
+        user = self.request.user
+
+        try:
+            User.objects.filter(id=user.id).delete()
+
+            return Response({ 'success': 'User deleted successfully' })
+        except:
+            return Response({ 'error': 'Something went wrong when trying to delete user' })
+ 
+class get_all_team(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = TeamSerializer
+    # queryset = User.objects.filter(is_staff=False).order_by('-date_joined')
+    pagination_class = CustomPageNumberPagination
+
+    def get_queryset(self):
+        queryset = Team.objects.all()
+
+        # Filter based on request parameters
+        is_active = self.request.query_params.get('is_active', False)
+        if is_active:
+            queryset = queryset.filter(user__is_active=is_active)
+   
+        return queryset
+
+class get_all_agent(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = AgentSerializer
-    queryset = Agent.objects.all()
+    # queryset = User.objects.filter(is_staff=False).order_by('-date_joined')
+    pagination_class = CustomPageNumberPagination
+
+    def get_queryset(self):
+        queryset = Agent.objects.all()
+
+        # Filter based on request parameters
+        is_active = self.request.query_params.get('is_active', False)
+        if is_active:
+            queryset = queryset.filter(user__is_active=is_active)
+   
+        return queryset
+
+# class get_all_agent(generics.ListAPIView):
+#     permission_classes = (AllowAny,)
+#     serializer_class = AgentSerializer
+#     # queryset = Agent.objects.all()
+#     queryset = Agent.objects.filter(user__is_active=False)
 
 
 class RequestPasswordResetEmail(generics.GenericAPIView):
@@ -231,3 +393,34 @@ class SetNewPasswordAPIView(generics.GenericAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response({'success': True, 'message': 'Password reset success'}, status=status.HTTP_200_OK)
+    
+
+class ActivateDeactivateUser(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_user(self, id):
+        try:
+            return User.objects.get(id=id)
+        except User.DoesNotExist:
+            return None
+
+    def post(self, request, *args, **kwargs):
+        id = request.data.get('id')
+        action = request.data.get('action')  # 'activate' or 'deactivate'
+
+        user = self.get_user(id)
+
+        if not user:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if action == 'activate':
+            user.is_active = True
+        elif action == 'deactivate':
+            user.is_active = False
+        else:
+            return Response({'error': 'Invalid action'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.save()
+
+        return Response({'message': f'User {user.username} successfully {action}d'}, status=status.HTTP_200_OK)
+    

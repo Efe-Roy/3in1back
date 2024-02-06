@@ -5,7 +5,6 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
@@ -13,14 +12,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-s2v*ko$0$n&k^dy#t3h0i9i2t^$70l9l28*ez7-tgllzwk-hb0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['147.182.215.149', '127.0.0.1', 'fuscaliaycontraloria.com']
-# ALLOWED_HOSTS = ['147.182.215.149', 'fuscaliaycontraloria.com']
-
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -29,17 +25,22 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'storages',
+
     #Third Party App
     'Auth',
     'pqrsAPI',
     'contratacionAPI',
     'InspecciónAPI',
+    'lawAPI',
+    'ticketAPI',
+    'sisbenAPI',
     
 
     # API SetUp
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_auth',
+    # 'rest_auth',
     "corsheaders",
     
     'import_export',
@@ -89,28 +90,29 @@ WSGI_APPLICATION = 'core.wsgi.application'
 #     }
 # }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'dbtest', 
-#         'USER': 'postgres',
-#         'PASSWORD': 'admin',
-#         'HOST': 'localhost', 
-#         'PORT': '5432',
-#     }
-# }
-
-# ONLINE LIVE
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'roydb',
-        'USER': 'royuser1',
-        'PASSWORD': 'roy12345',
-        'HOST': 'localhost',
-        'PORT': '5432',
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'dbtest', 
+            'USER': 'postgres',
+            'PASSWORD': 'admin',
+            'HOST': 'localhost', 
+            'PORT': '5432',
+        }
     }
-}
+else:
+    # ONLINE LIVE
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'roydb',
+            'USER': 'royuser1',
+            'PASSWORD': 'roy12345',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
 
 AUTH_USER_MODEL = 'Auth.User'
 
@@ -150,10 +152,30 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# STATIC_URL = '/static/'
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_URL = '/media/'
+
+
+AWS_ACCESS_KEY_ID = 'DO00PRT6ALVZRZ9YPQ8K'
+AWS_SECRET_ACCESS_KEY = 'hlzEl2qyXWgINQuvEncA0HRri0gNZLblj+WqVZ8KNqw'
+AWS_STORAGE_BUCKET_NAME = 'three-in-one-space-bucket'
+AWS_S3_ENDPOINT_URL = 'https://sfo3.digitaloceanspaces.com'
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+AWS_LOCATION = 'three-in-one-static'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+STATIC_URL = 'https://%s/%s/' % (AWS_S3_ENDPOINT_URL, AWS_LOCATION)
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -172,9 +194,10 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
     "http://167.71.19.13",
     "https://procesosadministrativos.com",
-    "https://rainbow-monstera-17aaac.netlify.app"
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -182,13 +205,14 @@ AUTHENTICATION_BACKENDS = [
     # 'Auth.authentication.EmailAuthBackend',
 ]
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
+DATA_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 20
+FILE_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 20
+MAX_UPLOAD_SIZE = 1024 * 1024 * 100 
 
-FILE_UPLOAD_HANDLERS = [
-    'django.core.files.uploadhandler.MemoryFileUploadHandler',
-    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
-]
+# FILE_UPLOAD_HANDLERS = [
+#     'django.core.files.uploadhandler.MemoryFileUploadHandler',
+#     'django.core.files.uploadhandler.TemporaryFileUploadHandler',
+# ]
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_USE_SSL = True
@@ -196,27 +220,3 @@ EMAIL_HOST = "smtp.hostinger.com"
 EMAIL_HOST_USER = "info@licenciasurbanisticas.com"
 EMAIL_HOST_PASSWORD = "Email10.CD"
 EMAIL_PORT = 465
-
-LOGGING = {
-    'version': 1,
-    # The version number of our log
-    'disable_existing_loggers': False,
-    # django uses some of its own loggers for internal operations. In case you want to disable them just replace the False above with true.
-    # A handler for WARNING. It is basically writing the WARNING messages into a file called WARNING.log
-    'handlers': {
-        'file': {
-            'level': 'WARNING',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'warning.log',
-        },
-    },
-    # A logger for WARNING which has a handler called 'file'. A logger can have multiple handler
-    'loggers': {
-       # notice the blank '', Usually you would put built in loggers like django or root here based on your needs
-        '': {
-            'handlers': ['file'], #notice how file variable is called in handler which has been defined above
-            'level': 'WARNING',
-            'propagate': True,
-        },
-    },
-}

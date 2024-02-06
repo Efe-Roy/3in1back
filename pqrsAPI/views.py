@@ -4,12 +4,14 @@ from rest_framework.generics import (
     ListAPIView, RetrieveAPIView, CreateAPIView,
     UpdateAPIView, DestroyAPIView, ListCreateAPIView
 )
-from .serializers import (PqrsMainSerializer, EntityTypeSerializer, 
-                          NameTypeSerializer, AllPqrsSerializer, RestrictedPqrsMaintSerializer,
+from .serializers import (PqrsMainSerializer, EntityTypeSerializer, PqrsNotifySerializer,
+                          NameTypeSerializer, AllPqrsSerializer,
                           MediumResTypeSerializer, InnerFormPqrsMaintSerializer, StatusTypeSerializer
                           )
-from .models import PqrsMain, EntityType, NameType, MediumResType, FileResNum, StatusType
+from .models import PqrsMain, EntityType, NameType, MediumResType, FileResNum, StatusType, PqrsNotifify, PqrsFileNum
 from Auth.models import Agent, Team
+from datetime import datetime
+from django.db.models import Count
 
 from rest_framework.views import APIView
 from django.http import Http404
@@ -49,12 +51,7 @@ class get_all_pqrs2(ListAPIView):
     permission_classes = (AllowAny,)
     serializer_class = AllPqrsSerializer
     queryset = PqrsMain.objects.all()
-
-# class In_Form_pqrs(UpdateAPIView):
-#     permission_classes = (AllowAny,)
-#     serializer_class = InnerFormPqrsMaintSerializer
-#     queryset = PqrsMain.objects.all()
-
+    
 class In_Form_pqrs(APIView):
     def get_object(self, pk):
         try:
@@ -64,62 +61,144 @@ class In_Form_pqrs(APIView):
 
     def put(self, request, pk, format=None):
         PqrsById = self.get_object(pk)
+        automated_number = self.generate_automated_number()
 
         serializer = InnerFormPqrsMaintSerializer(PqrsById, data=request.data)
         if serializer.is_valid():
-            print("erase", request.data["file_res"])
-
-            get_file = FileResNum.objects.all()
-
-            if get_file.exists():
-                last_file = FileResNum.objects.all().order_by('-id').first()
-                upId = last_file.id
-
-                newFile_res_num = FileResNum.objects.get(id=upId)
-                newFile_res_num.name = request.data["file_res"]
-                newFile_res_num.save()
-
-            else:
-                print("getIndex is None")
-                file_num = 1
-                d = "RR-" + "%04d" % (file_num,) + "-2023"
-                FileResNum.objects.create(name=d)
-                print(d)
-
+            serializer.validated_data['file_res'] = automated_number
+            serializer.validated_data['date_of_response'] = datetime.now().date()
+            print("as", datetime.now())
             serializer.save()
+            self.save_automated_number(automated_number)
             return Response(serializer.data)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
 
+    def generate_automated_number(cls):
+        year = datetime.now().year
+        get_file = FileResNum.objects.all()
+
+        if get_file.exists():
+            last_file = FileResNum.objects.all().order_by('-id').first()
+            getIndex = last_file.name
+            part = getIndex.split('-')
+            desired_value = part[1]
+            file_num = int(desired_value) + 1
+            ed = "%03d" % ( file_num, )
+            d = f'RP-{ed}-{year}'
+            return d
+
+        else:
+            print("getIndex is None")
+            file_num = 1
+            ed = "%03d" % ( file_num, )
+            d = f'RP-{ed}-{year}'
+            return d
+
+    def save_automated_number(cls, numData):
+        year = datetime.now().year
+
+        existing_object = FileResNum.objects.all()
+        if existing_object.exists():
+            last_file = FileResNum.objects.all().order_by('-id')[0]
+            last_file.name = numData
+            last_file.save()
+        else:
+            file_num = 1
+            ed = "%03d" % ( file_num, )
+            d = f'RP-{ed}-{year}'
+            FileResNum.objects.create(name=d)
+
+    
 
 
 class get_post_pqrs(APIView):
     authentication_classes = [TokenAuthentication]
 
     def get(self, request, format=None):
-        queryset = PqrsMain.objects.all()
+        # queryset = PqrsMain.objects.all()
+        user = self.request.user
+        if user.is_organisor or user.is_pqrs or user.is_consult:
+            queryset = PqrsMain.objects.all()
+        elif user.is_team:
+            foundObject = Team.objects.get(user_id=user.id)
+            team_id = foundObject.id
+            # print("User is_team", team_id)
+            queryset = PqrsMain.objects.filter(responsible_for_the_response_id=team_id)
+        else:
+            print("User Unauthorise")
+            queryset = None
+
+
+        # Order the queryset by id
+        queryset = queryset.order_by('-id')
+
         serializerPqrs = AllPqrsSerializer(queryset, many=True)
         return Response( serializerPqrs.data)
 
     def post(self, request, format=None):
-        serializer = RestrictedPqrsMaintSerializer(data=request.data)
-        # print("zzzxxxcccvvv", request.data["responsible_for_the_response"])
-
+        serializer = PqrsMainSerializer(data=request.data)
+        automated_number = self.generate_automated_number()
+        need_answer = request.data["need_answer"]
+        # print("automated_number", automated_number)
+        print("Data need_answer :-", need_answer)
+        
         if serializer.is_valid():
-            serializer.save()
-           
-            team_id = request.data['responsible_for_the_response']
-            team = Team.objects.get(id=team_id)
-            print("email", team.user.email)
-
-            # Send activation email
-            email_body = f'Hola {team.user.username}, \n Se le ha asignado el número de expediente {request.data["file_num"]}.'
-            data = {'email_body': email_body, 'to_email': team.user.email,
-                    'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
-            send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
+            serializer.validated_data['file_num'] = automated_number
+            if request.data["need_answer"] == "No":
+                serializer.validated_data['status_of_the_response'] = StatusType.objects.get(id=3)
+            if request.data["name"] == "5" or request.data["name"] == "7":
+                serializer.validated_data['status_of_the_response'] = StatusType.objects.get(id=4)
             
+                
+            serializer.save()
+
+            self.save_automated_number(automated_number)
+           
+            if request.data['responsible_for_the_response']:
+                team_id = request.data['responsible_for_the_response']
+                team = Team.objects.get(id=team_id)
+
+                # Send activation email
+                email_body = f'Hola {team.user.username}, \n Se le ha asignado el número de expediente {request.data["file_num"]}.'
+                data = {'email_body': email_body, 'to_email': team.user.email,
+                        'from_email': settings.EMAIL_HOST_USER ,'email_subject': 'Assigned to you'}
+                send_mail(subject=data['email_subject'], message=data['email_body'], from_email=data['from_email'], recipient_list=[data['to_email']])
+        
             return Response(serializer.data, status= HTTP_201_CREATED)
         return Response(serializer.errors, status= HTTP_400_BAD_REQUEST)
+    
+    def generate_automated_number(cls):
+        get_num_file = PqrsFileNum.objects.all()
+        year = datetime.now().year
 
+        if get_num_file.exists():
+            last_file = PqrsFileNum.objects.all().order_by('-id')[0]
+
+            string = last_file.name
+            # print("string", string)
+            # parts = string.split("-")
+            # number = parts[0]
+            file_num = int(string) + 1
+            ed = "%03d" % ( file_num, )
+            d = f'{ed}-{year}'
+            return d
+        else:
+            file_num = 1
+            ed = "%03d" % ( file_num, )
+            d = f'{ed}-{year}'
+            return d
+        
+    def save_automated_number(cls, numData):
+        existing_object = PqrsFileNum.objects.all()
+        parts = numData.split("-")
+        number = parts[0]
+        if existing_object.exists():
+            last_file = PqrsFileNum.objects.all().order_by('-id')[0]
+            last_file.name = number
+            last_file.save()
+        else:
+            pass
+        
 class CustomPagination(PageNumberPagination):
     page_size_query_param = 'PageSize'
     # max_page_size = 100
@@ -130,7 +209,20 @@ class get_pqrs(ListCreateAPIView):
     pagination_class = CustomPagination
 
     def get_queryset(self):
-        queryset = PqrsMain.objects.all()
+        # queryset = PqrsMain.objects.all()
+
+        user = self.request.user
+        if user.is_organisor or user.is_pqrs or user.is_consult:
+            queryset = PqrsMain.objects.all()
+        elif user.is_team:
+            foundObject = Team.objects.get(user_id=user.id)
+            team_id = foundObject.id
+            # print("User is_team", team_id)
+            queryset = PqrsMain.objects.filter(responsible_for_the_response_id=team_id)
+        else:
+            # print("User Unauthorise")
+            queryset = None
+
 
         # Filter based on request parameters
         name_id = self.request.query_params.get('name_id', None)
@@ -149,14 +241,118 @@ class get_pqrs(ListCreateAPIView):
         if file_num:
             queryset = queryset.filter(file_num__icontains=file_num)
    
+        need_answer = self.request.query_params.get('need_answer', None)
+        if need_answer:
+            queryset = queryset.filter(need_answer__icontains=need_answer)
+    
         responsible_user_id = self.request.query_params.get('responsible_user_id', None)
         if responsible_user_id:
             # Filter based on the 'user' field within the 'responsible_for_the_response' Team object
             queryset = queryset.filter(responsible_for_the_response__user_id=responsible_user_id)
         
-   
+        status_of_the_response = self.request.query_params.get('status_of_the_response', None)
+        if status_of_the_response:
+            queryset = queryset.filter(status_of_the_response_id =status_of_the_response)
+        
         return queryset
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
 
+        # Get all distinct values from model
+        all_entity_types = EntityType.objects.values_list('name', flat=True)
+        all_name_types = NameType.objects.values_list('name', flat=True)
+        all_status_type = StatusType.objects.values_list('name', flat=True)
+
+        # Aggregate counts based on field
+        aggregated_counts = queryset.values('entity_or_position__name').annotate(count=Count('id'))
+        name_aggregated_counts = queryset.values('name__name').annotate(count=Count('id'))
+        status_aggregated_counts = queryset.values('status_of_the_response__name').annotate(count=Count('id'))
+
+        # Create a dictionary to store counts for each 
+        counts_dict = {item['entity_or_position__name']: item['count'] for item in aggregated_counts}
+        name_counts_dict = {item['name__name']: item['count'] for item in name_aggregated_counts}
+        status_counts_dict = {item['status_of_the_response__name']: item['count'] for item in status_aggregated_counts}
+
+        # Create a list of dictionaries with all values and their counts
+        result = [{"entity_or_position__name": entity_type, "entity_or_position_count": counts_dict.get(entity_type, 0)} for entity_type in all_entity_types]
+        result_name = [{"name__name": name_type, "mame_count": name_counts_dict.get(name_type, 0)} for name_type in all_name_types]
+        result_status = [{"status_name": status_type, "status_count": status_counts_dict.get(status_type, 0)} for status_type in all_status_type]
+
+
+         # Count instances where need_answer
+        yes_count = queryset.filter(need_answer="Sí").count()
+        no_count = queryset.filter(need_answer="No").count()
+
+
+        # Order the queryset by id
+        queryset = queryset.order_by('-id')
+
+        # Paginate the queryset
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            response_data = {
+                'results': serializer.data,
+                'entity_or_position': result,
+                'name': result_name,
+                'status_of_the_response': result_status,
+                'yes_count': yes_count,
+                'no_count': no_count,
+            }
+            return self.get_paginated_response(response_data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        response_data = {
+            'results': serializer.data,
+            'entity_or_position': result,
+            'name': result_name,
+            'status_of_the_response': result_status,
+            'yes_count': yes_count,
+            'no_count': no_count,
+        }
+
+        return Response(response_data)
+    
+
+class DashboardView(APIView):
+    def get(self, request, format=None):
+        # Get all distinct values from model
+        all_entity_types = EntityType.objects.values_list('name', flat=True)
+        all_name_types = NameType.objects.values_list('name', flat=True)
+        all_status_type = StatusType.objects.values_list('name', flat=True)
+
+        # Aggregate counts based on field
+        aggregated_counts = PqrsMain.objects.values('entity_or_position__name').annotate(count=Count('id'))
+        name_aggregated_counts = PqrsMain.objects.values('name__name').annotate(count=Count('id'))
+        status_aggregated_counts = PqrsMain.objects.values('status_of_the_response__name').annotate(count=Count('id'))
+
+        # Create a dictionary to store counts for each 
+        counts_dict = {item['entity_or_position__name']: item['count'] for item in aggregated_counts}
+        name_counts_dict = {item['name__name']: item['count'] for item in name_aggregated_counts}
+        status_counts_dict = {item['status_of_the_response__name']: item['count'] for item in status_aggregated_counts}
+
+        # Create a list of dictionaries with all values and their counts
+        result = [{"entity_or_position__name": entity_type, "entity_or_position_count": counts_dict.get(entity_type, 0)} for entity_type in all_entity_types]
+        result_name = [{"name__name": name_type, "mame_count": name_counts_dict.get(name_type, 0)} for name_type in all_name_types]
+        result_status = [{"status_name": status_type, "status_count": status_counts_dict.get(status_type, 0)} for status_type in all_status_type]
+
+
+
+
+        # Count instances where need_answer
+        yes_count = PqrsMain.objects.filter(need_answer="Sí").count()
+        no_count = PqrsMain.objects.filter(need_answer="No").count()
+
+        response_data = {
+            'entity_or_position': result,
+            'name': result_name,
+            'status_of_the_response': result_status,
+            'yes_count': yes_count,
+            'no_count': no_count,
+        }
+        return Response(response_data)
+    
 class get_details_pqrs(APIView):
     def get_object(self, pk):
         try:
@@ -183,44 +379,41 @@ class get_details_pqrs(APIView):
         PqrsById.delete()
         return Response(status= HTTP_204_NO_CONTENT)
 
-
 class CurrentFileNumView(APIView):
     def get(self, request, format=None):
-        get_file = PqrsMain.objects.all()
+        get_num_file = PqrsFileNum.objects.all()
+        year = datetime.now().year
 
+        if get_num_file.exists():
+            print("Has Data nn")
+            last_file = PqrsFileNum.objects.all().order_by('-id')[0]
 
-        if get_file.exists():
-            print("Has Data")
-            last_file = PqrsMain.objects.all().order_by('-id')[0]
-            # file_num = int(last_file.file_num) + 1
-
-            # string = "0001-2023"
-            string = last_file.file_num
+            string = last_file.name
             parts = string.split("-")
             number = parts[0]
-            print(number)
+            # num2 = parts[1]
             file_num = int(number) + 1
-            d = "%04d" % ( file_num, ) + "-2023"
+            ed = "%03d" % ( file_num, )
+            d = f'{ed}-{year}'
 
-            # d = "%04d" % ( file_num, )
-            print(d)
+            # print(num2)
         else:
             print("Empty")
             file_num = 1
-            d = "%04d" % ( file_num, ) + "-2023"
-
-            # d = "%04d" % ( file_num, )
-            print(d)
+            ed = "%03d" % ( file_num, )
+            d = f'{ed}-{year}'
+            # print(d)
 
         return Response(d)
 
 class FileResNumView(APIView):
     def get(self, request, format=None):
+        year = datetime.now().year
 
         get_file = FileResNum.objects.all()
 
         if get_file.exists():
-            print("Has Data")
+            # print("Has Data")
             last_file = FileResNum.objects.all().order_by('-id').first()
             getIndex = last_file.name
             # print("xcx", getIndex)
@@ -230,22 +423,28 @@ class FileResNumView(APIView):
                 part = getIndex.split('-')
                 desired_value = part[1]
                 file_num = int(desired_value) + 1
-                d = "RR-" + "%04d" % (file_num,) + "-2023"
-                # print(d)
-                print("new File Num", d)
+                ed = "%03d" % ( file_num, )
+                d = f'RP-{ed}-{year}'
+                # print("new File Num", d)
             else:
-                print("getIndex is None")
+                # print("getIndex is None")
                 file_num = 1
-                d = "RR-" + "%04d" % (file_num,) + "-2023"
+                ed = "%03d" % ( file_num, )
+                d = f'RR-{ed}-{year}'
 
         else:
-            print("getIndex is None")
+            # print("getIndex is None")
             file_num = 1
-            d = "RR-" + "%04d" % (file_num,) + "-2023"
-            # FileResNum.objects.create(name=d)
-            print(d)
-            
+            # d = "RR-" + "%04d" % (file_num,) + "-" + {year}
+            file_num = 1
+            ed = "%03d" % ( file_num, )
+            d = f'RP-{ed}-{year}'
+            # print(d)
         
-
         return Response(d)
 
+class PqrsNotifyView(ListAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = PqrsNotifySerializer
+    pagination_class = CustomPagination
+    queryset = PqrsNotifify.objects.all().order_by("-id")

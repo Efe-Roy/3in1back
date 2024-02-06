@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import User, UserProfile, Team, Agent
+from .models import User, UserProfile, Team, Agent, ActivityTracker
+from contratacionAPI.models import resSecType
 from rest_framework.exceptions import AuthenticationFailed
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import force_str
@@ -8,18 +9,33 @@ from django.conf import settings
 from django.core.mail import send_mail
 
 
+class ResSecTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = resSecType
+        fields = '__all__'
 
 class UserSerializer(serializers.ModelSerializer):
+    responsible_secretary = serializers.SerializerMethodField()
+
     class Meta:
         model=User
-        fields=['id', 'username', 'first_name', 'last_name', 'email', 'is_organisor', 'is_team', 'is_agent', 'is_pqrs', 'is_hiring']
+        fields=['id', 'username', 'first_name', 'last_name', 'email', 
+                'responsible_secretary',
+                'position', 'image', 'signature', 'approve_signature', 
+                'is_organisor', 'is_team', 'is_agent', 'is_agent_org', 'is_pqrs', 
+                'is_hiring', 'is_hiring_org', 'is_sisben', 'is_consult', 
+                'is_ticket_admin', 'is_ticket_agent', 'is_lawyer', 'is_active']
+        
+    def get_responsible_secretary(self, obj):
+        return ResSecTypeSerializer(obj.responsible_secretary).data
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'phone_num', 'image']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 
+                  'phone_num', 'position', 'image', 'signature', 'approve_signature', 
+                  'is_ticket_admin', 'is_ticket_agent']
 
    
 class SignupSerializer(serializers.ModelSerializer):
@@ -54,25 +70,37 @@ class SignupSerializer(serializers.ModelSerializer):
 class OperatorSignUpSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'is_agent', 'is_team', 'is_pqrs', 'is_hiring']
+        fields = ['username', 'email', 'password', 'is_agent', 'is_agent_org',
+                  'is_team', 'is_pqrs', 'is_hiring', 'is_consult',
+                  'responsible_secretary', 'is_hiring_org', 'is_sisben',
+                  'is_ticket_admin', 'is_ticket_agent', 'is_lawyer'
+                ]
         extra_kwargs = {
             'password': {'write_only': True}
         }
     
     def save(self, **kwargs):
         email = self.validated_data['email']
-# Auth_user
+        # Auth_user
         # Check if a user with the provided email already exists
         if User.objects.filter(email=email).exists():
             raise serializers.ValidationError("A user with this email already exists.")
 
         user = User(
             username=self.validated_data['username'],
+            responsible_secretary=self.validated_data['responsible_secretary'],
             email=email,
             is_agent=self.validated_data['is_agent'],
+            is_agent_org=self.validated_data['is_agent_org'],
             is_team=self.validated_data['is_team'],
             is_pqrs=self.validated_data['is_pqrs'],
             is_hiring=self.validated_data['is_hiring'],
+            is_hiring_org=self.validated_data['is_hiring_org'],
+            is_sisben=self.validated_data['is_sisben'],
+            is_consult=self.validated_data['is_consult'],
+            is_ticket_admin=self.validated_data['is_ticket_admin'],
+            is_ticket_agent=self.validated_data['is_ticket_agent'],
+            is_lawyer=self.validated_data['is_lawyer'],
             is_organisor=False,
             is_active = False,
         )
@@ -152,3 +180,14 @@ class SetNewPasswordSerializer(serializers.Serializer):
             raise AuthenticationFailed('The reset link is invalid', 401)
         return super().validate(attrs)
     
+
+class ActivityTrackerSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ActivityTracker
+        fields = '__all__'
+        # fields = [ 'msg', 'user', 'action', 'sector', 'createdAt']
+
+    def get_user(self, obj):
+        return UserSerializer(obj.user).data

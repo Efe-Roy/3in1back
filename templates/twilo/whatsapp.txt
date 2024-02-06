@@ -1,0 +1,3 @@
+Hello {{ recipient_name }}!
+
+This is a reminder for your appointment on {{ appointment_date }} at {{ appointment_time }}.

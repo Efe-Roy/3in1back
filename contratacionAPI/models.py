@@ -1,9 +1,9 @@
 from django.db import models
-from Auth.models import UserProfile, Agent, Team, User
+# from Auth.models import User
 
 # Create your models here.
 class ValueAdded(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
         return self.name or ''
@@ -38,7 +38,13 @@ class ItemValue(models.Model):
     def __str__(self):
         return self.name or ''
     
+class ContratacionManager(models.Manager):
+    def get_queryset(self):
+        # return super().get_queryset() #all data
+        return super().get_queryset().filter(is_deleted=False)
+    
 class ContratacionMain(models.Model):
+    is_active = models.BooleanField(default=False)
     process = models.ForeignKey("processType", null=True, blank=True, on_delete=models.SET_NULL)
     process_num = models.CharField(max_length=2300, null=True, blank=True)
     acroyms_of_contract = models.ForeignKey("acroymsType", null=True, blank=True, on_delete=models.SET_NULL)
@@ -69,24 +75,13 @@ class ContratacionMain(models.Model):
     addition = models.CharField(max_length=2310, null=True, blank=True)
     url_1 = models.CharField(max_length=2310, null=True, blank=True)
     url_2 = models.CharField(max_length=2310, null=True, blank=True)
-
-    # value_added = models.CharField(max_length=2310, null=True, blank=True)
-    value_added = models.ManyToManyField(ValueAdded)
-
     extra_time = models.CharField(max_length=2310, null=True, blank=True)
-    # bpin_project_code = models.CharField(max_length=2310, null=True, blank=True)
+
+    value_added = models.ManyToManyField(ValueAdded)
     bpin_project_code = models.ManyToManyField(BpinProjectCode)
-
-    # value_affected_bpin_proj_cdp = models.CharField(max_length=2310, null=True, blank=True)
     value_affected_bpin_proj_cdp = models.ManyToManyField(ValueAffectedBpinProjCDP)
-
-    # budget_items = models.CharField(max_length=2310, null=True, blank=True)
     budget_items = models.ManyToManyField(BudgetItems)
-
-    # article_name = models.CharField(max_length=2310, null=True, blank=True)
     article_name = models.ManyToManyField(ArticleName)
-
-    # item_value = models.CharField(max_length=2310, null=True, blank=True)
     item_value = models.ManyToManyField(ItemValue)
 
     state = models.ForeignKey("StateType", null=True, blank=True, on_delete=models.SET_NULL)
@@ -95,12 +90,17 @@ class ContratacionMain(models.Model):
     observations = models.CharField(max_length=2310, null=True, blank=True)
     contract_value_plus = models.CharField(max_length=2310, null=True, blank=True)
     real_executed_value_according_to_settlement = models.CharField(max_length=2310, null=True, blank=True)
-    # real_executed_value_according_to_settlement = models.IntegerField(null=True, blank=True)
     file_status = models.CharField(max_length=2310, null=True, blank=True)
+
+    # purpose of track and trace of soft delete
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    is_deleted = models.BooleanField(default=False)
+    objects = ContratacionManager()
 
     def __str__(self):
         return str(self.contractor) or ''
-
+    
 class processType(models.Model):
     name = models.CharField(max_length=310, null=True, blank=True)
 
@@ -139,3 +139,18 @@ class Notification(models.Model):
 
     def __str__(self):
         return self.msg or ''
+    
+
+class LawFirmModel(models.Model):
+    contract = models.ForeignKey("ContratacionMain", related_name="contratacion", on_delete=models.CASCADE, null=True, blank=True)
+    document = models.TextField()
+    conservation = models.CharField(max_length=255)
+    # conservation = models.BooleanField(default=False)
+    personal_services = models.BooleanField(default=False)
+    work_contract = models.BooleanField(default=False)
+    direct_contract = models.BooleanField(default=False)
+    fulfills = models.CharField(max_length=255)
+    
+    def __str__(self):
+        return self.document
+    

@@ -1,4 +1,3 @@
-
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
@@ -10,7 +9,10 @@ urlpatterns = [
     path('api/', include('pqrsAPI.urls')),
     path('api/contratacion/', include('contratacionAPI.urls')),
     path('api/inspección/', include('InspecciónAPI.urls')),
-
+    path('api/lawyer/', include('lawAPI.urls')),
+    path('api/sisben/', include('sisbenAPI.urls')),
+    path('api/ticket/', include('ticketAPI.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

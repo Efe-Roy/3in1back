@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import PqrsMain, EntityType, NameType, MediumResType, StatusType
+from .models import PqrsMain, EntityType, NameType, MediumResType, StatusType, PqrsNotifify
 
 from Auth.serializers import TeamSerializer
 from Auth.models import Team
@@ -48,7 +48,7 @@ class AllPqrsSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'date_of_entry', 'sender', 'entity_or_position', 
             'subject', 'file_num', 'responsible_for_the_response', 
-            'name', 'days_of_the_response', 'expiration_date', 
+            'name', 'days_of_the_response', 'expiration_date', 'need_answer',
             'status_of_the_response', 'medium_of_the_response', 
             'date_of_response', 'file_res', 'comment', 'pdf'
         )
@@ -68,19 +68,19 @@ class AllPqrsSerializer(serializers.ModelSerializer):
     def get_responsible_for_the_response(self, obj):
         return TeamSerializer(obj.responsible_for_the_response).data
 
-
-class RestrictedPqrsMaintSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = PqrsMain
-        fields = ('id', 'date_of_entry', 'sender', 'entity_or_position', 'subject',
-                  'file_num', 'responsible_for_the_response', 'name', 'days_of_the_response', 'expiration_date',
-                  'status_of_the_response'
-                    # 'medium_of_the_response', 'date_of_response', 'file_res'
-                  )
-
 class InnerFormPqrsMaintSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PqrsMain
-        fields = ( 'id', 'medium_of_the_response', 'comment', 'file_res', 'pdf' )
+        fields = ( 'id', 'medium_of_the_response', 'status_of_the_response', 'comment', 'file_res', 'pdf' )
+    
+
+class PqrsNotifySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PqrsNotifify
+        fields = (
+            'id',
+            'msg',
+            'createdAt'
+        )

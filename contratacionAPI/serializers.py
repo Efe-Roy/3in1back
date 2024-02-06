@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import ( 
     ContratacionMain, processType, acroymsType, 
-    typologyType, resSecType, StateType, 
+    typologyType, resSecType, StateType, LawFirmModel,
 
     ValueAdded, BpinProjectCode, ValueAffectedBpinProjCDP,
     BudgetItems, ArticleName, ItemValue, Notification
@@ -65,6 +65,19 @@ class ItemValueSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemValue
         fields = ('name',)
+
+
+class PlanContratacionMainSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContratacionMain
+        fields = (
+            'acroyms_of_contract',
+            'contact_no',
+            'process',
+            'process_num',
+            'responsible_secretary',
+            'typology',
+        )
 
 
 class AllContratacionMainSerializer(serializers.ModelSerializer):
@@ -215,7 +228,6 @@ class AllContratacionMainSerializer(serializers.ModelSerializer):
         return instance
 
 
-
 class ContratacionMainSerializer(serializers.ModelSerializer):
     process = serializers.SerializerMethodField()
     acroyms_of_contract = serializers.SerializerMethodField()
@@ -233,7 +245,7 @@ class ContratacionMainSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContratacionMain
         fields = (
-          'id', 'process', 'process_num', 'acroyms_of_contract', 'typology', 'contact_no',
+          'id', 'is_active', 'process', 'process_num', 'acroyms_of_contract', 'typology', 'contact_no',
           'contractor', 'contractor_identification', 'verification_digit', 
           'birthday_date', 'blood_type', 'sex', 'object', 'worth', 'duration',
           'contract_date', 'start_date', 'finish_date', 'advance', 'report_secop_begins',
@@ -270,3 +282,8 @@ class NotificationSerializer(serializers.ModelSerializer):
             'msg',
             'createdAt'
         )
+
+class LawFirmSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LawFirmModel
+        fields = '__all__'
