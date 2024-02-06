@@ -60,4 +60,4 @@ def run_check_expiration_daily():
 # Start the thread
 thread = threading.Thread(target=run_check_expiration_daily)
 thread.daemon = True
-thread.start()
+# thread.start()

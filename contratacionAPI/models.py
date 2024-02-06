@@ -44,6 +44,7 @@ class ContratacionManager(models.Manager):
         return super().get_queryset().filter(is_deleted=False)
     
 class ContratacionMain(models.Model):
+    is_active = models.BooleanField(default=False)
     process = models.ForeignKey("processType", null=True, blank=True, on_delete=models.SET_NULL)
     process_num = models.CharField(max_length=2300, null=True, blank=True)
     acroyms_of_contract = models.ForeignKey("acroymsType", null=True, blank=True, on_delete=models.SET_NULL)

@@ -28,7 +28,7 @@ def check_expiration():
         st = StatusType.objects.get(id=2)
         if existing_notification:
             # Notification already exists, skip creating a new one
-            print("Notification already exists for:", instance.status_of_the_response.id)
+            print("Notification already exists for:", instance.file_num)
             
         else:
             # Create a new notification if it doesn't exist

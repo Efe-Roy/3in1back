@@ -245,7 +245,7 @@ class ContratacionMainSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContratacionMain
         fields = (
-          'id', 'process', 'process_num', 'acroyms_of_contract', 'typology', 'contact_no',
+          'id', 'is_active', 'process', 'process_num', 'acroyms_of_contract', 'typology', 'contact_no',
           'contractor', 'contractor_identification', 'verification_digit', 
           'birthday_date', 'blood_type', 'sex', 'object', 'worth', 'duration',
           'contract_date', 'start_date', 'finish_date', 'advance', 'report_secop_begins',

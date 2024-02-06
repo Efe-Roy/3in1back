@@ -179,6 +179,8 @@ class get_prerequisite(APIView):
 
         if pt.name == "CONTRATACIÓN DIRECTA":
             initial_part = f'{result_pt}-{ac.name}-{result}'
+        elif pt.name == "CONTRATACIÓN MÍNIMA CUANTÍA.":
+            initial_part = f'{result_pt}-{ac.name}-{result}'
         else:
             initial_part = f'{result_pt}-{result}'
         
@@ -277,6 +279,7 @@ class get_base(APIView):
             return f'{initial_part}-001-{year}'
         
 # ====== End One Family type of logic but different purpose =======
+
 
 class create_contratacion(APIView):
     authentication_classes = [TokenAuthentication]
@@ -462,7 +465,6 @@ class get_post_contratacion(APIView):
         else:
             return f'{initial_part}-001-{year}'
         
-
 
 class CustomPagination(PageNumberPagination):
     page_size_query_param = 'PageSize'
@@ -702,6 +704,15 @@ class get_contratacion(ListCreateAPIView):
 
         return Response(response_data)
 
+class ActivateDeactivateContrataction(APIView):
+    def post(self, request, pk, *args, **kwargs):
+        obj = ContratacionMain.objects.get(id=pk)
+        obj.is_active = not obj.is_active
+        obj.save()
+
+        action = "activated" if obj.is_active else "deactivated"
+        return Response({'message': f'successfully {action}'}, status=status.HTTP_200_OK)
+    
 
 class get_filtered_contratacion(ListCreateAPIView):
     authentication_classes = [TokenAuthentication]
