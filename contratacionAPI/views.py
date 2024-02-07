@@ -1018,15 +1018,12 @@ class LawFirmView(APIView):
 
 class UpdateEmptyStateAPIView(APIView):
     def get(self, request, format=None):
-        # Step 1: Filter ContratacionMain instances with empty state
-        instances_with_empty_state = ContratacionMain.objects.filter(state__isnull=True, process_num__endswith=2024)
+        # instances_with_empty_state = ContratacionMain.objects.filter(state__isnull=True, process_num__endswith=2024)
+        instances_with_empty_state = ContratacionMain.objects.filter(is_active=False, process_num__endswith=2023)
 
-        # Step 2: Update state for filtered instances
         for instance in instances_with_empty_state:
-            default_state = StateType.objects.get(id='1')
-
-            # Update the instance's state
-            instance.state = default_state
+            # default_state = StateType.objects.get(id='1')
+            instance.is_active = True
             instance.save()
 
-        return Response("State updated for instances with empty state.", status=status.HTTP_200_OK)
+        return Response("Successfully updated for instances", status=status.HTTP_200_OK)
