@@ -538,6 +538,10 @@ class get_contratacion(ListCreateAPIView):
         bool_contact_no = self.request.query_params.get('bool_contact_no', None)
         if bool_contact_no:
             queryset = queryset.filter(contact_no__exact='')
+
+        revats = self.request.query_params.get('revats', None)
+        if revats:
+            queryset = queryset.filter(real_executed_value_according_to_settlement__exact='')
         
         sex = self.request.query_params.get('sex', None)
         if sex:
@@ -622,13 +626,30 @@ class get_contratacion(ListCreateAPIView):
         # Count instances where sex is "Femenino"
         female_count = queryset.filter(sex="Femenino").count()
 
+        deactivate_count = queryset.filter(is_active=False).count()
+        activate_count = queryset.filter(is_active=True).count()
+
+
         # Calculate the accumulated value of contract_value_plus
         accumulated_value = queryset.aggregate(
             total_accumulated_value=Sum(
                 Cast('contract_value_plus', output_field=DecimalField(max_digits=15, decimal_places=2))
             )
         )['total_accumulated_value'] or Decimal('0.00')  # Default to 0.00 if no valid values are found
+        
+        accumulated_valor = queryset.aggregate(
+            total_accumulated_value=Sum(
+                Cast('worth', output_field=DecimalField(max_digits=15, decimal_places=2))
+            )
+        )['total_accumulated_value'] or Decimal('0.00') 
+         # Default to 0.00 if no valid values are found
+        accumulated_revats = queryset.aggregate(
+            total_accumulated_value=Sum(
+                Cast('real_executed_value_according_to_settlement', output_field=DecimalField(max_digits=15, decimal_places=2))
+            )
+        )['total_accumulated_value'] or Decimal('0.00')  # Default to 0.00 if no valid values are found
 
+        # accumulated_revats = 0
         # queryset = queryset.order_by('process_num')
 
 
@@ -678,6 +699,10 @@ class get_contratacion(ListCreateAPIView):
             response_data = {
                 'results': serializer.data,
                 'accumulated_value': str(accumulated_value),  # Convert Decimal to string for serialization
+                'accumulated_valor': str(accumulated_valor),  # Convert Decimal to string for serialization
+                'accumulated_revats': str(accumulated_revats),  # Convert Decimal to string for serialization
+                'deactivate_count': deactivate_count,
+                'activate_count': activate_count,
                 'ejecucion_count': ejecucion_count,
                 'terminado_count': terminado_count,
                 'liquidado_count': liquidado_count,
@@ -696,6 +721,8 @@ class get_contratacion(ListCreateAPIView):
         response_data = {
             'results': serializer.data,
             'accumulated_value': str(accumulated_value),  # Convert Decimal to string for serialization
+            'accumulated_valor': str(accumulated_valor),
+            'accumulated_revats': str(accumulated_revats),
             'ejecucion_count': ejecucion_count,
             'terminado_count': terminado_count,
             'liquidado_count': liquidado_count,
