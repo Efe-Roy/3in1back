@@ -286,6 +286,7 @@ class create_contratacion(APIView):
     # permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
+        d_state = StateType.objects.get(id=request.data["state"])
         user = self.request.user
         # process_num = request.data["process_num"]
         pt = processType.objects.get(id=request.data["process"])
@@ -298,11 +299,11 @@ class create_contratacion(APIView):
             'SGG': "SECRETARÍA GENERAL Y DE GOBIERNO",
             'SPO': "SECRETARÍA DE PLANEACIÓN Y ORDENAMIENTO TERRITORIAL",
             'SHB': "SECRETARÍA DE HACIENDA Y BIENES",
-            'SIE': "SECRETARÍA DE INNOACIÓN Y EMPRENDIMIENTO",
+            'SIE': "SECRETARÍA DE INNOVACIÓN Y EMPRENDIMIENTO",
             'SPD': "SECRETARÍA DE PROTECCIÓN SOCIAL Y DESARROLLO COMUNITARIO",
             'SSP': "SECRETARÍA DE SERVICIOS PÚBLICOS Y MEDIO AMBIENTE",
         }
-
+       
         pt_order = {
             'MC': "CONTRATACIÓN MÍNIMA CUANTÍA.",
             'SAMC': "SELECCIÓN ABREVIADA DE MENOR CUANTÍA",
@@ -340,6 +341,7 @@ class create_contratacion(APIView):
             else:
                 serializer.validated_data['process_num'] = automated_number
 
+            serializer.validated_data['state'] = d_state
             serializer.save()
             ActivityTracker.objects.create(
                 msg='Se creó un nuevo contrato con NÚMERO DE PROCESO: ' + automated_number,
@@ -532,6 +534,10 @@ class get_contratacion(ListCreateAPIView):
         contact_no = self.request.query_params.get('contact_no', None)
         if contact_no:
             queryset = queryset.filter(contact_no__icontains=contact_no)
+            
+        bool_contact_no = self.request.query_params.get('bool_contact_no', None)
+        if bool_contact_no:
+            queryset = queryset.filter(contact_no__exact='')
         
         sex = self.request.query_params.get('sex', None)
         if sex:
@@ -1009,3 +1015,21 @@ class LawFirmView(APIView):
 
         return Response({'message': 'Data updated successfully'}, status=status.HTTP_200_OK)
     
+
+class UpdateEmptyStateAPIView(APIView):
+    def get(self, request, format=None):
+        # Step 1: Filter ContratacionMain instances with empty state
+        instances_with_empty_state = ContratacionMain.objects.filter(state__isnull=True)
+
+        # Step 2: Update state for filtered instances
+        for instance in instances_with_empty_state:
+            # Perform your logic to determine the state to assign here
+            # For example, you might assign a default state or fetch it from somewhere
+            # Let's assume you have a default_state variable for demonstration
+            default_state = StateType.objects.get(id='1')
+
+            # Update the instance's state
+            instance.state = default_state
+            instance.save()
+
+        return Response("State updated for instances with empty state.", status=status.HTTP_200_OK)

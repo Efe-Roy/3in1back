@@ -4,7 +4,8 @@ from .views import (
     get_all_resSecType, get_all_StateType, get_post_contratacion, 
     get_details_contratacion, get_contratacion,get_filtered_contratacion, 
     NotificationView, ListUnusedValueAdded, get_prerequisite, LawFirmView,
-    create_contratacion, get_base, update_prerequisite, ActivateDeactivateContrataction
+    create_contratacion, get_base, update_prerequisite, ActivateDeactivateContrataction,
+    UpdateEmptyStateAPIView
 )
 
 urlpatterns = [
@@ -29,6 +30,9 @@ urlpatterns = [
     path('list-value-added/', ListUnusedValueAdded.as_view()),
 
     path('lawfirm/<pk>/', LawFirmView.as_view()),
+
+
+    path('update_empty_state/', UpdateEmptyStateAPIView.as_view()),
 
 ]
 
