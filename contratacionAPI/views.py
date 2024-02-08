@@ -189,8 +189,8 @@ class get_prerequisite(APIView):
         filtered_objects = ContratacionMain.objects.filter(process_num__icontains=f'{ac.name}-{result}')
         filtered_objects_cno = ContratacionMain.objects.filter(contact_no__icontains=f'{ac.name}-{result}')
         if filtered_objects.exists() or filtered_objects_cno.exists():
-            highest_value = filtered_objects.aggregate(Max('process_num'))['process_num__max'] if highest_value else 0
-            highest_contact_no = filtered_objects_cno.aggregate(Max('contact_no'))['contact_no__max'] if highest_value else 0
+            highest_value = filtered_objects.aggregate(Max('process_num'))['process_num__max']
+            highest_contact_no = filtered_objects_cno.aggregate(Max('contact_no'))['contact_no__max']
             
             # Find the maximum number
             max_number = max(highest_value, highest_contact_no)
