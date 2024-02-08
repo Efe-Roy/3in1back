@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-s2v*ko$0$n&k^dy#t3h0i9i2t^$70l9l28*ez7-tgllzwk-hb0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['147.182.215.149', '127.0.0.1', 'fuscaliaycontraloria.com']
 
@@ -90,29 +90,29 @@ WSGI_APPLICATION = 'core.wsgi.application'
 #     }
 # }
 
-if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'dbtest', 
-            'USER': 'postgres',
-            'PASSWORD': 'admin',
-            'HOST': 'localhost', 
-            'PORT': '5432',
-        }
-    }
-else:
+# if DEBUG:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#             'NAME': 'dbtest', 
+#             'USER': 'postgres',
+#             'PASSWORD': 'admin',
+#             'HOST': 'localhost', 
+#             'PORT': '5432',
+#         }
+#     }
+# else:
     # ONLINE LIVE
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'roydb',
-            'USER': 'royuser1',
-            'PASSWORD': 'roy12345',
-            'HOST': 'localhost',
-            'PORT': '5432',
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'roydb',
+        'USER': 'royuser1',
+        'PASSWORD': 'roy12345',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
+}
 
 AUTH_USER_MODEL = 'Auth.User'
 
