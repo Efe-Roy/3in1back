@@ -177,29 +177,32 @@ class get_prerequisite(APIView):
             # Find the key for the given name
             result_pt = next(key for key, value in pt_order.items() if value == pt.name)
 
-        if pt.name == "CONTRATACIÓN DIRECTA":
-            initial_part = f'{result_pt}-{ac.name}-{result}'
-        elif pt.name == "CONTRATACIÓN MÍNIMA CUANTÍA.":
-            initial_part = f'{result_pt}-{ac.name}-{result}'
-        else:
-            initial_part = f'{result_pt}-{result}'
+        initial_part = f'{result_pt}-{ac.name}-{result}'
         
-        automated_number = self.generate_automated_number(initial_part)
+        automated_number = self.generate_automated_number(initial_part, ac, result)
 
         return Response(automated_number)
     
-    def generate_automated_number(cls, initial_part):
+    def generate_automated_number(cls, initial_part, ac, result):
         year = datetime.now().year
-        filtered_objects = ContratacionMain.objects.filter(process_num__startswith=initial_part)
-        if filtered_objects.exists():
-            highest_value = filtered_objects.aggregate(Max('process_num'))['process_num__max']
-            print("highest_value", highest_value.split('-')[-1])
+        print(ac.name)
+        filtered_objects = ContratacionMain.objects.filter(process_num__icontains=f'{ac.name}-{result}')
+        filtered_objects_cno = ContratacionMain.objects.filter(contact_no__icontains=f'{ac.name}-{result}')
+        if filtered_objects.exists() or filtered_objects_cno.exists():
+            highest_value = filtered_objects.aggregate(Max('process_num'))['process_num__max'] if highest_value else 0
+            highest_contact_no = filtered_objects_cno.aggregate(Max('contact_no'))['contact_no__max'] if highest_value else 0
+            
+            # Find the maximum number
+            max_number = max(highest_value, highest_contact_no)
 
-            if highest_value is not None:
+            # Now you can use this new highest number in your code
+            # print("New highest number:", max_number)
+
+            if max_number is not None:
                 # Extract the numeric part from the 'process_num' field
-                year_part = int(highest_value.split('-')[-1])
+                year_part = int(max_number.split('-')[-1])
                 if year_part >= year:
-                    numeric_part = int(highest_value.split('-')[-2])
+                    numeric_part = int(max_number.split('-')[-2])
                     plus_1 = numeric_part + 1
                     count_str = str(plus_1).zfill(3)
                     return f'{initial_part}-{count_str}-{year}'
@@ -245,12 +248,12 @@ class get_base(APIView):
             # Find the key for the given name
             result_pt = next(key for key, value in pt_order.items() if value == pt.name)
 
-        # if pt.name == "CONTRATACIÓN DIRECTA":
-        #     initial_part = f'{result_pt}-{ac.name}-{result}'
-        # else:
-        #     initial_part = f'{result_pt}-{result}'
+        if pt.name == "CONTRATACIÓN DIRECTA":
+            initial_part = None
+        else:
+            initial_part = f'{result_pt}-{result}'
             
-        initial_part = f'{result_pt}-{result}'
+        # initial_part = f'{result_pt}-{result}'
         
         automated_number = self.generate_automated_number(initial_part)
 
@@ -329,17 +332,20 @@ class create_contratacion(APIView):
             else:
                 initial_part = f'{result_pt}-{result}'
         else:
-            initial_part = f'{result_pt}-{result}'
+            if pt.name == "CONTRATACIÓN DIRECTA":
+                initial_part = f'{result_pt}-{ac.name}-{result}'
+            else:
+                initial_part = f'{result_pt}-{result}'
         
         automated_number = self.gen_auto(initial_part)
         
         serializer = PlanContratacionMainSerializer(data=request.data)
         if serializer.is_valid():
-            if pt.name == "CONTRATACIÓN DIRECTA":
-                serializer.validated_data['process_num'] = automated_number
-                serializer.validated_data['contact_no'] = automated_number
-            else:
-                serializer.validated_data['process_num'] = automated_number
+            # if pt.name == "CONTRATACIÓN DIRECTA":
+            #     serializer.validated_data['process_num'] = automated_number
+            #     serializer.validated_data['contact_no'] = automated_number
+            # else:
+            #     serializer.validated_data['process_num'] = automated_number
 
             serializer.validated_data['state'] = d_state
             serializer.save()
