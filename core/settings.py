@@ -13,10 +13,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-SECRET_KEY = env('SECRET_KEY')
+# SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = 'django-insecure-s2v*ko$0$n&k^dy#t3h0i9i2t^$70l9l28*ez7-tgllzwk-hb0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['147.182.215.149', '127.0.0.1', 'fuscaliaycontraloria.com']
 
@@ -221,7 +222,9 @@ MAX_UPLOAD_SIZE = 1024 * 1024 * 100
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_USE_SSL = True
-EMAIL_HOST = env('EMAIL_HOST')
-EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+EMAIL_HOST = "smtp.hostinger.com"
+# EMAIL_HOST_USER = "info@licenciasurbanisticas.com"
+EMAIL_HOST_USER = "info@procesosadministrativos.com"
+# EMAIL_HOST_PASSWORD = "Email10.CD"
+EMAIL_HOST_PASSWORD = "Info10.CD"
 EMAIL_PORT = 465
