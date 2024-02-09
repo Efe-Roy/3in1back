@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
 get_all_entityType, get_all_nameType, DashboardView,
-get_post_pqrs, get_details_pqrs, get_all_pqrs2, CurrentFileNumView,
+get_post_pqrs, get_details_pqrs, get_all_pqrs2, CurrentFileNumView, UpdateStateAPIView,
 FileResNumView, get_all_mediumRes, In_Form_pqrs, get_pqrs, get_all_statuType, PqrsNotifyView
 )
 
@@ -22,4 +22,6 @@ urlpatterns = [
     path('dashboard', DashboardView.as_view()),
 
     path('pqrs_notify/', PqrsNotifyView.as_view()),
+
+    path('pqrs_ss/', UpdateStateAPIView.as_view()),
 ]

@@ -448,3 +448,18 @@ class PqrsNotifyView(ListAPIView):
     serializer_class = PqrsNotifySerializer
     pagination_class = CustomPagination
     queryset = PqrsNotifify.objects.all().order_by("-id")
+
+class UpdateStateAPIView(APIView):
+    def get(self, request, format=None):
+        queryset = PqrsMain.objects.exclude(file_res__isnull=True)
+        queryset = queryset.filter(status_of_the_response__name='CADUCARA PRONTO')
+        # serializer = PqrsMainSerializer(queryset, many=True)
+        # return Response(serializer.data)
+    
+        for instance in queryset:
+            default_state = StatusType.objects.get(id='3')
+            instance.status_of_the_response = default_state
+            instance.save()
+
+        return Response("Successfully updated for instances", status=HTTP_200_OK)
+    
