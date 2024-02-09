@@ -191,9 +191,14 @@ class get_prerequisite(APIView):
         if filtered_objects.exists() or filtered_objects_cno.exists():
             highest_value = filtered_objects.aggregate(Max('process_num'))['process_num__max']
             highest_contact_no = filtered_objects_cno.aggregate(Max('contact_no'))['contact_no__max']
+
+            desired_highest_value = highest_value[3:] 
+            desired_highest_contact_no = highest_contact_no[3:] 
+            print("desired_highest_value", desired_highest_value)
+            print("desired_highest_contact_no", desired_highest_contact_no)
             
             # Find the maximum number
-            max_number = max(highest_value, highest_contact_no)
+            max_number = max(desired_highest_value, desired_highest_contact_no)
 
             # Now you can use this new highest number in your code
             # print("New highest number:", max_number)
