@@ -26,6 +26,7 @@ def check_expiration():
         # Check if a notification with the same message already exists
         existing_notification = PqrsNotifify.objects.filter(msg=notification_msg).first()
         st = StatusType.objects.get(id=2)
+        stv = StatusType.objects.get(id=5)
         if existing_notification:
             # Notification already exists, skip creating a new one
             print("Notification already exists for:", instance.file_num)
@@ -33,9 +34,19 @@ def check_expiration():
         else:
             # Create a new notification if it doesn't exist
             PqrsNotifify.objects.create(msg=notification_msg)
+
+            if instance.status_of_the_response.name == 'CERRADO' or instance.status_of_the_response.name == 'REPARTO':
+                 pass
+            else:
+                if instance.expiration_date > datetime.today().date():
+                    instance.status_of_the_response = stv
+                    instance.save()
+                else:
+                    instance.status_of_the_response = st
+                    instance.save()
             
-            if not instance.status_of_the_response.name == 'CERRADO' or not instance.status_of_the_response.name == 'REPARTO':
-                instance.status_of_the_response = st
-                instance.save()
+            # if not instance.status_of_the_response.name == 'CERRADO' or not instance.status_of_the_response.name == 'REPARTO':
+            #     instance.status_of_the_response = st
+            #     instance.save()
                  
 
