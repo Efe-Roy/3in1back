@@ -10,7 +10,7 @@ from .serializers import (PqrsMainSerializer, EntityTypeSerializer, PqrsNotifySe
                           )
 from .models import PqrsMain, EntityType, NameType, MediumResType, FileResNum, StatusType, PqrsNotifify, PqrsFileNum
 from Auth.models import Agent, Team
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.db.models import Count
 
 from rest_framework.views import APIView
@@ -451,15 +451,49 @@ class PqrsNotifyView(ListAPIView):
 
 class UpdateStateAPIView(APIView):
     def get(self, request, format=None):
-        queryset = PqrsMain.objects.exclude(file_res__isnull=True)
-        queryset = queryset.filter(status_of_the_response__name='CADUCARA PRONTO')
-        serializer = PqrsMainSerializer(queryset, many=True)
-        return Response(serializer.data)
+        # queryset = PqrsMain.objects.exclude(file_res__isnull=True)
+        # queryset = queryset.filter(status_of_the_response__name='CADUCARA PRONTO')
+        # serializer = PqrsMainSerializer(queryset, many=True)
+        # return Response(serializer.data)
     
         # for instance in queryset:
         #     default_state = StatusType.objects.get(id='3')
         #     instance.status_of_the_response = default_state
         #     instance.save()
 
-        return Response("Successfully updated for instances", status=HTTP_200_OK)
-    
+        today = datetime.today().date()
+        five_days_later = today + timedelta(days=5)
+        
+        instances_to_notify = PqrsMain.objects.filter(
+            expiration_date__gt=today,
+            expiration_date__lte=five_days_later
+        )
+        
+        for instance in instances_to_notify:
+            notification_msg = f'El expediente NÚMERO {instance.file_num} está a punto de caducar'
+            # print("Baba Test", notification_msg)
+
+            # Check if a notification with the same message already exists
+            existing_notification = PqrsNotifify.objects.filter(msg=notification_msg).first()
+            st = StatusType.objects.get(id=2)
+            stv = StatusType.objects.get(id=5)
+            if existing_notification:
+                # Notification already exists, skip creating a new one
+                print("Notification already exists for:", instance.file_num)
+                
+            else:
+                # Create a new notification if it doesn't exist
+                # PqrsNotifify.objects.create(msg=notification_msg)
+
+                if instance.status_of_the_response.name == 'CERRADO' or instance.status_of_the_response.name == 'REPARTO':
+                    pass
+                else:
+                    if instance.expiration_date < datetime.today().date():
+                        instance.status_of_the_response = stv
+                        instance.save()
+                    else:
+                        instance.status_of_the_response = st
+                        instance.save()
+
+            return Response("Successfully updated for instances", status=HTTP_200_OK)
+        

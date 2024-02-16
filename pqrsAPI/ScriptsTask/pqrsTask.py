@@ -38,7 +38,7 @@ def check_expiration():
             if instance.status_of_the_response.name == 'CERRADO' or instance.status_of_the_response.name == 'REPARTO':
                  pass
             else:
-                if instance.expiration_date > datetime.today().date():
+                if instance.expiration_date < datetime.today().date():
                     instance.status_of_the_response = stv
                     instance.save()
                 else:
