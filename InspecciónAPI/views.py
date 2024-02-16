@@ -1708,12 +1708,13 @@ class FilteredDataDetailUpdateView(APIView):
             queryset_urban_control = UrbanControl.objects.filter(id__in=id_list1)
             serializer_urban_control = UrbanControlSerializer(queryset_urban_control, many=True)
 
-            police_compliant_ids = filter_selection.selected_police_compliant_ids.split()
+            police_compliant_ids = filter_selection.selected_police_compliant_ids.split(',')
             id_list2 = [int(id_str) for id_str in police_compliant_ids if id_str.isdigit()]
             queryset_police_compliant = PoliceCompliant.objects.filter(id__in=id_list2)
             serializer_police_compliant = PoliceCompliantSerializer(queryset_police_compliant, many=True)
             
-            policeSubmissionLGGS_ids = filter_selection.selected_policeSubmissionLGGS_ids.split()
+            policeSubmissionLGGS_ids = filter_selection.selected_policeSubmissionLGGS_ids.split(',')
+            print("policeSubmissionLGGS_ids", policeSubmissionLGGS_ids)
             id_list3 = [int(id_str) for id_str in policeSubmissionLGGS_ids if id_str.isdigit()]
             queryset_policeSubmissionLGGS = PoliceSubmissionLGGS.objects.filter(id__in=id_list3)
             serializer_policeSubmissionLGGS = PoliceSubmissionLGGSSerializer2(queryset_policeSubmissionLGGS, many=True)
@@ -1723,17 +1724,17 @@ class FilteredDataDetailUpdateView(APIView):
             queryset_trafficViolationCompared = TrafficViolationCompared.objects.filter(id__in=id_list4)
             serializer_trafficViolationCompared = TrafficViolationComparedSerializer2(queryset_trafficViolationCompared, many=True)
 
-            trafficViolationComparedMyColission_ids = filter_selection.selected_trafficViolationComparedMyColission_ids.split()
+            trafficViolationComparedMyColission_ids = filter_selection.selected_trafficViolationComparedMyColission_ids.split(',')
             id_list5 = [int(id_str) for id_str in trafficViolationComparedMyColission_ids if id_str.isdigit()]
             queryset_trafficViolationComparedMyColission = TrafficViolationComparedMyColission.objects.filter(id__in=id_list5)
             serializer_trafficViolationComparedMyColission = TrafficViolationComparedMyColissionSerializer2(queryset_trafficViolationComparedMyColission, many=True)
        
-            complaintAndOfficeToAttend_ids = filter_selection.selected_complaintAndOfficeToAttend_ids.split()
+            complaintAndOfficeToAttend_ids = filter_selection.selected_complaintAndOfficeToAttend_ids.split(',')
             id_list6 = [int(id_str) for id_str in complaintAndOfficeToAttend_ids if id_str.isdigit()]
             queryset_complaintAndOfficeToAttend = ComplaintAndOfficeToAttend.objects.filter(id__in=id_list6)
             serializer_complaintAndOfficeToAttend = ComplaintAndOfficeToAttendSerializer2(queryset_complaintAndOfficeToAttend, many=True)
 
-            file2Return2dOffice_ids = filter_selection.selected_file2Return2dOffice_ids.split()
+            file2Return2dOffice_ids = filter_selection.selected_file2Return2dOffice_ids.split(',')
             id_list7 = [int(id_str) for id_str in file2Return2dOffice_ids if id_str.isdigit()]
             queryset_file2Return2dOffice = File2Return2dOffice.objects.filter(id__in=id_list7)
             serializer_file2Return2dOffice = File2Return2dOfficeSerializer2(queryset_file2Return2dOffice, many=True)
@@ -1770,11 +1771,11 @@ class FilteredDataDetailUpdateView(APIView):
             id_list1 = [int(id_str) for id_str in urban_control_ids if id_str.isdigit()]
             queryset_urban_control = UrbanControl.objects.filter(id__in=id_list1)
 
-            police_compliant_ids = filter_selection.selected_police_compliant_ids.split()
+            police_compliant_ids = filter_selection.selected_police_compliant_ids.split(',')
             id_list2 = [int(id_str) for id_str in police_compliant_ids if id_str.isdigit()]
             queryset_police_compliant = PoliceCompliant.objects.filter(id__in=id_list2)
             
-            policeSubmissionLGGS_ids = filter_selection.selected_policeSubmissionLGGS_ids.split()
+            policeSubmissionLGGS_ids = filter_selection.selected_policeSubmissionLGGS_ids.split(',')
             id_list3 = [int(id_str) for id_str in policeSubmissionLGGS_ids if id_str.isdigit()]
             queryset_policeSubmissionLGGS = PoliceSubmissionLGGS.objects.filter(id__in=id_list3)
 
@@ -1782,15 +1783,15 @@ class FilteredDataDetailUpdateView(APIView):
             id_list4 = [int(id_str) for id_str in trafficViolationCompared_ids if id_str.isdigit()]
             queryset_trafficViolationCompared = TrafficViolationCompared.objects.filter(id__in=id_list4)
 
-            trafficViolationComparedMyColission_ids = filter_selection.selected_trafficViolationComparedMyColission_ids.split()
+            trafficViolationComparedMyColission_ids = filter_selection.selected_trafficViolationComparedMyColission_ids.split(',')
             id_list5 = [int(id_str) for id_str in trafficViolationComparedMyColission_ids if id_str.isdigit()]
             queryset_trafficViolationComparedMyColission = TrafficViolationComparedMyColission.objects.filter(id__in=id_list5)
        
-            complaintAndOfficeToAttend_ids = filter_selection.selected_complaintAndOfficeToAttend_ids.split()
+            complaintAndOfficeToAttend_ids = filter_selection.selected_complaintAndOfficeToAttend_ids.split(',')
             id_list6 = [int(id_str) for id_str in complaintAndOfficeToAttend_ids if id_str.isdigit()]
             queryset_complaintAndOfficeToAttend = ComplaintAndOfficeToAttend.objects.filter(id__in=id_list6)
 
-            file2Return2dOffice_ids = filter_selection.selected_file2Return2dOffice_ids.split()
+            file2Return2dOffice_ids = filter_selection.selected_file2Return2dOffice_ids.split(',')
             id_list7 = [int(id_str) for id_str in file2Return2dOffice_ids if id_str.isdigit()]
             queryset_file2Return2dOffice = File2Return2dOffice.objects.filter(id__in=id_list7)
           
