@@ -19,6 +19,12 @@ class ValueAffectedBpinProjCDP(models.Model):
 
     def __str__(self):
         return self.name or ''
+    
+class SourceOfResources(models.Model):
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name or ''
 
 class BudgetItems(models.Model):
     name = models.CharField(max_length=200)
@@ -58,6 +64,7 @@ class ContratacionMain(models.Model):
     sex = models.CharField(max_length=2300, null=True, blank=True)
     object = models.CharField(max_length=2300, null=True, blank=True)
     worth = models.CharField(max_length=2300, null=True, blank=True)
+    program = models.CharField(max_length=2300, null=True, blank=True)
     duration = models.CharField(max_length=2300, null=True, blank=True)
     contract_date = models.DateField(null=True, blank=True)
     start_date = models.DateField(null=True, blank=True)
@@ -65,7 +72,7 @@ class ContratacionMain(models.Model):
     advance = models.CharField(max_length=2310, null=True, blank=True)
     report_secop_begins = models.DateField(null=True, blank=True)
     secop_contract_report = models.DateField(null=True, blank=True)
-    report_honest_antioquia = models.DateField(null=True, blank=True)
+    # report_honest_antioquia = models.DateField(null=True, blank=True)
     report_institute_web = models.DateField(null=True, blank=True)
     sia_observe_report = models.DateField(null=True, blank=True) #transparent_management_report
     act_liquidation = models.DateField(null=True, blank=True)
@@ -80,6 +87,7 @@ class ContratacionMain(models.Model):
     value_added = models.ManyToManyField(ValueAdded)
     bpin_project_code = models.ManyToManyField(BpinProjectCode)
     value_affected_bpin_proj_cdp = models.ManyToManyField(ValueAffectedBpinProjCDP)
+    source_of_resources = models.ManyToManyField(SourceOfResources)
     budget_items = models.ManyToManyField(BudgetItems)
     article_name = models.ManyToManyField(ArticleName)
     item_value = models.ManyToManyField(ItemValue)
