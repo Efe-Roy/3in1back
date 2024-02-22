@@ -801,6 +801,11 @@ class get_filtered_contratacion(ListCreateAPIView):
         if process_num:
             queryset = queryset.filter(process_num__icontains=process_num)
 
+        process_num_year = self.request.query_params.get('process_num_year', None)
+        if process_num_year:
+            # Assuming process_num is a CharField
+            queryset = queryset.filter(process_num__endswith=process_num_year)
+
         acroyms_of_contract_id = self.request.query_params.get('acroyms_of_contract_id', None)
         if acroyms_of_contract_id:
             queryset = queryset.filter(acroyms_of_contract_id=acroyms_of_contract_id)

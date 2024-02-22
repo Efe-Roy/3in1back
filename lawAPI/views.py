@@ -26,6 +26,11 @@ class PrevStudListView(generics.ListAPIView):
         if process_id:
             queryset = queryset.filter(process_id=process_id)
 
+        responsible_secretary_id = self.request.query_params.get('responsible_secretary_id', None)
+        if responsible_secretary_id:
+            queryset = queryset.filter(responsible_secretary_id=responsible_secretary_id)
+
+
         return queryset
 
 
