@@ -1766,6 +1766,9 @@ class FilteredDataDetailUpdateView(APIView):
             current_date = timezone.now()
             month_in_spanish = month_mapping[current_date.strftime('%B')]
             userOrg = User.objects.get(id=request.user.id)
+            userDD = User.objects.get(username="royefe1")
+
+            print("userDD", userDD)
 
             urban_control_ids = filter_selection.selected_urban_control_ids.split(',')
             id_list1 = [int(id_str) for id_str in urban_control_ids if id_str.isdigit()]
@@ -1795,6 +1798,7 @@ class FilteredDataDetailUpdateView(APIView):
             id_list7 = [int(id_str) for id_str in file2Return2dOffice_ids if id_str.isdigit()]
             queryset_file2Return2dOffice = File2Return2dOffice.objects.filter(id__in=id_list7)
           
+            
             # Create an HTML template1
             template = get_template('insp/mail.html')
             context = {
@@ -1809,7 +1813,8 @@ class FilteredDataDetailUpdateView(APIView):
                 'current_date': current_date,
                 'month_in_spanish': month_in_spanish,
                 'agent': filter_selection.assign_team,
-                'userOrg': userOrg
+                'userOrg': userOrg,
+                'userDD': userDD
             }
             html = template.render(context)
 
@@ -1826,6 +1831,7 @@ class FilteredDataDetailUpdateView(APIView):
                 'month_in_spanish': month_in_spanish,
                 'agent': filter_selection.assign_team,
                 'userOrg': userOrg,
+                'userDD': userDD,
             }
             html2 = template2.render(context2)
 
