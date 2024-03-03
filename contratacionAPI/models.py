@@ -83,6 +83,7 @@ class ContratacionMain(models.Model):
     url_1 = models.CharField(max_length=2310, null=True, blank=True)
     url_2 = models.CharField(max_length=2310, null=True, blank=True)
     extra_time = models.CharField(max_length=2310, null=True, blank=True)
+    bpin_proj_name = models.CharField(max_length=2310, null=True, blank=True)
 
     value_added = models.ManyToManyField(ValueAdded)
     bpin_project_code = models.ManyToManyField(BpinProjectCode)
