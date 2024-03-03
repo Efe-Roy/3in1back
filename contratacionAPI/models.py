@@ -108,7 +108,7 @@ class ContratacionMain(models.Model):
     objects = ContratacionManager()
 
     def __str__(self):
-        return str(self.contractor) or ''
+        return str(self.contact_no) or ''
     
 class processType(models.Model):
     name = models.CharField(max_length=310, null=True, blank=True)

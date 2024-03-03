@@ -185,6 +185,7 @@ class AllContratacionMainSerializer(serializers.ModelSerializer):
         instance.url_1 = validated_data.get('url_1', instance.url_1)
         instance.url_2 = validated_data.get('url_2', instance.url_2)
         instance.extra_time = validated_data.get('extra_time', instance.extra_time)
+        instance.bpin_proj_name = validated_data.get('bpin_proj_name', instance.bpin_proj_name)
         instance.state = validated_data.get('state', instance.state)
         instance.responsible_secretary = validated_data.get('responsible_secretary', instance.responsible_secretary)
         instance.name_supervisor_or_controller = validated_data.get('name_supervisor_or_controller', instance.name_supervisor_or_controller)
