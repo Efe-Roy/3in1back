@@ -3,7 +3,7 @@ from .models import (
     ContratacionMain, processType, acroymsType, 
     typologyType, resSecType, StateType, LawFirmModel,
 
-    ValueAdded, BpinProjectCode, ValueAffectedBpinProjCDP,
+    ValueAdded, BpinProjectCode, BpinProjName, ValueAffectedBpinProjCDP,
     BudgetItems, ArticleName, ItemValue, Notification, SourceOfResources
 )
 
@@ -44,6 +44,11 @@ class ValueAddedSerializer(serializers.ModelSerializer):
 class BpinProjectCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = BpinProjectCode
+        fields = ('name',)
+
+class BpinProjNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BpinProjName
         fields = ('name',)
 
 class ValueAffectedBpinProjCDPSerializer(serializers.ModelSerializer):
@@ -88,6 +93,7 @@ class PlanContratacionMainSerializer(serializers.ModelSerializer):
 class AllContratacionMainSerializer(serializers.ModelSerializer):
     value_added = ValueAddedSerializer(many=True)
     bpin_project_code = BpinProjectCodeSerializer(many=True)
+    bpin_proj_name = BpinProjNameSerializer(many=True)
     value_affected_bpin_proj_cdp = ValueAffectedBpinProjCDPSerializer(many=True)
     source_of_resources = SourceOfResourcesSerializer(many=True)
     budget_items = BudgetItemsSerializer(many=True)
@@ -113,6 +119,7 @@ class AllContratacionMainSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         value_added_datas = validated_data.pop('value_added')
         bpin_project_code_datas = validated_data.pop('bpin_project_code')
+        bpin_proj_name_datas = validated_data.pop('bpin_proj_name')
         value_affected_bpin_proj_cdp_datas = validated_data.pop('value_affected_bpin_proj_cdp')
         source_of_resources_datas = validated_data.pop('source_of_resources')
         budget_items_datas = validated_data.pop('budget_items')
@@ -128,6 +135,10 @@ class AllContratacionMainSerializer(serializers.ModelSerializer):
         for bpin_project_code_data in bpin_project_code_datas:
             resData = BpinProjectCode.objects.create(**bpin_project_code_data)
             contratacion.bpin_project_code.add(resData)
+
+        for bpin_proj_name_data in bpin_proj_name_datas:
+            resData = BpinProjName.objects.create(**bpin_proj_name_data)
+            contratacion.bpin_proj_name.add(resData)
 
         for value_affected_bpin_proj_cdp_data in value_affected_bpin_proj_cdp_datas:
             resData = ValueAffectedBpinProjCDP.objects.create(**value_affected_bpin_proj_cdp_data)
@@ -185,7 +196,7 @@ class AllContratacionMainSerializer(serializers.ModelSerializer):
         instance.url_1 = validated_data.get('url_1', instance.url_1)
         instance.url_2 = validated_data.get('url_2', instance.url_2)
         instance.extra_time = validated_data.get('extra_time', instance.extra_time)
-        instance.bpin_proj_name = validated_data.get('bpin_proj_name', instance.bpin_proj_name)
+        # instance.bpin_proj_name = validated_data.get('bpin_proj_name', instance.bpin_proj_name)
         instance.state = validated_data.get('state', instance.state)
         instance.responsible_secretary = validated_data.get('responsible_secretary', instance.responsible_secretary)
         instance.name_supervisor_or_controller = validated_data.get('name_supervisor_or_controller', instance.name_supervisor_or_controller)
@@ -209,6 +220,13 @@ class AllContratacionMainSerializer(serializers.ModelSerializer):
         for item_data in bpin_project_code_data:
             bpin_project_code_instance = BpinProjectCode.objects.create(**item_data)
             instance.bpin_project_code.add(bpin_project_code_instance)
+
+        # Update the bpin_proj_name field (Many-to-many)
+        bpin_proj_name_data = validated_data.get('bpin_proj_name', [])
+        instance.bpin_proj_name.clear()  # Remove existing related objects
+        for item_data in bpin_proj_name_data:
+            bpin_proj_name_instance = BpinProjName.objects.create(**item_data)
+            instance.bpin_proj_name.add(bpin_proj_name_instance)
 
         # Update the value_affected_bpin_proj_cdp field (Many-to-many)
         value_affected_bpin_proj_cdp_data = validated_data.get('value_affected_bpin_proj_cdp', [])
@@ -258,6 +276,7 @@ class ContratacionMainSerializer(serializers.ModelSerializer):
 
     value_added = ValueAddedSerializer(many=True)
     bpin_project_code = BpinProjectCodeSerializer(many=True)
+    bpin_proj_name = BpinProjNameSerializer(many=True)
     value_affected_bpin_proj_cdp = ValueAffectedBpinProjCDPSerializer(many=True)
     source_of_resources = SourceOfResourcesSerializer(many=True)
     budget_items = BudgetItemsSerializer(many=True)

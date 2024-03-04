@@ -7,7 +7,7 @@ ContratacionMain, processType, acroymsType,
 typologyType, resSecType, StateType, LawFirmModel,
 
 ValueAdded, BpinProjectCode, ValueAffectedBpinProjCDP,
-BudgetItems, ArticleName, ItemValue, Notification
+BudgetItems, ArticleName, ItemValue, Notification, BpinProjName
 )
 from import_export.admin import ImportExportModelAdmin
 
@@ -33,6 +33,11 @@ admin.site.register(ValueAdded, ValueAddedAdmin)
 class BpinProjectCodeAdmin(ImportExportModelAdmin, admin.ModelAdmin):
         ...
 admin.site.register(BpinProjectCode, BpinProjectCodeAdmin)
+
+
+class BpinProjNameAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+        ...
+admin.site.register(BpinProjName, BpinProjNameAdmin)
 
 
 class ValueAffectedBpinProjCDPAdmin(ImportExportModelAdmin, admin.ModelAdmin):

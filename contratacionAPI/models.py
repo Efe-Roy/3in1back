@@ -13,6 +13,12 @@ class BpinProjectCode(models.Model):
 
     def __str__(self):
         return self.name or ''
+    
+class BpinProjName(models.Model):
+    name = models.CharField(max_length=200, null=True, blank=True)
+
+    def __str__(self):
+        return self.name or ''
 
 class ValueAffectedBpinProjCDP(models.Model):
     name = models.CharField(max_length=200)
@@ -83,10 +89,11 @@ class ContratacionMain(models.Model):
     url_1 = models.CharField(max_length=2310, null=True, blank=True)
     url_2 = models.CharField(max_length=2310, null=True, blank=True)
     extra_time = models.CharField(max_length=2310, null=True, blank=True)
-    bpin_proj_name = models.CharField(max_length=2310, null=True, blank=True)
+    # bpin_proj_name = models.CharField(max_length=2310, null=True, blank=True)
 
     value_added = models.ManyToManyField(ValueAdded)
     bpin_project_code = models.ManyToManyField(BpinProjectCode)
+    bpin_proj_name = models.ManyToManyField(BpinProjName)
     value_affected_bpin_proj_cdp = models.ManyToManyField(ValueAffectedBpinProjCDP)
     source_of_resources = models.ManyToManyField(SourceOfResources)
     budget_items = models.ManyToManyField(BudgetItems)
