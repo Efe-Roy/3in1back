@@ -187,9 +187,9 @@ class get_prerequisite(APIView):
     def generate_automated_number(cls, initial_part, ac, result):
         print("initial_part", initial_part)
         year = datetime.now().year
-        # print("ddff", f'{ac.name}-{result}')
-        filtered_objects = ContratacionMain.objects.filter(process_num__icontains=f'{result}')
-        filtered_objects_cno = ContratacionMain.objects.filter(contact_no__icontains=f'{result}')
+        print("ddff", f'{ac.name}-{result}')
+        filtered_objects = ContratacionMain.objects.filter(process_num__icontains=f'{ac.name}-{result}')
+        filtered_objects_cno = ContratacionMain.objects.filter(contact_no__icontains=f'{ac.name}-{result}')
         if filtered_objects.exists() or filtered_objects_cno.exists():
             highest_value = filtered_objects.aggregate(Max('process_num'))['process_num__max']
             highest_contact_no = filtered_objects_cno.aggregate(Max('contact_no'))['contact_no__max']
@@ -227,90 +227,6 @@ class get_prerequisite(APIView):
             return f'{initial_part}-001-{year}'
         
 class get_base(APIView):
-    def get(self, request, ptR, rscR):
-        pt = processType.objects.get(id=ptR)
-        rsc = resSecType.objects.get(id=rscR)
-
-        rsc_order = {
-            'AMS': "ALCALDÍA MUNICIPAL",
-            'SGG': "SECRETARÍA GENERAL Y DE GOBIERNO",
-            'SPO': "SECRETARÍA DE PLANEACIÓN Y ORDENAMIENTO TERRITORIAL",
-            'SHB': "SECRETARÍA DE HACIENDA Y BIENES",
-            'SIE': "SECRETARÍA DE INNOVACIÓN Y EMPRENDIMIENTO",
-            'SPD': "SECRETARÍA DE PROTECCIÓN SOCIAL Y DESARROLLO COMUNITARIO",
-            'SSP': "SECRETARÍA DE SERVICIOS PÚBLICOS Y MEDIO AMBIENTE",
-        }
-
-        pt_order = {
-            'MC': "CONTRATACIÓN MÍNIMA CUANTÍA.",
-            'SAMC': "SELECCIÓN ABREVIADA DE MENOR CUANTÍA",
-            'SI': "SUBASTA INVERSA",
-            'LP': "LICITACIÓN PÚBLICA",
-            'CM': "CONCURSO DE MÉRITOS",
-            'CD': "CONTRATACIÓN DIRECTA",
-        }
-        
-        result = "Unknown"
-        if rsc.name in rsc_order.values():
-            # Find the key for the given name
-            result = next(key for key, value in rsc_order.items() if value == rsc.name)
-        
-        result_pt = "Unknown"
-        if pt.name in pt_order.values():
-            # Find the key for the given name
-            result_pt = next(key for key, value in pt_order.items() if value == pt.name)
-
-        if pt.name == "CONTRATACIÓN DIRECTA":
-            initial_part = None
-        else:
-            initial_part = f'{result_pt}-{result}'
-        
-        automated_number = self.generate_automated_number(initial_part, result)
-
-        return Response(automated_number)
-    
-    def generate_automated_number(cls, initial_part, result):
-        print("initial_part", initial_part)
-        year = datetime.now().year
-        filtered_objects = ContratacionMain.objects.filter(process_num__icontains=f'{result}')
-        filtered_objects_cno = ContratacionMain.objects.filter(contact_no__icontains=f'{result}')
-        if filtered_objects.exists() or filtered_objects_cno.exists():
-            highest_value = filtered_objects.aggregate(Max('process_num'))['process_num__max']
-            highest_contact_no = filtered_objects_cno.aggregate(Max('contact_no'))['contact_no__max']
-
-            print(highest_value)
-            # desired_highest_value = highest_value[3:] 
-            # desired_highest_contact_no = highest_contact_no[3:] 
-            
-            desired_highest_value = highest_value[3:] if highest_value is not None else None
-            desired_highest_contact_no = highest_contact_no[3:] if highest_contact_no is not None else None
-
-            print("desired_highest_value", desired_highest_value)
-            print("desired_highest_contact_no", desired_highest_contact_no)
-            
-            # Find the maximum number
-            # max_number = max(desired_highest_value, desired_highest_contact_no)
-            max_number = max(desired_highest_value or '', desired_highest_contact_no or '')
-
-            # Now you can use this new highest number in your code
-            # print("New highest number:", max_number)
-
-            if max_number is not None:
-                # Extract the numeric part from the 'process_num' field
-                year_part = int(max_number.split('-')[-1])
-                if year_part >= year:
-                    numeric_part = int(max_number.split('-')[-2])
-                    plus_1 = numeric_part + 1
-                    count_str = str(plus_1).zfill(3)
-                    return f'{initial_part}-{count_str}-{year}'
-                else:
-                    return f'{initial_part}-001-{year}'
-            else:
-                return f'{initial_part}-001-{year}'
-        else:
-            return f'{initial_part}-001-{year}'
-        
-class get_base3(APIView):
     def get(self, request, ptR, rscR):
         pt = processType.objects.get(id=ptR)
         # ac = acroymsType.objects.get(id=acR)
