@@ -194,13 +194,23 @@ class get_prerequisite(APIView):
             highest_value = filtered_objects.aggregate(Max('process_num'))['process_num__max']
             highest_contact_no = filtered_objects_cno.aggregate(Max('contact_no'))['contact_no__max']
 
-            print(highest_value)
+            # print(highest_value)
             # desired_highest_value = highest_value[3:] 
             # desired_highest_contact_no = highest_contact_no[3:] 
             
-            desired_highest_value = highest_value[3:] if highest_value is not None else None
-            desired_highest_contact_no = highest_contact_no[3:] if highest_contact_no is not None else None
+            # desired_highest_value = highest_value[3:] if highest_value is not None else None
+            # desired_highest_contact_no = highest_contact_no[3:] if highest_contact_no is not None else None
 
+            if highest_value is not None:
+                desired_highest_value = '-'.join(highest_value.split("-")[-3:])
+            else:
+                desired_highest_value = None
+
+            if highest_contact_no is not None:
+                desired_highest_contact_no = '-'.join(highest_contact_no.split("-")[-3:])
+            else:
+                desired_highest_contact_no = None
+                
             print("desired_highest_value", desired_highest_value)
             print("desired_highest_contact_no", desired_highest_contact_no)
             
