@@ -192,11 +192,11 @@ class get_prerequisite(APIView):
         filtered_objects = ContratacionMain.objects.filter(process_num__icontains=f'{ac.name}-{result}')
         filtered_objects_cno = ContratacionMain.objects.filter(contact_no__icontains=f'{ac.name}-{result}')
         if filtered_objects.exists() or filtered_objects_cno.exists():
-            # highest_value = filtered_objects.aggregate(Max('process_num'))['process_num__max']
-            # highest_contact_no = filtered_objects_cno.aggregate(Max('contact_no'))['contact_no__max']
+            highest_value = filtered_objects.aggregate(Max('process_num'))['process_num__max']
+            highest_contact_no = filtered_objects_cno.aggregate(Max('contact_no'))['contact_no__max']
 
-            highest_value = max(filtered_objects, key=lambda obj: int(re.search(r'\d+$', obj.process_num).group())).process_num
-            highest_contact_no = max(filtered_objects_cno, key=lambda obj: int(re.search(r'\d+$', obj.contact_no).group())).contact_no
+            # highest_value = max(filtered_objects, key=lambda obj: int(re.search(r'\d+$', obj.process_num).group())).process_num
+            # highest_contact_no = max(filtered_objects_cno, key=lambda obj: int(re.search(r'\d+$', obj.contact_no).group())).contact_no
             
             print("highest_value", highest_value)
             # desired_highest_value = highest_value[3:] 
