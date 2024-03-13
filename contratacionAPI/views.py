@@ -32,7 +32,7 @@ from django.db.models.functions import Cast, Substr
 from decimal import Decimal
 from datetime import datetime
 from .namesTitle import NAMES
-import re
+
 
 # def jsonRoy(request):
 #     data= list(ContratacionMain.objects.values())
@@ -191,45 +191,56 @@ class get_prerequisite(APIView):
         print("ddff", f'{ac.name}-{result}')
         filtered_objects = ContratacionMain.objects.filter(process_num__icontains=f'{ac.name}-{result}')
         filtered_objects_cno = ContratacionMain.objects.filter(contact_no__icontains=f'{ac.name}-{result}')
+
         if filtered_objects.exists() or filtered_objects_cno.exists():
-            highest_value = filtered_objects.aggregate(Max('process_num'))['process_num__max']
-            highest_contact_no = filtered_objects_cno.aggregate(Max('contact_no'))['contact_no__max']
+            # highest_value = filtered_objects.aggregate(Max('process_num'))['process_num__max']
+            # highest_contact_no = filtered_objects_cno.aggregate(Max('contact_no'))['contact_no__max']
 
-            # highest_value = max(filtered_objects, key=lambda obj: int(re.search(r'\d+$', obj.process_num).group())).process_num
-            # highest_contact_no = max(filtered_objects_cno, key=lambda obj: int(re.search(r'\d+$', obj.contact_no).group())).contact_no
-            
-            print("highest_value", highest_value)
-            # desired_highest_value = highest_value[3:] 
-            # desired_highest_contact_no = highest_contact_no[3:] 
-            
-            # desired_highest_value = highest_value[3:] if highest_value is not None else None
-            # desired_highest_contact_no = highest_contact_no[3:] if highest_contact_no is not None else None
+            # if highest_value is not None:
+            #     desired_highest_value = '-'.join(highest_value.split("-")[-3:])
+            # else:
+            #     desired_highest_value = None
 
-            if highest_value is not None:
-                desired_highest_value = '-'.join(highest_value.split("-")[-3:])
-            else:
-                desired_highest_value = None
-
-            if highest_contact_no is not None:
-                desired_highest_contact_no = '-'.join(highest_contact_no.split("-")[-3:])
-            else:
-                desired_highest_contact_no = None
+            # if highest_contact_no is not None:
+            #     desired_highest_contact_no = '-'.join(highest_contact_no.split("-")[-3:])
+            # else:
+            #     desired_highest_contact_no = None
                 
-            print("desired_highest_value", desired_highest_value)
-            print("desired_highest_contact_no", desired_highest_contact_no)
+
+
+            process_nums_2 = [obj.process_num for obj in filtered_objects]
+            contact_nos_2 = [obj.contact_no for obj in filtered_objects_cno]
+
+            # data = ['C-PS-SSP-001-2023', 'CD-C-PS-SSP-001-2024', 'C-PS-SSP-002-2023', 'CD-C-PS-SSP-003-2023', 'CD-C-PS-SSP-002-2024']
+            highest_value_2 = max(process_nums_2, key=lambda x: (int(x.split('-')[-1]), int(x.split('-')[-2])))
+            highest_contact_no_2 = max(contact_nos_2, key=lambda x: (int(x.split('-')[-1]), int(x.split('-')[-2])))
+            desired_highest_value_2 = highest_value_2.split('-')[-3] + '-' + highest_value_2.split('-')[-2] + '-' + highest_value_2.split('-')[-1]
+            desired_highest_contact_no_2 = highest_contact_no_2.split('-')[-3] + '-' + highest_contact_no_2.split('-')[-2] + '-' + highest_contact_no_2.split('-')[-1]
+                
+            if desired_highest_value_2 is None:
+                desired_highest_value_2 = None
+
+            if desired_highest_contact_no_2 is None:
+                desired_highest_contact_no_2 = None
+
+            print("Highest value 2:", desired_highest_value_2)
+            print("Highest contact_nos 2:", desired_highest_contact_no_2)
+
+            # print("desired_highest_value", desired_highest_value)
+            # print("desired_highest_contact_no", desired_highest_contact_no)
             
             # Find the maximum number
-            # max_number = max(desired_highest_value, desired_highest_contact_no)
-            max_number = max(desired_highest_value or '', desired_highest_contact_no or '')
+            max_number_2 = max(desired_highest_value_2 or '', desired_highest_contact_no_2 or '')
+            # max_number = max(desired_highest_value or '', desired_highest_contact_no or '')
 
             # Now you can use this new highest number in your code
-            print("New highest number:", max_number)
+            # print("New highest number 2:", max_number)
 
-            if max_number is not None:
+            if max_number_2 is not None:
                 # Extract the numeric part from the 'process_num' field
-                year_part = int(max_number.split('-')[-1])
+                year_part = int(max_number_2.split('-')[-1])
                 if year_part >= year:
-                    numeric_part = int(max_number.split('-')[-2])
+                    numeric_part = int(max_number_2.split('-')[-2])
                     plus_1 = numeric_part + 1
                     count_str = str(plus_1).zfill(3)
                     return f'{initial_part}-{count_str}-{year}'
