@@ -215,17 +215,38 @@ class get_prerequisite(APIView):
             process_nums_2 = [obj.process_num for obj in filtered_objects]
             contact_nos_2 = [obj.contact_no for obj in filtered_objects_cno]
 
-            # data = ['C-PS-SSP-001-2023', 'CD-C-PS-SSP-001-2024', 'C-PS-SSP-002-2023', 'CD-C-PS-SSP-003-2023', 'CD-C-PS-SSP-002-2024']
-            highest_value_2 = max(process_nums_2, key=lambda x: (int(x.split('-')[-1]), int(x.split('-')[-2])))
-            highest_contact_no_2 = max(contact_nos_2, key=lambda x: (int(x.split('-')[-1]), int(x.split('-')[-2])))
-            desired_highest_value_2 = highest_value_2.split('-')[-3] + '-' + highest_value_2.split('-')[-2] + '-' + highest_value_2.split('-')[-1]
-            desired_highest_contact_no_2 = highest_contact_no_2.split('-')[-3] + '-' + highest_contact_no_2.split('-')[-2] + '-' + highest_contact_no_2.split('-')[-1]
-                
-            if desired_highest_value_2 is None:
-                desired_highest_value_2 = None
+            # print("process_nums_2", process_nums_2)
+            # print("contact_nos_2", contact_nos_2)
 
-            if desired_highest_contact_no_2 is None:
+            # data = ['C-PS-SSP-001-2023', 'CD-C-PS-SSP-001-2024', 'C-PS-SSP-002-2023', 'CD-C-PS-SSP-003-2023', 'CD-C-PS-SSP-002-2024']
+            # highest_value_2 = max(process_nums_2, key=lambda x: (int(x.split('-')[-1]), int(x.split('-')[-2])))
+            # highest_contact_no_2 = max(contact_nos_2, key=lambda x: (int(x.split('-')[-1]), int(x.split('-')[-2])))
+            # desired_highest_value_2 = highest_value_2.split('-')[-3] + '-' + highest_value_2.split('-')[-2] + '-' + highest_value_2.split('-')[-1]
+            # desired_highest_contact_no_2 = highest_contact_no_2.split('-')[-3] + '-' + highest_contact_no_2.split('-')[-2] + '-' + highest_contact_no_2.split('-')[-1]
+                
+            # if desired_highest_value_2 is None:
+            #     desired_highest_value_2 = None
+
+            # if desired_highest_contact_no_2 is None:
+            #     desired_highest_contact_no_2 = None
+
+            # Check if process_nums_2 is empty
+            if process_nums_2:
+                highest_value_2 = max(process_nums_2, key=lambda x: (int(x.split('-')[-1]), int(x.split('-')[-2])))
+                desired_highest_value_2 = highest_value_2.split('-')[-3] + '-' + highest_value_2.split('-')[-2] + '-' + highest_value_2.split('-')[-1]
+                print("Highest value found:", desired_highest_value_2)
+            else:
+                desired_highest_value_2 = None
+                print("No values found in process_nums_2")
+
+            # Similarly, check if contact_nos_2 is empty
+            if contact_nos_2:
+                highest_contact_no_2 = max(contact_nos_2, key=lambda x: (int(x.split('-')[-1]), int(x.split('-')[-2])))
+                desired_highest_contact_no_2 = highest_contact_no_2.split('-')[-3] + '-' + highest_contact_no_2.split('-')[-2] + '-' + highest_contact_no_2.split('-')[-1]
+                print("Highest contact number found:", desired_highest_contact_no_2)
+            else:
                 desired_highest_contact_no_2 = None
+                print("No values found in contact_nos_2")
 
             print("Highest value 2:", desired_highest_value_2)
             print("Highest contact_nos 2:", desired_highest_contact_no_2)
