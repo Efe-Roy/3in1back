@@ -2,6 +2,12 @@ from django.db import models
 # from Auth.models import User
 
 # Create your models here.
+class ServiceSegment(models.Model):
+    name = models.CharField(max_length=200, null=True, blank=True)
+
+    def __str__(self):
+        return self.name or ''
+    
 class ValueAdded(models.Model):
     name = models.CharField(max_length=200, null=True, blank=True)
 
@@ -89,9 +95,11 @@ class ContratacionMain(models.Model):
     url_1 = models.CharField(max_length=2310, null=True, blank=True)
     url_2 = models.CharField(max_length=2310, null=True, blank=True)
     extra_time = models.CharField(max_length=2310, null=True, blank=True)
+    expense_type = models.CharField(max_length=2310, null=True, blank=True)
     # bpin_proj_name = models.CharField(max_length=2310, null=True, blank=True)
 
     value_added = models.ManyToManyField(ValueAdded)
+    service_segment = models.ManyToManyField(ServiceSegment)
     bpin_project_code = models.ManyToManyField(BpinProjectCode)
     bpin_proj_name = models.ManyToManyField(BpinProjName)
     value_affected_bpin_proj_cdp = models.ManyToManyField(ValueAffectedBpinProjCDP)
