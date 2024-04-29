@@ -30,9 +30,8 @@ class ContratacionMainAdmin(admin.ModelAdmin):
 #         'payment',
 #         'coupon'
 #     ]
-    list_filter = ['contact_no',
+    list_filter = [
                    'process',
-                   'process_num',
                    'acroyms_of_contract',
                    'typology']
     search_fields = [
