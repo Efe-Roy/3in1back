@@ -31,7 +31,7 @@ class ContratacionMainAdmin(admin.ModelAdmin):
 #         'coupon'
 #     ]
     list_filter = [
-                   'process',
+                   'responsible_secretary',
                    'acroyms_of_contract',
                    'typology']
     search_fields = [
