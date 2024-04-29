@@ -87,6 +87,7 @@ class update_prerequisite(APIView):
             'SAMC': "SELECCIÓN ABREVIADA DE MENOR CUANTÍA",
             'SI': "SUBASTA INVERSA",
             'LP': "LICITACIÓN PÚBLICA",
+            'IP': "INVITACIÓN PRIVADA",
             'CM': "CONCURSO DE MÉRITOS",
             'CD': "CONTRATACIÓN DIRECTA",
         }
@@ -165,6 +166,7 @@ class get_prerequisite(APIView):
             'SAMC': "SELECCIÓN ABREVIADA DE MENOR CUANTÍA",
             'SI': "SUBASTA INVERSA",
             'LP': "LICITACIÓN PÚBLICA",
+            'IP': "INVITACIÓN PRIVADA",
             'CM': "CONCURSO DE MÉRITOS",
             'CD': "CONTRATACIÓN DIRECTA",
         }
@@ -272,6 +274,7 @@ class get_base(APIView):
             'SAMC': "SELECCIÓN ABREVIADA DE MENOR CUANTÍA",
             'SI': "SUBASTA INVERSA",
             'LP': "LICITACIÓN PÚBLICA",
+            'IP': "INVITACIÓN PRIVADA",
             'CM': "CONCURSO DE MÉRITOS",
             'CD': "CONTRATACIÓN DIRECTA",
         }
@@ -351,6 +354,7 @@ class create_contratacion(APIView):
             'SAMC': "SELECCIÓN ABREVIADA DE MENOR CUANTÍA",
             'SI': "SUBASTA INVERSA",
             'LP': "LICITACIÓN PÚBLICA",
+            'IP': "INVITACIÓN PRIVADA",
             'CM': "CONCURSO DE MÉRITOS",
             'CD': "CONTRATACIÓN DIRECTA",
         }
@@ -451,6 +455,7 @@ class get_post_contratacion(APIView):
             'SAMC': "SELECCIÓN ABREVIADA DE MENOR CUANTÍA",
             'SI': "SUBASTA INVERSA",
             'LP': "LICITACIÓN PÚBLICA",
+            'IP': "INVITACIÓN PRIVADA",
             'CM': "CONCURSO DE MÉRITOS",
             'CD': "CONTRATACIÓN DIRECTA",
         }
