@@ -12,9 +12,35 @@ BudgetItems, ArticleName, ItemValue, Notification, BpinProjName
 from import_export.admin import ImportExportModelAdmin
 
 # Register your models here.
-class ContratacionMainAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-        ...
-        
+# class ContratacionMainAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+#         ...
+class ContratacionMainAdmin(admin.ModelAdmin):
+    list_display = ['id',
+                    'process',
+                    'process_num',
+                    'acroyms_of_contract',
+                    'typology',
+                    'contact_no',
+                    'contractor'
+                    ]
+#     list_display_links = [
+#         'user',
+#         'shipping_address',
+#         'billing_address',
+#         'payment',
+#         'coupon'
+#     ]
+    list_filter = ['contact_no',
+                   'process',
+                   'process_num',
+                   'acroyms_of_contract',
+                   'typology']
+    search_fields = [
+        'contact_no',
+        'process_num'
+    ]
+
+
 admin.site.register(ContratacionMain, ContratacionMainAdmin)
 
 admin.site.register(LawFirmModel)
