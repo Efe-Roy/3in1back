@@ -3,11 +3,13 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status, generics
-from .serializers import PreviousStudySerializer, PreviousStudySerializer2
-from .models import PreviousStudyModel
+from .serializers import PreviousStudySerializer, PreviousStudySerializer2, OperationSerializer
+from .models import PreviousStudyModel, OperationModel
 from contratacionAPI.models import resSecType
 from rest_framework.pagination import PageNumberPagination
 from django.db.models import Count
+from django.http import Http404
+from rest_framework import status
 
 # Create your views here.
 class CustomPageNumberPagination(PageNumberPagination):
@@ -85,4 +87,67 @@ class get_post_prev_stud(APIView):
 
             return Response(serializer.data, status= status.HTTP_201_CREATED)
         return Response(serializer.errors, status= status.HTTP_400_BAD_REQUEST)
+    
+    
+class OperationListView(generics.ListAPIView):
+    # permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    serializer_class = OperationSerializer
+    pagination_class = CustomPageNumberPagination
+
+    def get_queryset(self):
+        queryset = OperationModel.objects.all().order_by("-id")
+
+        # Filter based on request parameters
+        corporate_name = self.request.query_params.get('corporate_name', None)
+        if corporate_name:
+            queryset = queryset.filter(corporate_name__icontains=corporate_name)
+
+        return queryset
+ 
+class OperationView(APIView):
+    # authentication_classes = [TokenAuthentication]
+
+    def get(self, request, format=None):
+        queryset = OperationModel.objects.all()
+        serializerPqrs = OperationSerializer(queryset, many=True)
+        return Response( serializerPqrs.data)
+    
+    def post(self, request, format=None):
+        serializer = OperationSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(serializer.data, status= status.HTTP_201_CREATED)
+        return Response(serializer.errors, status= status.HTTP_400_BAD_REQUEST)
+    
+class OperationDetailView(APIView):
+    def get_object(self, pk):
+        try:
+            return OperationModel.objects.get(id=pk)
+        except OperationModel.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        ById = self.get_object(pk)
+        serializer = OperationSerializer(ById)
+        return Response( serializer.data)
+
+    def put(self, request, pk, format=None):
+        obj = self.get_object(pk)
+        user = self.request.user
+        # request.data['authorize_user'] = user.id
+
+        serializer = OperationSerializer(obj, data=request.data)
+        if serializer.is_valid():
+            serializer.validated_data['authorize_user'] = user
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status= status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        ById = self.get_object(pk)
+        ById.delete()
+        return Response(status= status.HTTP_204_NO_CONTENT)
     
