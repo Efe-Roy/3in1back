@@ -10,6 +10,7 @@ from rest_framework.pagination import PageNumberPagination
 from django.db.models import Count
 from django.http import Http404
 from rest_framework import status
+from datetime import datetime
 
 # Create your views here.
 class CustomPageNumberPagination(PageNumberPagination):
@@ -115,17 +116,38 @@ class OperationView(APIView):
     
     def post(self, request, format=None):
         serializer = OperationSerializer(data=request.data)
+        automated_number = self.generate_automated_number() 
+        print("hh -- kk", automated_number)
 
         if serializer.is_valid():
+            serializer.validated_data['consecutive_numbering'] = automated_number
             serializer.save()
 
             return Response(serializer.data, status= status.HTTP_201_CREATED)
         return Response(serializer.errors, status= status.HTTP_400_BAD_REQUEST)
     
+    def generate_automated_number(cls):
+        year = datetime.now().year
+        obj = OperationModel.objects.all()
+        if obj.exists():
+            last_obj = OperationModel.objects.all().order_by('-id').first()
+            getIndex = last_obj.consecutive_numbering
+
+            if getIndex:
+                part = getIndex.split('-')
+                desired_value = part[0]
+                file_num = int(desired_value) + 1
+                ed = "%03d" % ( file_num, )
+                return f'{ed}-{year}'
+            else:
+                return f'001-{year}'
+        else:
+            return f'001-{year}'
+        
 class OperationDetailView(APIView):
     def get_object(self, pk):
         try:
-            return OperationModel.objects.get(id=pk)
+            return OperationModel.objects.get(consecutive_numbering=pk)
         except OperationModel.DoesNotExist:
             raise Http404
 
