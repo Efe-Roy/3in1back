@@ -728,43 +728,43 @@ class test_contratacion(ListAPIView):
         # queryset = queryset.order_by('process_num')
 
 
-        # first_initials_order = {
-        #     'C-PS': 1,
-        #     'C-S': 2,
-        #     'C-A': 3,
-        #     'C-INT': 4,
-        #     'C-SL': 5,
-        #     'C-CONS': 6,
-        #     'C-AR': 7,
-        #     'C-OP': 8,
-        #     'C-I': 9,
-        #     'CT-INT': 10,
-        #     'C-T': 11,
-        #     'C-C': 12,
-        # }
+        first_initials_order = {
+            'C-PS': 1,
+            'C-S': 2,
+            'C-A': 3,
+            'C-INT': 4,
+            'C-SL': 5,
+            'C-CONS': 6,
+            'C-AR': 7,
+            'C-OP': 8,
+            'C-I': 9,
+            'CT-INT': 10,
+            'C-T': 11,
+            'C-C': 12,
+        }
 
-        # second_initials_order = {
-        #     'AMS': 1,
-        #     'SGG': 2,
-        #     'SPO': 3,
-        #     'SHB': 4,
-        #     'SIE': 5,
-        #     'SPD': 6,
-        #     'SSP': 7,
-        # }
+        second_initials_order = {
+            'AMS': 1,
+            'SGG': 2,
+            'SPO': 3,
+            'SHB': 4,
+            'SIE': 5,
+            'SPD': 6,
+            'SSP': 7,
+        }
 
-        # queryset = queryset.annotate(
-        #     first_order=Case(
-        #         *[When(process_num__startswith=key, then=Value(value)) for key, value in first_initials_order.items()],
-        #         default=Value(999), output_field=CharField()
-        #     ),
-        #     second_order=Case(
-        #         *[When(process_num__endswith=key, then=Value(value)) for key, value in second_initials_order.items()],
-        #         default=Value(999), output_field=CharField()
-        #     )
-        # )
+        queryset = queryset.annotate(
+            first_order=Case(
+                *[When(process_num__startswith=key, then=Value(value)) for key, value in first_initials_order.items()],
+                default=Value(999), output_field=CharField()
+            ),
+            second_order=Case(
+                *[When(process_num__endswith=key, then=Value(value)) for key, value in second_initials_order.items()],
+                default=Value(999), output_field=CharField()
+            )
+        )
 
-        # queryset = queryset.order_by('first_order', 'second_order', 'process_num')
+        queryset = queryset.order_by('first_order', 'second_order', 'process_num')
 
 
         # Paginate the queryset
