@@ -552,6 +552,122 @@ class test_contratacion(ListAPIView):
     permission_classes = (AllowAny,)
     serializer_class = ContratacionMainSerializer
     queryset = ContratacionMain.objects.all()
+    
+    def get_queryset(self):
+        # queryset = ContratacionMain.objects.all()
+
+        user = self.request.user
+        # print("qaws", user.is_organisor)
+        if user.is_organisor:
+            queryset = ContratacionMain.objects.all()
+        elif user.is_consult:
+            queryset = ContratacionMain.objects.all()
+        elif user.is_hiring_org:
+            queryset = ContratacionMain.objects.all()
+        elif user.is_hiring and user.username == "43420510":
+            queryset = ContratacionMain.objects.all()
+        elif user.is_hiring:
+            # print("None Org", user.responsible_secretary_id)
+            queryset = ContratacionMain.objects.filter(responsible_secretary_id=user.responsible_secretary_id)
+        else:
+            queryset = None
+
+
+        # Filter based on request parameters
+        state_id = self.request.query_params.get('state_id', None)
+        if state_id:
+            queryset = queryset.filter(state_id=state_id)
+        
+        process_id = self.request.query_params.get('process_id', None)
+        if process_id:
+            queryset = queryset.filter(process_id=process_id)
+
+        process_num = self.request.query_params.get('process_num', None)
+        if process_num:
+            queryset = queryset.filter(process_num__icontains=process_num)
+
+        process_num_year = self.request.query_params.get('process_num_year', None)
+        if process_num_year:
+            # Assuming process_num is a CharField
+            queryset = queryset.filter(process_num__endswith=process_num_year)
+
+        acroyms_of_contract_id = self.request.query_params.get('acroyms_of_contract_id', None)
+        if acroyms_of_contract_id:
+            queryset = queryset.filter(acroyms_of_contract_id=acroyms_of_contract_id)
+        
+        responsible_secretary_id = self.request.query_params.get('responsible_secretary_id', None)
+        if responsible_secretary_id:
+            queryset = queryset.filter(responsible_secretary_id=responsible_secretary_id)
+
+        contractor_identification = self.request.query_params.get('contractor_identification', None)
+        if contractor_identification:
+            queryset = queryset.filter(contractor_identification__icontains=contractor_identification)
+
+        contractor = self.request.query_params.get('contractor', None)
+        if contractor:
+            queryset = queryset.filter(contractor__icontains=contractor)
+
+        contact_no = self.request.query_params.get('contact_no', None)
+        if contact_no:
+            queryset = queryset.filter(contact_no__icontains=contact_no)
+            
+        bool_contact_no = self.request.query_params.get('bool_contact_no', None)
+        if bool_contact_no:
+            queryset = queryset.filter(contact_no__exact='')
+
+        revats = self.request.query_params.get('revats', None)
+        if revats:
+            queryset = queryset.filter(real_executed_value_according_to_settlement__exact='')
+        
+        sex = self.request.query_params.get('sex', None)
+        if sex:
+            queryset = queryset.filter(sex__icontains=sex)
+        
+        addition = self.request.query_params.get('addition', None)
+        if addition:
+            queryset = queryset.filter(addition__icontains=addition)
+
+        bpin_project_code_names = self.request.query_params.getlist('bpin_project_code', None)
+        if bpin_project_code_names:
+            queryset = queryset.filter(bpin_project_code__name__in=bpin_project_code_names)
+
+        typology_id = self.request.query_params.get('typology_id', None)
+        if typology_id:
+            queryset = queryset.filter(typology_id=typology_id)
+
+        # Filter based on start_date parameter
+        start_date = self.request.query_params.get('start_date', None)
+        if start_date:
+            try:
+                start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+                queryset = queryset.filter(start_date__gte=start_date)
+            except ValueError:
+                print("Invalid start_date format")
+
+        # Filter based on finish_date parameter
+        finish_date = self.request.query_params.get('finish_date', None)
+        if finish_date:
+            try:
+                finish_date = datetime.strptime(finish_date, '%Y-%m-%d').date()
+                queryset = queryset.filter(finish_date__lt=finish_date)
+            except ValueError:
+                print("Invalid start_date format")
+
+         # Check if both start_date and end_date are present
+        contract_start_date_str = self.request.query_params.get('contract_start_date_str', None)
+        contract_end_date_str = self.request.query_params.get('contract_end_date_str', None)
+        if contract_start_date_str and contract_end_date_str:
+            try:
+                print("***********************contract_start_date_str", contract_start_date_str)
+                print("***********************contract_end_date_str", contract_end_date_str)
+                start_date = datetime.strptime(contract_start_date_str, '%Y-%m-%d').date()
+                end_date = datetime.strptime(contract_end_date_str, '%Y-%m-%d').date()
+                queryset = queryset.filter( contract_date__range=[start_date, end_date] )
+            except ValueError:
+                print("Invalid start_date format")
+
+        return queryset
+    
 
 
 class get_contratacion(ListCreateAPIView):
