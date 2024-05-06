@@ -985,13 +985,13 @@ class get_contratacion(ListCreateAPIView):
             )
         )['total_accumulated_value'] or Decimal('0.00') 
          # Default to 0.00 if no valid values are found
-        accumulated_revats = queryset.aggregate(
-            total_accumulated_value=Sum(
-                Cast('real_executed_value_according_to_settlement', output_field=DecimalField(max_digits=15, decimal_places=2))
-            )
-        )['total_accumulated_value'] or Decimal('0.00')  # Default to 0.00 if no valid values are found
+        # accumulated_revats = queryset.aggregate(
+        #     total_accumulated_value=Sum(
+        #         Cast('real_executed_value_according_to_settlement', output_field=DecimalField(max_digits=15, decimal_places=2))
+        #     )
+        # )['total_accumulated_value'] or Decimal('0.00')  # Default to 0.00 if no valid values are found
 
-        # accumulated_revats = 0
+        accumulated_revats = 0
         # queryset = queryset.order_by('process_num')
 
 
