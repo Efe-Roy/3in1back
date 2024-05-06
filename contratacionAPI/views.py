@@ -548,20 +548,12 @@ class CustomPagination(PageNumberPagination):
     page_size_query_param = 'PageSize'
     # max_page_size = 100
 
-class test_contratacion(ListCreateAPIView):
+class test_contratacion(ListAPIView):
     permission_classes = (AllowAny,)
     serializer_class = ContratacionMainSerializer
-    pagination_class = CustomPagination
+    queryset = ContratacionMain.objects.all()
 
-    def get_queryset(self):
-        queryset = ContratacionMain.objects.all()
 
-        # Filter based on request parameters
-        state_id = self.request.query_params.get('state_id', None)
-        if state_id:
-            queryset = queryset.filter(state_id=state_id)
-        return queryset
-    
 class get_contratacion(ListCreateAPIView):
     authentication_classes = [TokenAuthentication]
     serializer_class = ContratacionMainSerializer
