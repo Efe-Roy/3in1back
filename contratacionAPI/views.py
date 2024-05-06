@@ -551,7 +551,7 @@ class CustomPagination(PageNumberPagination):
 class test_contratacion(ListAPIView):
     permission_classes = (AllowAny,)
     serializer_class = ContratacionMainSerializer
-    queryset = ContratacionMain.objects.all()
+    pagination_class = CustomPagination
 
     def get_queryset(self):
         # queryset = ContratacionMain.objects.all()
