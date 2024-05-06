@@ -5,7 +5,7 @@ from .views import (
     get_details_contratacion, get_contratacion,get_filtered_contratacion, 
     NotificationView, ListUnusedValueAdded, get_prerequisite, LawFirmView,
     create_contratacion, get_base, update_prerequisite, ActivateDeactivateContrataction,
-    UpdateEmptyStateAPIView
+    UpdateEmptyStateAPIView, test_contratacion
 )
 
 urlpatterns = [
@@ -17,6 +17,7 @@ urlpatterns = [
 
     path('active_deactive_contratacion/<int:pk>/', ActivateDeactivateContrataction.as_view()),
     path('get_contratacion/', get_contratacion.as_view()),
+    path('test_contratacion/', test_contratacion.as_view()),
     path('get_filtered_contratacion/', get_filtered_contratacion.as_view()),
     path('get_prerequisite/<ptR>/<acR>/<rscR>/', get_prerequisite.as_view()),
     path('update_prerequisite/<ptR>/<acR>/<rscR>/<int:pk>/', update_prerequisite.as_view()),
