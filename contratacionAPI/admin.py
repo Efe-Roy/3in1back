@@ -21,6 +21,7 @@ class ContratacionMainAdmin(admin.ModelAdmin):
                     'acroyms_of_contract',
                     'typology',
                     'contact_no',
+                    'real_executed_value_according_to_settlement',
                     'contractor'
                     ]
 #     list_display_links = [
@@ -35,6 +36,7 @@ class ContratacionMainAdmin(admin.ModelAdmin):
                    'acroyms_of_contract',
                    'typology']
     search_fields = [
+        'real_executed_value_according_to_settlement',
         'contact_no',
         'process_num'
     ]
