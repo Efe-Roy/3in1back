@@ -712,12 +712,12 @@ class test_contratacion(ListAPIView):
             )
         )['total_accumulated_value'] or Decimal('0.00')  # Default to 0.00 if no valid values are found
         
-        # accumulated_valor = queryset.aggregate(
-        #     total_accumulated_value=Sum(
-        #         Cast('worth', output_field=DecimalField(max_digits=15, decimal_places=2))
-        #     )
-        # )['total_accumulated_value'] or Decimal('0.00') 
-        #  # Default to 0.00 if no valid values are found
+        accumulated_valor = queryset.aggregate(
+            total_accumulated_value=Sum(
+                Cast('worth', output_field=DecimalField(max_digits=15, decimal_places=2))
+            )
+        )['total_accumulated_value'] or Decimal('0.00') 
+         # Default to 0.00 if no valid values are found
         # accumulated_revats = queryset.aggregate(
         #     total_accumulated_value=Sum(
         #         Cast('real_executed_value_according_to_settlement', output_field=DecimalField(max_digits=15, decimal_places=2))
@@ -774,7 +774,7 @@ class test_contratacion(ListAPIView):
             response_data = {
                 'results': serializer.data,
                 'accumulated_value': str(accumulated_value),  
-                # 'accumulated_valor': str(accumulated_valor),  
+                'accumulated_valor': str(accumulated_valor),  
                 # 'accumulated_revats': str(accumulated_revats),  
                 'deactivate_count': deactivate_count,
                 'activate_count': activate_count,
@@ -796,7 +796,7 @@ class test_contratacion(ListAPIView):
         response_data = {
             'results': serializer.data,
             'accumulated_value': str(accumulated_value),  
-            # 'accumulated_valor': str(accumulated_valor),
+            'accumulated_valor': str(accumulated_valor),
             # 'accumulated_revats': str(accumulated_revats),
             'ejecucion_count': ejecucion_count,
             'terminado_count': terminado_count,
