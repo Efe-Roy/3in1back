@@ -45,13 +45,14 @@ class AllPqrsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PqrsMain
-        fields = (
-            'id', 'date_of_entry', 'sender', 'entity_or_position', 
-            'subject', 'file_num', 'responsible_for_the_response', 
-            'name', 'days_of_the_response', 'expiration_date', 'need_answer',
-            'status_of_the_response', 'medium_of_the_response', 
-            'date_of_response', 'file_res', 'comment', 'pdf'
-        )
+        fields = '__all__'
+        # fields = (
+        #     'id', 'date_of_entry', 'sender', 'entity_or_position', 
+        #     'subject', 'file_num', 'responsible_for_the_response', 
+        #     'name', 'days_of_the_response', 'expiration_date', 'need_answer',
+        #     'status_of_the_response', 'medium_of_the_response', 
+        #     'date_of_response', 'file_res', 'comment', 'pdf'
+        # )
 
     def get_entity_or_position(self, obj):
         return EntityTypeSerializer(obj.entity_or_position).data
@@ -72,7 +73,8 @@ class InnerFormPqrsMaintSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PqrsMain
-        fields = ( 'id', 'medium_of_the_response', 'status_of_the_response', 'comment', 'file_res', 'pdf' )
+        # fields = '__all__'
+        fields = ( 'id', 'medium_of_the_response', 'status_of_the_response', 'comment', 'file_res', 'pdf', 'pdf_res' )
     
 
 class PqrsNotifySerializer(serializers.ModelSerializer):
