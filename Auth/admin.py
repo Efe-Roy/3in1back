@@ -8,10 +8,10 @@ class UserProfileAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 admin.site.register(UserProfile, UserProfileAdmin)
 
 
-# class UserAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+class UserAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 #         ...
 
-class UserAdmin(admin.ModelAdmin):
+# class UserAdmin(admin.ModelAdmin):
     list_display = [
         'id',
         'username',
@@ -54,15 +54,13 @@ class AgentAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 admin.site.register(Agent, AgentAdmin)
 
 
-# class TeamAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-#         ...
-class TeamAdmin(admin.ModelAdmin):
+class TeamAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+        # ...
     list_display = [
         'id',
         'user',
         'organisation'
     ]
-    search_fields = ['user']
 
 admin.site.register(Team, TeamAdmin)
 
