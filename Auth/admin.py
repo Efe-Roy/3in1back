@@ -9,9 +9,6 @@ admin.site.register(UserProfile, UserProfileAdmin)
 
 
 class UserAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-#         ...
-
-# class UserAdmin(admin.ModelAdmin):
     list_display = [
         'id',
         'username',
@@ -55,7 +52,6 @@ admin.site.register(Agent, AgentAdmin)
 
 
 class TeamAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-        # ...
     list_display = [
         'id',
         'user',
