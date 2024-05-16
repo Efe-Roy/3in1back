@@ -62,7 +62,7 @@ class TeamAdmin(admin.ModelAdmin):
         'user',
         'organisation'
     ]
-    search_fields = ['username']
+    search_fields = ['user']
 
 admin.site.register(Team, TeamAdmin)
 
