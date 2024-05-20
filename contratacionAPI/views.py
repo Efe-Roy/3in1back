@@ -1392,12 +1392,12 @@ class LawFirmView(APIView):
 
 class UpdateEmptyStateAPIView(APIView):
     def get(self, request, format=None):
-        # instances_with_empty_state = ContratacionMain.objects.filter(state__isnull=True, process_num__endswith=2024)
-        instances_with_empty_state = ContratacionMain.objects.filter(is_active=False, process_num__endswith=2023)
+        # instances_with_expense_type = ContratacionMain.objects.filter(expense_type="INVESTMENT")
+        instances_with_expense_type = ContratacionMain.objects.filter(expense_type="OPERACIÓN")
 
-        for instance in instances_with_empty_state:
+        for instance in instances_with_expense_type:
             # default_state = StateType.objects.get(id='1')
-            instance.is_active = True
+            instance.expense_type = "FUNCIONAMIENTO"
             instance.save()
 
         return Response("Successfully updated for instances", status=status.HTTP_200_OK)

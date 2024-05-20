@@ -22,6 +22,7 @@ class ContratacionMainAdmin(admin.ModelAdmin):
                     'typology',
                     'contact_no',
                     'real_executed_value_according_to_settlement',
+                    'expense_type',
                     'contractor'
                     ]
 #     list_display_links = [
