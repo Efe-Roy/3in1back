@@ -1392,8 +1392,8 @@ class LawFirmView(APIView):
 
 class UpdateEmptyStateAPIView(APIView):
     def get(self, request, format=None):
-        # instances_with_expense_type = ContratacionMain.objects.filter(expense_type="INVESTMENT")
-        instances_with_expense_type = ContratacionMain.objects.filter(expense_type="OPERACIÓN")
+        instances_with_expense_type = ContratacionMain.objects.filter(expense_type="INVESTMENT")
+        # instances_with_expense_type = ContratacionMain.objects.filter(expense_type="OPERACIÓN")
 
         for instance in instances_with_expense_type:
             # default_state = StateType.objects.get(id='1')
