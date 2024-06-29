@@ -224,6 +224,8 @@ class get_prerequisite(APIView):
             
             # Find the maximum number
             max_number_2 = max(desired_highest_value_2 or '', desired_highest_contact_no_2 or '')
+            print("Final Highest :", max_number_2)
+
 
             if max_number_2 is not None:
                 # Extract the numeric part from the 'process_num' field
