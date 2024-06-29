@@ -32,6 +32,7 @@ from django.db.models.functions import Cast, Substr
 from decimal import Decimal
 from datetime import datetime
 from .namesTitle import NAMES
+from django.db.models import Q
 
 
 # def jsonRoy(request):
@@ -197,38 +198,8 @@ class get_prerequisite(APIView):
         filtered_objects_cno = ContratacionMain.objects.filter(contact_no__icontains=f'{ac.name}-{result}')
 
         if filtered_objects.exists() or filtered_objects_cno.exists():
-            # highest_value = filtered_objects.aggregate(Max('process_num'))['process_num__max']
-            # highest_contact_no = filtered_objects_cno.aggregate(Max('contact_no'))['contact_no__max']
-
-            # if highest_value is not None:
-            #     desired_highest_value = '-'.join(highest_value.split("-")[-3:])
-            # else:
-            #     desired_highest_value = None
-
-            # if highest_contact_no is not None:
-            #     desired_highest_contact_no = '-'.join(highest_contact_no.split("-")[-3:])
-            # else:
-            #     desired_highest_contact_no = None
-                
-
-
             process_nums_2 = [obj.process_num for obj in filtered_objects]
             contact_nos_2 = [obj.contact_no for obj in filtered_objects_cno]
-
-            # print("process_nums_2", process_nums_2)
-            # print("contact_nos_2", contact_nos_2)
-
-            # data = ['C-PS-SSP-001-2023', 'CD-C-PS-SSP-001-2024', 'C-PS-SSP-002-2023', 'CD-C-PS-SSP-003-2023', 'CD-C-PS-SSP-002-2024']
-            # highest_value_2 = max(process_nums_2, key=lambda x: (int(x.split('-')[-1]), int(x.split('-')[-2])))
-            # highest_contact_no_2 = max(contact_nos_2, key=lambda x: (int(x.split('-')[-1]), int(x.split('-')[-2])))
-            # desired_highest_value_2 = highest_value_2.split('-')[-3] + '-' + highest_value_2.split('-')[-2] + '-' + highest_value_2.split('-')[-1]
-            # desired_highest_contact_no_2 = highest_contact_no_2.split('-')[-3] + '-' + highest_contact_no_2.split('-')[-2] + '-' + highest_contact_no_2.split('-')[-1]
-                
-            # if desired_highest_value_2 is None:
-            #     desired_highest_value_2 = None
-
-            # if desired_highest_contact_no_2 is None:
-            #     desired_highest_contact_no_2 = None
 
             # Check if process_nums_2 is empty
             if process_nums_2:
@@ -250,16 +221,9 @@ class get_prerequisite(APIView):
 
             print("Highest value 2:", desired_highest_value_2)
             print("Highest contact_nos 2:", desired_highest_contact_no_2)
-
-            # print("desired_highest_value", desired_highest_value)
-            # print("desired_highest_contact_no", desired_highest_contact_no)
             
             # Find the maximum number
             max_number_2 = max(desired_highest_value_2 or '', desired_highest_contact_no_2 or '')
-            # max_number = max(desired_highest_value or '', desired_highest_contact_no or '')
-
-            # Now you can use this new highest number in your code
-            # print("New highest number 2:", max_number)
 
             if max_number_2 is not None:
                 # Extract the numeric part from the 'process_num' field
@@ -879,7 +843,8 @@ class get_contratacion(ListCreateAPIView):
             
         bool_contact_no = self.request.query_params.get('bool_contact_no', None)
         if bool_contact_no:
-            queryset = queryset.filter(contact_no__exact='')
+            # queryset = queryset.filter(contact_no__exact='')
+            queryset = queryset.filter(Q(contact_no__exact='') | Q(contact_no__isnull=True))
 
         revats = self.request.query_params.get('revats', None)
         if revats:
