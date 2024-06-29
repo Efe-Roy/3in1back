@@ -190,7 +190,7 @@ class get_prerequisite(APIView):
 
         return Response(automated_number)
     
-    def generate_automated_number(cls, initial_part, ac, result):
+    def generate_automated_number(self, initial_part, ac, result):
         print("initial_part", initial_part)
         year = datetime.now().year
         print("ddff", f'{ac.name}-{result}')
@@ -223,9 +223,10 @@ class get_prerequisite(APIView):
             print("Highest contact_nos 2:", desired_highest_contact_no_2)
             
             # Find the maximum number
-            max_number_2 = max(desired_highest_value_2 or '', desired_highest_contact_no_2 or '')
+            # max_number_2 = max(desired_highest_value_2 or '', desired_highest_contact_no_2 or '')
+            max_number_2 = self.compare_spo(desired_highest_value_2, desired_highest_contact_no_2)
             print("Final Highest :", max_number_2)
-
+            
 
             if max_number_2 is not None:
                 # Extract the numeric part from the 'process_num' field
@@ -241,6 +242,26 @@ class get_prerequisite(APIView):
                 return f'{initial_part}-001-{year}'
         else:
             return f'{initial_part}-001-{year}'
+        
+    def compare_spo(self, desired_highest_value_2, desired_highest_contact_no_2):
+        # Check if either string is empty
+        if not desired_highest_value_2:
+            return desired_highest_contact_no_2
+        if not desired_highest_contact_no_2:
+            return desired_highest_value_2
+        
+        # Extract the years from the strings
+        year1 = int(desired_highest_value_2.split('-')[-1])
+        year2 = int(desired_highest_contact_no_2.split('-')[-1])
+        
+        if year1 > year2:
+            return desired_highest_value_2
+        elif year1 < year2:
+            return desired_highest_contact_no_2
+        else:
+            # If years are the same, compare the rest of the strings
+            return max(desired_highest_value_2, desired_highest_contact_no_2)
+
         
 class get_base(APIView):
     def get(self, request, ptR, rscR):
