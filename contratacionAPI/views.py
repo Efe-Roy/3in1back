@@ -92,6 +92,7 @@ class update_prerequisite(APIView):
             'IP': "INVITACIÓN PRIVADA",
             'CM': "CONCURSO DE MÉRITOS",
             'CD': "CONTRATACIÓN DIRECTA",
+            'GE': "GESTIÓN ESPECIAL",
         }
         
         result = "Unknown"
@@ -172,6 +173,7 @@ class get_prerequisite(APIView):
             'IP': "INVITACIÓN PRIVADA",
             'CM': "CONCURSO DE MÉRITOS",
             'CD': "CONTRATACIÓN DIRECTA",
+            'GE': "GESTIÓN ESPECIAL",
         }
         
         result = "Unknown"
@@ -288,6 +290,7 @@ class get_base(APIView):
             'IP': "INVITACIÓN PRIVADA",
             'CM': "CONCURSO DE MÉRITOS",
             'CD': "CONTRATACIÓN DIRECTA",
+            'GE': "GESTIÓN ESPECIAL",
         }
         
         result = "Unknown"
@@ -369,6 +372,7 @@ class create_contratacion(APIView):
             'IP': "INVITACIÓN PRIVADA",
             'CM': "CONCURSO DE MÉRITOS",
             'CD': "CONTRATACIÓN DIRECTA",
+            'GE': "GESTIÓN ESPECIAL",
         }
         
         result = "Unknown"
@@ -471,6 +475,7 @@ class get_post_contratacion(APIView):
             'IP': "INVITACIÓN PRIVADA",
             'CM': "CONCURSO DE MÉRITOS",
             'CD': "CONTRATACIÓN DIRECTA",
+            'GE': "GESTIÓN ESPECIAL",
         }
         
         result = "Unknown"
