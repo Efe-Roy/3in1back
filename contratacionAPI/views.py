@@ -1052,11 +1052,11 @@ class get_contratacion(ListCreateAPIView):
                     'liquidado_count': liquidado_count,
                     'cerrado_count': cerrado_count,
                     'process_counts': process_counts,
-                    # 'responsible_secretary_counts': responsible_secretary_counts,
-                    # 'state_counts': state_counts,
-                    # 'typology_counts': typology_counts,
-                    # 'male_count': male_count,
-                    # 'female_count': female_count
+                    'responsible_secretary_counts': responsible_secretary_counts,
+                    'state_counts': state_counts,
+                    'typology_counts': typology_counts,
+                    'male_count': male_count,
+                    'female_count': female_count
 
                 }
                 return self.get_paginated_response(response_data)
@@ -1074,11 +1074,11 @@ class get_contratacion(ListCreateAPIView):
                 'liquidado_count': liquidado_count,
                 'cerrado_count': cerrado_count,
                 'process_counts': process_counts,
-                # 'responsible_secretary_counts': responsible_secretary_counts,
-                # 'state_counts': state_counts,
-                # 'typology_counts': typology_counts,
-                # 'male_count': male_count,
-                # 'female_count': female_count
+                'responsible_secretary_counts': responsible_secretary_counts,
+                'state_counts': state_counts,
+                'typology_counts': typology_counts,
+                'male_count': male_count,
+                'female_count': female_count
             }
 
             return Response(response_data)
