@@ -1040,7 +1040,7 @@ class get_contratacion(ListCreateAPIView):
                 response_data = {
                     'results': serializer.data,
                     'accumulated_value': str(accumulated_value),  
-                    'accumulated_valor': str(accumulated_valor),  
+                    # 'accumulated_valor': str(accumulated_valor),  
                     'accumulated_revats': str(accumulated_revats),  
                     # 'deactivate_count': deactivate_count,
                     # 'activate_count': activate_count,
@@ -1062,7 +1062,7 @@ class get_contratacion(ListCreateAPIView):
             response_data = {
                 'results': serializer.data,
                 'accumulated_value': str(accumulated_value),  
-                'accumulated_valor': str(accumulated_valor),
+                # 'accumulated_valor': str(accumulated_valor),
                 'accumulated_revats': str(accumulated_revats),
                 # 'ejecucion_count': ejecucion_count,
                 # 'terminado_count': terminado_count,
