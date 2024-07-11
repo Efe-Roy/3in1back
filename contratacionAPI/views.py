@@ -937,38 +937,38 @@ class get_contratacion(ListCreateAPIView):
         try:
             queryset = self.get_queryset()
 
-            # Count instances where state.name is "EJECUCION"
-            ejecucion_count = queryset.filter(state__name="EJECUCION").count()
+            # # Count instances where state.name is "EJECUCION"
+            # ejecucion_count = queryset.filter(state__name="EJECUCION").count()
 
-            # Count instances where state.name is "TERMINADO"
-            terminado_count = queryset.filter(state__name="TERMINADO").count()
+            # # Count instances where state.name is "TERMINADO"
+            # terminado_count = queryset.filter(state__name="TERMINADO").count()
 
-            # Count instances where state.name is "LIQUIDADO"
-            liquidado_count = queryset.filter(state__name="LIQUIDADO").count()
+            # # Count instances where state.name is "LIQUIDADO"
+            # liquidado_count = queryset.filter(state__name="LIQUIDADO").count()
 
-            # Count instances where state.name is "CERRADO"
-            cerrado_count = queryset.filter(state__name="CERRADO").count()
+            # # Count instances where state.name is "CERRADO"
+            # cerrado_count = queryset.filter(state__name="CERRADO").count()
 
-            # Count instances of each processType
-            process_counts = queryset.values('process__name').annotate(process_count=Count('process'))
+            # # Count instances of each processType
+            # process_counts = queryset.values('process__name').annotate(process_count=Count('process'))
 
-            # Count instances of each resSecType
-            responsible_secretary_counts = queryset.values('responsible_secretary__name').annotate(responsible_secretary_count=Count('responsible_secretary'))
+            # # Count instances of each resSecType
+            # responsible_secretary_counts = queryset.values('responsible_secretary__name').annotate(responsible_secretary_count=Count('responsible_secretary'))
 
-            # Count instances of each stateType
-            state_counts = queryset.values('state__name').annotate(state_count=Count('state'))
+            # # Count instances of each stateType
+            # state_counts = queryset.values('state__name').annotate(state_count=Count('state'))
         
-            # Count instances of each typologyType
-            typology_counts = queryset.values('typology__name').annotate(typology_count=Count('typology'))
+            # # Count instances of each typologyType
+            # typology_counts = queryset.values('typology__name').annotate(typology_count=Count('typology'))
 
-            # Count instances where sex is "Masculino"
-            male_count = queryset.filter(sex="Masculino").count()
+            # # Count instances where sex is "Masculino"
+            # male_count = queryset.filter(sex="Masculino").count()
 
-            # Count instances where sex is "Femenino"
-            female_count = queryset.filter(sex="Femenino").count()
+            # # Count instances where sex is "Femenino"
+            # female_count = queryset.filter(sex="Femenino").count()
 
-            deactivate_count = queryset.filter(is_active=False).count()
-            activate_count = queryset.filter(is_active=True).count()
+            # deactivate_count = queryset.filter(is_active=False).count()
+            # activate_count = queryset.filter(is_active=True).count()
 
 
             # Calculate the accumulated value of contract_value_plus
