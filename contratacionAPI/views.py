@@ -1042,18 +1042,18 @@ class get_contratacion(ListCreateAPIView):
                     'accumulated_value': str(accumulated_value),  
                     'accumulated_valor': str(accumulated_valor),  
                     'accumulated_revats': str(accumulated_revats),  
-                    'deactivate_count': deactivate_count,
-                    'activate_count': activate_count,
-                    'ejecucion_count': ejecucion_count,
-                    'terminado_count': terminado_count,
-                    'liquidado_count': liquidado_count,
-                    'cerrado_count': cerrado_count,
-                    'process_counts': process_counts,
-                    'responsible_secretary_counts': responsible_secretary_counts,
-                    'state_counts': state_counts,
-                    'typology_counts': typology_counts,
-                    'male_count': male_count,
-                    'female_count': female_count
+                    # 'deactivate_count': deactivate_count,
+                    # 'activate_count': activate_count,
+                    # 'ejecucion_count': ejecucion_count,
+                    # 'terminado_count': terminado_count,
+                    # 'liquidado_count': liquidado_count,
+                    # 'cerrado_count': cerrado_count,
+                    # 'process_counts': process_counts,
+                    # 'responsible_secretary_counts': responsible_secretary_counts,
+                    # 'state_counts': state_counts,
+                    # 'typology_counts': typology_counts,
+                    # 'male_count': male_count,
+                    # 'female_count': female_count
 
                 }
                 return self.get_paginated_response(response_data)
@@ -1064,16 +1064,16 @@ class get_contratacion(ListCreateAPIView):
                 'accumulated_value': str(accumulated_value),  
                 'accumulated_valor': str(accumulated_valor),
                 'accumulated_revats': str(accumulated_revats),
-                'ejecucion_count': ejecucion_count,
-                'terminado_count': terminado_count,
-                'liquidado_count': liquidado_count,
-                'cerrado_count': cerrado_count,
-                'process_counts': process_counts,
-                'responsible_secretary_counts': responsible_secretary_counts,
-                'state_counts': state_counts,
-                'typology_counts': typology_counts,
-                'male_count': male_count,
-                'female_count': female_count
+                # 'ejecucion_count': ejecucion_count,
+                # 'terminado_count': terminado_count,
+                # 'liquidado_count': liquidado_count,
+                # 'cerrado_count': cerrado_count,
+                # 'process_counts': process_counts,
+                # 'responsible_secretary_counts': responsible_secretary_counts,
+                # 'state_counts': state_counts,
+                # 'typology_counts': typology_counts,
+                # 'male_count': male_count,
+                # 'female_count': female_count
             }
 
             return Response(response_data)
