@@ -933,155 +933,153 @@ class get_contratacion(ListCreateAPIView):
             return Response({'error': str(e), 'traceback': error_traceback}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 
-    def list(self, request, *args, **kwargs):
-        try:
-            queryset = self.get_queryset()
+    # def list(self, request, *args, **kwargs):
+    #     try:
+    #         queryset = self.get_queryset()
 
-            # Count instances where state.name is "EJECUCION"
-            # ejecucion_count = queryset.filter(state__name="EJECUCION").count()
+    #         # Count instances where state.name is "EJECUCION"
+    #         ejecucion_count = queryset.filter(state__name="EJECUCION").count()
 
-            # Count instances where state.name is "TERMINADO"
-            terminado_count = queryset.filter(state__name="TERMINADO").count()
+    #         # Count instances where state.name is "TERMINADO"
+    #         terminado_count = queryset.filter(state__name="TERMINADO").count()
 
-            # Count instances where state.name is "LIQUIDADO"
-            liquidado_count = queryset.filter(state__name="LIQUIDADO").count()
+    #         # Count instances where state.name is "LIQUIDADO"
+    #         liquidado_count = queryset.filter(state__name="LIQUIDADO").count()
 
-            # Count instances where state.name is "CERRADO"
-            cerrado_count = queryset.filter(state__name="CERRADO").count()
+    #         # Count instances where state.name is "CERRADO"
+    #         cerrado_count = queryset.filter(state__name="CERRADO").count()
 
-            # Count instances of each processType
-            process_counts = queryset.values('process__name').annotate(process_count=Count('process'))
+    #         # Count instances of each processType
+    #         process_counts = queryset.values('process__name').annotate(process_count=Count('process'))
 
-            # Count instances of each resSecType
-            responsible_secretary_counts = queryset.values('responsible_secretary__name').annotate(responsible_secretary_count=Count('responsible_secretary'))
+    #         # Count instances of each resSecType
+    #         responsible_secretary_counts = queryset.values('responsible_secretary__name').annotate(responsible_secretary_count=Count('responsible_secretary'))
 
-            # Count instances of each stateType
-            state_counts = queryset.values('state__name').annotate(state_count=Count('state'))
+    #         # Count instances of each stateType
+    #         state_counts = queryset.values('state__name').annotate(state_count=Count('state'))
         
-            # Count instances of each typologyType
-            typology_counts = queryset.values('typology__name').annotate(typology_count=Count('typology'))
+    #         # Count instances of each typologyType
+    #         typology_counts = queryset.values('typology__name').annotate(typology_count=Count('typology'))
 
-            # Count instances where sex is "Masculino"
-            male_count = queryset.filter(sex="Masculino").count()
+    #         # Count instances where sex is "Masculino"
+    #         male_count = queryset.filter(sex="Masculino").count()
 
-            # Count instances where sex is "Femenino"
-            female_count = queryset.filter(sex="Femenino").count()
+    #         # Count instances where sex is "Femenino"
+    #         female_count = queryset.filter(sex="Femenino").count()
 
-            deactivate_count = queryset.filter(is_active=False).count()
-            activate_count = queryset.filter(is_active=True).count()
+    #         deactivate_count = queryset.filter(is_active=False).count()
+    #         activate_count = queryset.filter(is_active=True).count()
 
 
-            # Calculate the accumulated value of contract_value_plus
-            accumulated_value = queryset.aggregate(
-                total_accumulated_value=Sum(
-                    Cast('contract_value_plus', output_field=DecimalField(max_digits=15, decimal_places=2))
-                )
-            )['total_accumulated_value'] or Decimal('0.00')  # Default to 0.00 if no valid values are found
+    #         # Calculate the accumulated value of contract_value_plus
+    #         accumulated_value = queryset.aggregate(
+    #             total_accumulated_value=Sum(
+    #                 Cast('contract_value_plus', output_field=DecimalField(max_digits=15, decimal_places=2))
+    #             )
+    #         )['total_accumulated_value'] or Decimal('0.00')  # Default to 0.00 if no valid values are found
             
-            accumulated_valor = queryset.aggregate(
-                total_accumulated_value=Sum(
-                    Cast('worth', output_field=DecimalField(max_digits=15, decimal_places=2))
-                )
-            )['total_accumulated_value'] or Decimal('0.00') 
-            # Default to 0.00 if no valid values are found
-            # accumulated_revats = queryset.aggregate(
-            #     total_accumulated_value=Sum(
-            #         Cast('real_executed_value_according_to_settlement', output_field=DecimalField(max_digits=15, decimal_places=2))
-            #     )
-            # )['total_accumulated_value'] or Decimal('0.00')  # Default to 0.00 if no valid values are found
+    #         accumulated_valor = queryset.aggregate(
+    #             total_accumulated_value=Sum(
+    #                 Cast('worth', output_field=DecimalField(max_digits=15, decimal_places=2))
+    #             )
+    #         )['total_accumulated_value'] or Decimal('0.00') 
+    #         # Default to 0.00 if no valid values are found
+    #         # accumulated_revats = queryset.aggregate(
+    #         #     total_accumulated_value=Sum(
+    #         #         Cast('real_executed_value_according_to_settlement', output_field=DecimalField(max_digits=15, decimal_places=2))
+    #         #     )
+    #         # )['total_accumulated_value'] or Decimal('0.00')  # Default to 0.00 if no valid values are found
 
-            accumulated_revats = 0
-            # queryset = queryset.order_by('process_num')
-
-
-            first_initials_order = {
-                'C-PS': 1,
-                'C-S': 2,
-                'C-A': 3,
-                'C-INT': 4,
-                'C-SL': 5,
-                'C-CONS': 6,
-                'C-AR': 7,
-                'C-OP': 8,
-                'C-I': 9,
-                'CT-INT': 10,
-                'C-T': 11,
-                'C-C': 12,
-            }
-
-            second_initials_order = {
-                'AMS': 1,
-                'SGG': 2,
-                'SPO': 3,
-                'SHB': 4,
-                'SIE': 5,
-                'SPD': 6,
-                'SSP': 7,
-            }
-
-            queryset = queryset.annotate(
-                first_order=Case(
-                    *[When(process_num__startswith=key, then=Value(value)) for key, value in first_initials_order.items()],
-                    default=Value(999), output_field=CharField()
-                ),
-                second_order=Case(
-                    *[When(process_num__endswith=key, then=Value(value)) for key, value in second_initials_order.items()],
-                    default=Value(999), output_field=CharField()
-                )
-            )
-
-            queryset = queryset.order_by('first_order', 'second_order', 'process_num')
+    #         accumulated_revats = 0
+    #         # queryset = queryset.order_by('process_num')
 
 
-            # Paginate the queryset
-            page = self.paginate_queryset(queryset)
-            if page is not None:
-                serializer = self.get_serializer(page, many=True)
-                response_data = {
-                    'results': serializer.data,
-                    'accumulated_value': str(accumulated_value),  
-                    'accumulated_valor': str(accumulated_valor),  
-                    'accumulated_revats': str(accumulated_revats),  
-                    'deactivate_count': deactivate_count,
-                    'activate_count': activate_count,
-                    # 'ejecucion_count': ejecucion_count,
-                    'ejecucion_count': 0,
-                    'terminado_count': terminado_count,
-                    'liquidado_count': liquidado_count,
-                    'cerrado_count': cerrado_count,
-                    'process_counts': process_counts,
-                    'responsible_secretary_counts': responsible_secretary_counts,
-                    'state_counts': state_counts,
-                    'typology_counts': typology_counts,
-                    'male_count': male_count,
-                    'female_count': female_count
+    #         first_initials_order = {
+    #             'C-PS': 1,
+    #             'C-S': 2,
+    #             'C-A': 3,
+    #             'C-INT': 4,
+    #             'C-SL': 5,
+    #             'C-CONS': 6,
+    #             'C-AR': 7,
+    #             'C-OP': 8,
+    #             'C-I': 9,
+    #             'CT-INT': 10,
+    #             'C-T': 11,
+    #             'C-C': 12,
+    #         }
 
-                }
-                return self.get_paginated_response(response_data)
+    #         second_initials_order = {
+    #             'AMS': 1,
+    #             'SGG': 2,
+    #             'SPO': 3,
+    #             'SHB': 4,
+    #             'SIE': 5,
+    #             'SPD': 6,
+    #             'SSP': 7,
+    #         }
 
-            serializer = self.get_serializer(queryset, many=True)
-            response_data = {
-                'results': serializer.data,
-                'accumulated_value': str(accumulated_value),  
-                'accumulated_valor': str(accumulated_valor),
-                'accumulated_revats': str(accumulated_revats),
-                # 'ejecucion_count': ejecucion_count,
-                'ejecucion_count': 0,
-                'terminado_count': terminado_count,
-                'liquidado_count': liquidado_count,
-                'cerrado_count': cerrado_count,
-                'process_counts': process_counts,
-                'responsible_secretary_counts': responsible_secretary_counts,
-                'state_counts': state_counts,
-                'typology_counts': typology_counts,
-                'male_count': male_count,
-                'female_count': female_count
-            }
+    #         queryset = queryset.annotate(
+    #             first_order=Case(
+    #                 *[When(process_num__startswith=key, then=Value(value)) for key, value in first_initials_order.items()],
+    #                 default=Value(999), output_field=CharField()
+    #             ),
+    #             second_order=Case(
+    #                 *[When(process_num__endswith=key, then=Value(value)) for key, value in second_initials_order.items()],
+    #                 default=Value(999), output_field=CharField()
+    #             )
+    #         )
 
-            return Response(response_data)
-        except Exception as e:
-            error_traceback = traceback.format_exc()
-            return Response({'error': str(e), 'traceback': error_traceback}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    #         queryset = queryset.order_by('first_order', 'second_order', 'process_num')
+
+
+    #         # Paginate the queryset
+    #         page = self.paginate_queryset(queryset)
+    #         if page is not None:
+    #             serializer = self.get_serializer(page, many=True)
+    #             response_data = {
+    #                 'results': serializer.data,
+    #                 'accumulated_value': str(accumulated_value),  
+    #                 'accumulated_valor': str(accumulated_valor),  
+    #                 'accumulated_revats': str(accumulated_revats),  
+    #                 'deactivate_count': deactivate_count,
+    #                 'activate_count': activate_count,
+    #                 'ejecucion_count': ejecucion_count,
+    #                 'terminado_count': terminado_count,
+    #                 'liquidado_count': liquidado_count,
+    #                 'cerrado_count': cerrado_count,
+    #                 'process_counts': process_counts,
+    #                 'responsible_secretary_counts': responsible_secretary_counts,
+    #                 'state_counts': state_counts,
+    #                 'typology_counts': typology_counts,
+    #                 'male_count': male_count,
+    #                 'female_count': female_count
+
+    #             }
+    #             return self.get_paginated_response(response_data)
+
+    #         serializer = self.get_serializer(queryset, many=True)
+    #         response_data = {
+    #             'results': serializer.data,
+    #             'accumulated_value': str(accumulated_value),  
+    #             'accumulated_valor': str(accumulated_valor),
+    #             'accumulated_revats': str(accumulated_revats),
+    #             'ejecucion_count': ejecucion_count,
+    #             'terminado_count': terminado_count,
+    #             'liquidado_count': liquidado_count,
+    #             'cerrado_count': cerrado_count,
+    #             'process_counts': process_counts,
+    #             'responsible_secretary_counts': responsible_secretary_counts,
+    #             'state_counts': state_counts,
+    #             'typology_counts': typology_counts,
+    #             'male_count': male_count,
+    #             'female_count': female_count
+    #         }
+
+    #         return Response(response_data)
+    #     except Exception as e:
+    #         error_traceback = traceback.format_exc()
+    #         return Response({'error': str(e), 'traceback': error_traceback}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 
 class ActivateDeactivateContrataction(APIView):
