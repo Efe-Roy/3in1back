@@ -938,7 +938,7 @@ class get_contratacion(ListCreateAPIView):
             queryset = self.get_queryset()
 
             # Count instances where state.name is "EJECUCION"
-            ejecucion_count = queryset.filter(state__name="EJECUCION").count()
+            # ejecucion_count = queryset.filter(state__name="EJECUCION").count()
 
             # Count instances where state.name is "TERMINADO"
             terminado_count = queryset.filter(state__name="TERMINADO").count()
@@ -1044,7 +1044,8 @@ class get_contratacion(ListCreateAPIView):
                     'accumulated_revats': str(accumulated_revats),  
                     'deactivate_count': deactivate_count,
                     'activate_count': activate_count,
-                    'ejecucion_count': ejecucion_count,
+                    # 'ejecucion_count': ejecucion_count,
+                    'ejecucion_count': 0,
                     'terminado_count': terminado_count,
                     'liquidado_count': liquidado_count,
                     'cerrado_count': cerrado_count,
@@ -1064,7 +1065,8 @@ class get_contratacion(ListCreateAPIView):
                 'accumulated_value': str(accumulated_value),  
                 'accumulated_valor': str(accumulated_valor),
                 'accumulated_revats': str(accumulated_revats),
-                'ejecucion_count': ejecucion_count,
+                # 'ejecucion_count': ejecucion_count,
+                'ejecucion_count': 0,
                 'terminado_count': terminado_count,
                 'liquidado_count': liquidado_count,
                 'cerrado_count': cerrado_count,
