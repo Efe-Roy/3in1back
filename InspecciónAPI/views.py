@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.status import (
     HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_201_CREATED,
-    HTTP_204_NO_CONTENT
+    HTTP_204_NO_CONTENT, HTTP_500_INTERNAL_SERVER_ERROR
 )
 from rest_framework.authentication import TokenAuthentication
 from .models import ( 
@@ -37,6 +37,7 @@ import io
 from django.template.loader import get_template
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
+import traceback
 import pytz
 from datetime import datetime
 from django.core.files.base import ContentFile
@@ -1869,6 +1870,10 @@ class FilteredDataDetailUpdateView(APIView):
 
         except FilterSelection.DoesNotExist:
             return Response({'error': 'Filter selection not found for the user'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            error_traceback = traceback.format_exc()
+            print({'error': str(e), 'traceback': error_traceback})
+            return Response({'error': str(e), 'traceback': error_traceback}, status=HTTP_500_INTERNAL_SERVER_ERROR)
     
     
 class CarNum(APIView):
