@@ -1849,8 +1849,8 @@ class FilteredDataDetailUpdateView(APIView):
                 subject = 'PDF Report'
                 message = 'Please find attached your PDF report.'
                 from_email = settings.EMAIL_HOST_USER
-                # recipient_list = ['dakaraefe3@gmail.com', 'dakaraefe@gmail.com']
-                recipient_list = [filter_selection.assign_team.user.email, userOrg.email]
+                recipient_list = ['dakaraefe3@gmail.com', 'dakaraefe@gmail.com']
+                # recipient_list = [filter_selection.assign_team.user.email, userOrg.email]
 
                 email = EmailMessage(subject, message, from_email, recipient_list)
                 email.content_subtype = "html"
