@@ -971,7 +971,6 @@ class get_contratacion(ListCreateAPIView):
             activate_count = queryset.filter(is_active=True).count()
 
 
-            # Calculate the accumulated value of contract_value_plus
             # accumulated_value = queryset.aggregate(
             #     total_accumulated_value=Sum(
             #         Cast('contract_value_plus', output_field=DecimalField(max_digits=15, decimal_places=2))
@@ -984,17 +983,15 @@ class get_contratacion(ListCreateAPIView):
             #     )
             # )['total_accumulated_value'] or Decimal('0.00') 
 
-
-
-            # Default to 0.00 if no valid values are found
             # accumulated_revats = queryset.aggregate(
             #     total_accumulated_value=Sum(
             #         Cast('real_executed_value_according_to_settlement', output_field=DecimalField(max_digits=15, decimal_places=2))
             #     )
             # )['total_accumulated_value'] or Decimal('0.00')  # Default to 0.00 if no valid values are found
 
+            accumulated_value = 0
+            accumulated_valor = 0
             accumulated_revats = 0
-            # queryset = queryset.order_by('process_num')
 
 
             first_initials_order = {
@@ -1042,8 +1039,8 @@ class get_contratacion(ListCreateAPIView):
                 serializer = self.get_serializer(page, many=True)
                 response_data = {
                     'results': serializer.data,
-                    # 'accumulated_value': str(accumulated_value),  
-                    # 'accumulated_valor': str(accumulated_valor),  
+                    'accumulated_value': str(accumulated_value),  
+                    'accumulated_valor': str(accumulated_valor),  
                     'accumulated_revats': str(accumulated_revats),  
                     'deactivate_count': deactivate_count,
                     'activate_count': activate_count,
@@ -1064,8 +1061,8 @@ class get_contratacion(ListCreateAPIView):
             serializer = self.get_serializer(queryset, many=True)
             response_data = {
                 'results': serializer.data,
-                # 'accumulated_value': str(accumulated_value),  
-                # 'accumulated_valor': str(accumulated_valor),
+                'accumulated_value': str(accumulated_value),  
+                'accumulated_valor': str(accumulated_valor),
                 'accumulated_revats': str(accumulated_revats),
                 'deactivate_count': deactivate_count,
                 'activate_count': activate_count,
