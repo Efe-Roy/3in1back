@@ -806,7 +806,41 @@ class test_contratacion(ListAPIView):
         return Response(response_data)
     
 
+class get_contratacion_2(APIView):
+    def get(self, request, format=None):
+        try:
+            queryset = ContratacionMain.objects.all()
 
+            accumulated_value = queryset.aggregate(
+                total_accumulated_value=Sum(
+                    Cast('contract_value_plus', output_field=DecimalField(max_digits=15, decimal_places=2))
+                )
+            )['total_accumulated_value'] or Decimal('0.00')  # Default to 0.00 if no valid values are found
+            
+            accumulated_valor = queryset.aggregate(
+                total_accumulated_value=Sum(
+                    Cast('worth', output_field=DecimalField(max_digits=15, decimal_places=2))
+                )
+            )['total_accumulated_value'] or Decimal('0.00') 
+
+            accumulated_revats = queryset.aggregate(
+                total_accumulated_value=Sum(
+                    Cast('real_executed_value_according_to_settlement', output_field=DecimalField(max_digits=15, decimal_places=2))
+                )
+            )['total_accumulated_value'] or Decimal('0.00')  # Default to 0.00 if no valid values are found
+
+            serializer = ContratacionMainSerializer(queryset, many=True)
+            # return Response(serializerPqrs.data)
+            return Response({
+                'results': serializer.data,
+                'accumulated_value': str(accumulated_value),  
+                'accumulated_valor': str(accumulated_valor),
+                'accumulated_revats': str(accumulated_revats)
+            })
+        except Exception as e:
+            error_traceback = traceback.format_exc()
+            return Response({'error': str(e), 'traceback': error_traceback}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
 class get_contratacion(ListCreateAPIView):
     authentication_classes = [TokenAuthentication]
     serializer_class = ContratacionMainSerializer
