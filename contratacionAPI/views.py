@@ -933,6 +933,282 @@ class get_contratacion(ListCreateAPIView):
             return Response({'error': str(e), 'traceback': error_traceback}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 
+    # def list(self, request, *args, **kwargs):
+    #     try:
+    #         queryset = self.get_queryset()
+
+    #         # Count instances where state.name is "EJECUCION"
+    #         ejecucion_count = queryset.filter(state__name="EJECUCION").count()
+
+    #         # Count instances where state.name is "TERMINADO"
+    #         terminado_count = queryset.filter(state__name="TERMINADO").count()
+
+    #         # Count instances where state.name is "LIQUIDADO"
+    #         liquidado_count = queryset.filter(state__name="LIQUIDADO").count()
+
+    #         # Count instances where state.name is "CERRADO"
+    #         cerrado_count = queryset.filter(state__name="CERRADO").count()
+
+    #         # Count instances of each processType
+    #         process_counts = queryset.values('process__name').annotate(process_count=Count('process'))
+
+    #         # Count instances of each resSecType
+    #         responsible_secretary_counts = queryset.values('responsible_secretary__name').annotate(responsible_secretary_count=Count('responsible_secretary'))
+
+    #         # Count instances of each stateType
+    #         state_counts = queryset.values('state__name').annotate(state_count=Count('state'))
+        
+    #         # Count instances of each typologyType
+    #         typology_counts = queryset.values('typology__name').annotate(typology_count=Count('typology'))
+
+    #         # Count instances where sex is "Masculino"
+    #         male_count = queryset.filter(sex="Masculino").count()
+
+    #         # Count instances where sex is "Femenino"
+    #         female_count = queryset.filter(sex="Femenino").count()
+
+    #         deactivate_count = queryset.filter(is_active=False).count()
+    #         activate_count = queryset.filter(is_active=True).count()
+
+
+    #         # accumulated_value = queryset.aggregate(
+    #         #     total_accumulated_value=Sum(
+    #         #         Cast('contract_value_plus', output_field=DecimalField(max_digits=15, decimal_places=2))
+    #         #     )
+    #         # )['total_accumulated_value'] or Decimal('0.00')  # Default to 0.00 if no valid values are found
+            
+    #         # accumulated_valor = queryset.aggregate(
+    #         #     total_accumulated_value=Sum(
+    #         #         Cast('worth', output_field=DecimalField(max_digits=15, decimal_places=2))
+    #         #     )
+    #         # )['total_accumulated_value'] or Decimal('0.00') 
+
+    #         accumulated_revats = queryset.aggregate(
+    #             total_accumulated_value=Sum(
+    #                 Cast('real_executed_value_according_to_settlement', output_field=DecimalField(max_digits=15, decimal_places=2))
+    #             )
+    #         )['total_accumulated_value'] or Decimal('0.00')  # Default to 0.00 if no valid values are found
+
+    #         accumulated_value = 0
+    #         accumulated_valor = 0
+    #         # accumulated_revats = 0
+
+
+    #         first_initials_order = {
+    #             'C-PS': 1,
+    #             'C-S': 2,
+    #             'C-A': 3,
+    #             'C-INT': 4,
+    #             'C-SL': 5,
+    #             'C-CONS': 6,
+    #             'C-AR': 7,
+    #             'C-OP': 8,
+    #             'C-I': 9,
+    #             'CT-INT': 10,
+    #             'C-T': 11,
+    #             'C-C': 12,
+    #         }
+
+    #         second_initials_order = {
+    #             'AMS': 1,
+    #             'SGG': 2,
+    #             'SPO': 3,
+    #             'SHB': 4,
+    #             'SIE': 5,
+    #             'SPD': 6,
+    #             'SSP': 7,
+    #         }
+
+    #         queryset = queryset.annotate(
+    #             first_order=Case(
+    #                 *[When(process_num__startswith=key, then=Value(value)) for key, value in first_initials_order.items()],
+    #                 default=Value(999), output_field=CharField()
+    #             ),
+    #             second_order=Case(
+    #                 *[When(process_num__endswith=key, then=Value(value)) for key, value in second_initials_order.items()],
+    #                 default=Value(999), output_field=CharField()
+    #             )
+    #         )
+
+    #         queryset = queryset.order_by('first_order', 'second_order', 'process_num')
+
+
+    #         # Paginate the queryset
+    #         page = self.paginate_queryset(queryset)
+    #         if page is not None:
+    #             serializer = self.get_serializer(page, many=True)
+    #             response_data = {
+    #                 'results': serializer.data,
+    #                 'accumulated_value': str(accumulated_value),  
+    #                 'accumulated_valor': str(accumulated_valor),  
+    #                 'accumulated_revats': str(accumulated_revats),  
+    #                 'deactivate_count': deactivate_count,
+    #                 'activate_count': activate_count,
+    #                 'ejecucion_count': ejecucion_count,
+    #                 'terminado_count': terminado_count,
+    #                 'liquidado_count': liquidado_count,
+    #                 'cerrado_count': cerrado_count,
+    #                 'process_counts': process_counts,
+    #                 'responsible_secretary_counts': responsible_secretary_counts,
+    #                 'state_counts': state_counts,
+    #                 'typology_counts': typology_counts,
+    #                 'male_count': male_count,
+    #                 'female_count': female_count
+
+    #             }
+    #             return self.get_paginated_response(response_data)
+
+    #         serializer = self.get_serializer(queryset, many=True)
+    #         response_data = {
+    #             'results': serializer.data,
+    #             'accumulated_value': str(accumulated_value),  
+    #             'accumulated_valor': str(accumulated_valor),
+    #             'accumulated_revats': str(accumulated_revats),
+    #             'deactivate_count': deactivate_count,
+    #             'activate_count': activate_count,
+    #             'ejecucion_count': ejecucion_count,
+    #             'terminado_count': terminado_count,
+    #             'liquidado_count': liquidado_count,
+    #             'cerrado_count': cerrado_count,
+    #             'process_counts': process_counts,
+    #             'responsible_secretary_counts': responsible_secretary_counts,
+    #             'state_counts': state_counts,
+    #             'typology_counts': typology_counts,
+    #             'male_count': male_count,
+    #             'female_count': female_count
+    #         }
+
+    #         return Response(response_data)
+    #     except Exception as e:
+    #         error_traceback = traceback.format_exc()
+    #         return Response({'error': str(e), 'traceback': error_traceback}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+class get_contratacion_dashboard(ListCreateAPIView):
+    authentication_classes = [TokenAuthentication]
+    serializer_class = ContratacionMainSerializer
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+        try:
+            # queryset = ContratacionMain.objects.all()
+
+            user = self.request.user
+            # print("qaws", user.is_organisor)
+            if user.is_organisor:
+                queryset = ContratacionMain.objects.all()
+            elif user.is_consult:
+                queryset = ContratacionMain.objects.all()
+            elif user.is_hiring_org:
+                queryset = ContratacionMain.objects.all()
+            elif user.is_hiring and user.username == "43420510":
+                queryset = ContratacionMain.objects.all()
+            elif user.is_hiring:
+                # print("None Org", user.responsible_secretary_id)
+                queryset = ContratacionMain.objects.filter(responsible_secretary_id=user.responsible_secretary_id)
+            else:
+                queryset = None
+
+
+            # Filter based on request parameters
+            state_id = self.request.query_params.get('state_id', None)
+            if state_id:
+                queryset = queryset.filter(state_id=state_id)
+            
+            process_id = self.request.query_params.get('process_id', None)
+            if process_id:
+                queryset = queryset.filter(process_id=process_id)
+
+            process_num = self.request.query_params.get('process_num', None)
+            if process_num:
+                queryset = queryset.filter(process_num__icontains=process_num)
+
+            process_num_year = self.request.query_params.get('process_num_year', None)
+            if process_num_year:
+                # Assuming process_num is a CharField
+                queryset = queryset.filter(process_num__endswith=process_num_year)
+
+            acroyms_of_contract_id = self.request.query_params.get('acroyms_of_contract_id', None)
+            if acroyms_of_contract_id:
+                queryset = queryset.filter(acroyms_of_contract_id=acroyms_of_contract_id)
+            
+            responsible_secretary_id = self.request.query_params.get('responsible_secretary_id', None)
+            if responsible_secretary_id:
+                queryset = queryset.filter(responsible_secretary_id=responsible_secretary_id)
+
+            contractor_identification = self.request.query_params.get('contractor_identification', None)
+            if contractor_identification:
+                queryset = queryset.filter(contractor_identification__icontains=contractor_identification)
+
+            contractor = self.request.query_params.get('contractor', None)
+            if contractor:
+                queryset = queryset.filter(contractor__icontains=contractor)
+
+            contact_no = self.request.query_params.get('contact_no', None)
+            if contact_no:
+                queryset = queryset.filter(contact_no__icontains=contact_no)
+                
+            bool_contact_no = self.request.query_params.get('bool_contact_no', None)
+            if bool_contact_no:
+                # queryset = queryset.filter(contact_no__exact='')
+                queryset = queryset.filter(Q(contact_no__exact='') | Q(contact_no__isnull=True))
+
+            revats = self.request.query_params.get('revats', None)
+            if revats:
+                queryset = queryset.filter(real_executed_value_according_to_settlement__exact='')
+            
+            sex = self.request.query_params.get('sex', None)
+            if sex:
+                queryset = queryset.filter(sex__icontains=sex)
+            
+            addition = self.request.query_params.get('addition', None)
+            if addition:
+                queryset = queryset.filter(addition__icontains=addition)
+
+            bpin_project_code_names = self.request.query_params.getlist('bpin_project_code', None)
+            if bpin_project_code_names:
+                queryset = queryset.filter(bpin_project_code__name__in=bpin_project_code_names)
+
+            typology_id = self.request.query_params.get('typology_id', None)
+            if typology_id:
+                queryset = queryset.filter(typology_id=typology_id)
+
+            # Filter based on start_date parameter
+            start_date = self.request.query_params.get('start_date', None)
+            if start_date:
+                try:
+                    start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+                    queryset = queryset.filter(start_date__gte=start_date)
+                except ValueError:
+                    print("Invalid start_date format")
+
+            # Filter based on finish_date parameter
+            finish_date = self.request.query_params.get('finish_date', None)
+            if finish_date:
+                try:
+                    finish_date = datetime.strptime(finish_date, '%Y-%m-%d').date()
+                    queryset = queryset.filter(finish_date__lt=finish_date)
+                except ValueError:
+                    print("Invalid start_date format")
+
+            # Check if both start_date and end_date are present
+            contract_start_date_str = self.request.query_params.get('contract_start_date_str', None)
+            contract_end_date_str = self.request.query_params.get('contract_end_date_str', None)
+            if contract_start_date_str and contract_end_date_str:
+                try:
+                    print("***********************contract_start_date_str", contract_start_date_str)
+                    print("***********************contract_end_date_str", contract_end_date_str)
+                    start_date = datetime.strptime(contract_start_date_str, '%Y-%m-%d').date()
+                    end_date = datetime.strptime(contract_end_date_str, '%Y-%m-%d').date()
+                    queryset = queryset.filter( contract_date__range=[start_date, end_date] )
+                except ValueError:
+                    print("Invalid start_date format")
+
+            return queryset
+        except Exception as e:
+            error_traceback = traceback.format_exc()
+            return Response({'error': str(e), 'traceback': error_traceback}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
     def list(self, request, *args, **kwargs):
         try:
             queryset = self.get_queryset()
@@ -992,6 +1268,282 @@ class get_contratacion(ListCreateAPIView):
             accumulated_value = 0
             accumulated_valor = 0
             accumulated_revats = 0
+
+
+            first_initials_order = {
+                'C-PS': 1,
+                'C-S': 2,
+                'C-A': 3,
+                'C-INT': 4,
+                'C-SL': 5,
+                'C-CONS': 6,
+                'C-AR': 7,
+                'C-OP': 8,
+                'C-I': 9,
+                'CT-INT': 10,
+                'C-T': 11,
+                'C-C': 12,
+            }
+
+            second_initials_order = {
+                'AMS': 1,
+                'SGG': 2,
+                'SPO': 3,
+                'SHB': 4,
+                'SIE': 5,
+                'SPD': 6,
+                'SSP': 7,
+            }
+
+            queryset = queryset.annotate(
+                first_order=Case(
+                    *[When(process_num__startswith=key, then=Value(value)) for key, value in first_initials_order.items()],
+                    default=Value(999), output_field=CharField()
+                ),
+                second_order=Case(
+                    *[When(process_num__endswith=key, then=Value(value)) for key, value in second_initials_order.items()],
+                    default=Value(999), output_field=CharField()
+                )
+            )
+
+            queryset = queryset.order_by('first_order', 'second_order', 'process_num')
+
+
+            # Paginate the queryset
+            page = self.paginate_queryset(queryset)
+            if page is not None:
+                # serializer = self.get_serializer(page, many=True)
+                response_data = {
+                    # 'results': serializer.data,
+                    'accumulated_value': str(accumulated_value),  
+                    'accumulated_valor': str(accumulated_valor),  
+                    'accumulated_revats': str(accumulated_revats),  
+                    'deactivate_count': deactivate_count,
+                    'activate_count': activate_count,
+                    'ejecucion_count': ejecucion_count,
+                    'terminado_count': terminado_count,
+                    'liquidado_count': liquidado_count,
+                    'cerrado_count': cerrado_count,
+                    'process_counts': process_counts,
+                    'responsible_secretary_counts': responsible_secretary_counts,
+                    'state_counts': state_counts,
+                    'typology_counts': typology_counts,
+                    'male_count': male_count,
+                    'female_count': female_count
+
+                }
+                return self.get_paginated_response(response_data)
+
+            # serializer = self.get_serializer(queryset, many=True)
+            response_data = {
+                # 'results': serializer.data,
+                'accumulated_value': str(accumulated_value),  
+                'accumulated_valor': str(accumulated_valor),
+                'accumulated_revats': str(accumulated_revats),
+                'deactivate_count': deactivate_count,
+                'activate_count': activate_count,
+                'ejecucion_count': ejecucion_count,
+                'terminado_count': terminado_count,
+                'liquidado_count': liquidado_count,
+                'cerrado_count': cerrado_count,
+                'process_counts': process_counts,
+                'responsible_secretary_counts': responsible_secretary_counts,
+                'state_counts': state_counts,
+                'typology_counts': typology_counts,
+                'male_count': male_count,
+                'female_count': female_count
+            }
+
+            return Response(response_data)
+        except Exception as e:
+            error_traceback = traceback.format_exc()
+            return Response({'error': str(e), 'traceback': error_traceback}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+class get_contratacion_backup(ListCreateAPIView):
+    authentication_classes = [TokenAuthentication]
+    serializer_class = ContratacionMainSerializer
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+        try:
+            # queryset = ContratacionMain.objects.all()
+
+            user = self.request.user
+            # print("qaws", user.is_organisor)
+            if user.is_organisor:
+                queryset = ContratacionMain.objects.all()
+            elif user.is_consult:
+                queryset = ContratacionMain.objects.all()
+            elif user.is_hiring_org:
+                queryset = ContratacionMain.objects.all()
+            elif user.is_hiring and user.username == "43420510":
+                queryset = ContratacionMain.objects.all()
+            elif user.is_hiring:
+                # print("None Org", user.responsible_secretary_id)
+                queryset = ContratacionMain.objects.filter(responsible_secretary_id=user.responsible_secretary_id)
+            else:
+                queryset = None
+
+
+            # Filter based on request parameters
+            state_id = self.request.query_params.get('state_id', None)
+            if state_id:
+                queryset = queryset.filter(state_id=state_id)
+            
+            process_id = self.request.query_params.get('process_id', None)
+            if process_id:
+                queryset = queryset.filter(process_id=process_id)
+
+            process_num = self.request.query_params.get('process_num', None)
+            if process_num:
+                queryset = queryset.filter(process_num__icontains=process_num)
+
+            process_num_year = self.request.query_params.get('process_num_year', None)
+            if process_num_year:
+                # Assuming process_num is a CharField
+                queryset = queryset.filter(process_num__endswith=process_num_year)
+
+            acroyms_of_contract_id = self.request.query_params.get('acroyms_of_contract_id', None)
+            if acroyms_of_contract_id:
+                queryset = queryset.filter(acroyms_of_contract_id=acroyms_of_contract_id)
+            
+            responsible_secretary_id = self.request.query_params.get('responsible_secretary_id', None)
+            if responsible_secretary_id:
+                queryset = queryset.filter(responsible_secretary_id=responsible_secretary_id)
+
+            contractor_identification = self.request.query_params.get('contractor_identification', None)
+            if contractor_identification:
+                queryset = queryset.filter(contractor_identification__icontains=contractor_identification)
+
+            contractor = self.request.query_params.get('contractor', None)
+            if contractor:
+                queryset = queryset.filter(contractor__icontains=contractor)
+
+            contact_no = self.request.query_params.get('contact_no', None)
+            if contact_no:
+                queryset = queryset.filter(contact_no__icontains=contact_no)
+                
+            bool_contact_no = self.request.query_params.get('bool_contact_no', None)
+            if bool_contact_no:
+                # queryset = queryset.filter(contact_no__exact='')
+                queryset = queryset.filter(Q(contact_no__exact='') | Q(contact_no__isnull=True))
+
+            revats = self.request.query_params.get('revats', None)
+            if revats:
+                queryset = queryset.filter(real_executed_value_according_to_settlement__exact='')
+            
+            sex = self.request.query_params.get('sex', None)
+            if sex:
+                queryset = queryset.filter(sex__icontains=sex)
+            
+            addition = self.request.query_params.get('addition', None)
+            if addition:
+                queryset = queryset.filter(addition__icontains=addition)
+
+            bpin_project_code_names = self.request.query_params.getlist('bpin_project_code', None)
+            if bpin_project_code_names:
+                queryset = queryset.filter(bpin_project_code__name__in=bpin_project_code_names)
+
+            typology_id = self.request.query_params.get('typology_id', None)
+            if typology_id:
+                queryset = queryset.filter(typology_id=typology_id)
+
+            # Filter based on start_date parameter
+            start_date = self.request.query_params.get('start_date', None)
+            if start_date:
+                try:
+                    start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+                    queryset = queryset.filter(start_date__gte=start_date)
+                except ValueError:
+                    print("Invalid start_date format")
+
+            # Filter based on finish_date parameter
+            finish_date = self.request.query_params.get('finish_date', None)
+            if finish_date:
+                try:
+                    finish_date = datetime.strptime(finish_date, '%Y-%m-%d').date()
+                    queryset = queryset.filter(finish_date__lt=finish_date)
+                except ValueError:
+                    print("Invalid start_date format")
+
+            # Check if both start_date and end_date are present
+            contract_start_date_str = self.request.query_params.get('contract_start_date_str', None)
+            contract_end_date_str = self.request.query_params.get('contract_end_date_str', None)
+            if contract_start_date_str and contract_end_date_str:
+                try:
+                    print("***********************contract_start_date_str", contract_start_date_str)
+                    print("***********************contract_end_date_str", contract_end_date_str)
+                    start_date = datetime.strptime(contract_start_date_str, '%Y-%m-%d').date()
+                    end_date = datetime.strptime(contract_end_date_str, '%Y-%m-%d').date()
+                    queryset = queryset.filter( contract_date__range=[start_date, end_date] )
+                except ValueError:
+                    print("Invalid start_date format")
+
+            return queryset
+        except Exception as e:
+            error_traceback = traceback.format_exc()
+            return Response({'error': str(e), 'traceback': error_traceback}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+    def list(self, request, *args, **kwargs):
+        try:
+            queryset = self.get_queryset()
+
+            # Count instances where state.name is "EJECUCION"
+            ejecucion_count = queryset.filter(state__name="EJECUCION").count()
+
+            # Count instances where state.name is "TERMINADO"
+            terminado_count = queryset.filter(state__name="TERMINADO").count()
+
+            # Count instances where state.name is "LIQUIDADO"
+            liquidado_count = queryset.filter(state__name="LIQUIDADO").count()
+
+            # Count instances where state.name is "CERRADO"
+            cerrado_count = queryset.filter(state__name="CERRADO").count()
+
+            # Count instances of each processType
+            process_counts = queryset.values('process__name').annotate(process_count=Count('process'))
+
+            # Count instances of each resSecType
+            responsible_secretary_counts = queryset.values('responsible_secretary__name').annotate(responsible_secretary_count=Count('responsible_secretary'))
+
+            # Count instances of each stateType
+            state_counts = queryset.values('state__name').annotate(state_count=Count('state'))
+        
+            # Count instances of each typologyType
+            typology_counts = queryset.values('typology__name').annotate(typology_count=Count('typology'))
+
+            # Count instances where sex is "Masculino"
+            male_count = queryset.filter(sex="Masculino").count()
+
+            # Count instances where sex is "Femenino"
+            female_count = queryset.filter(sex="Femenino").count()
+
+            deactivate_count = queryset.filter(is_active=False).count()
+            activate_count = queryset.filter(is_active=True).count()
+
+
+            # accumulated_value = queryset.aggregate(
+            #     total_accumulated_value=Sum(
+            #         Cast('contract_value_plus', output_field=DecimalField(max_digits=15, decimal_places=2))
+            #     )
+            # )['total_accumulated_value'] or Decimal('0.00')  # Default to 0.00 if no valid values are found
+            
+            # accumulated_valor = queryset.aggregate(
+            #     total_accumulated_value=Sum(
+            #         Cast('worth', output_field=DecimalField(max_digits=15, decimal_places=2))
+            #     )
+            # )['total_accumulated_value'] or Decimal('0.00') 
+
+            accumulated_revats = queryset.aggregate(
+                total_accumulated_value=Sum(
+                    Cast('real_executed_value_according_to_settlement', output_field=DecimalField(max_digits=15, decimal_places=2))
+                )
+            )['total_accumulated_value'] or Decimal('0.00')  # Default to 0.00 if no valid values are found
+
+            accumulated_value = 0
+            accumulated_valor = 0
+            # accumulated_revats = 0
 
 
             first_initials_order = {
