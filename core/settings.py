@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-s2v*ko$0$n&k^dy#t3h0i9i2t^$70l9l28*ez7-tgllzwk-hb0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['147.182.215.149', '127.0.0.1', 'fuscaliaycontraloria.com']
 
@@ -91,10 +91,22 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # }
 
 if DEBUG:
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.sqlite3',
+    #         'NAME': BASE_DIR / 'db.sqlite3',
+    #     }
+    # }
+
+    # LOCAL DATABASE
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'procesosadministrativos', 
+            'USER': 'postgres',
+            'PASSWORD': 'admin',
+            'HOST': 'localhost',
+            'PORT': '5432',
         }
     }
 else:
@@ -148,30 +160,32 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-# if DEBUG:
-#     STATIC_URL = '/static/'
-#     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-#     STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
-#     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+if DEBUG:
+    STATIC_URL = '/static/'
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-#     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-#     MEDIA_URL = '/media/'
-# else:
-AWS_ACCESS_KEY_ID = 'DO00PRT6ALVZRZ9YPQ8K'
-AWS_SECRET_ACCESS_KEY = 'hlzEl2qyXWgINQuvEncA0HRri0gNZLblj+WqVZ8KNqw'
-AWS_STORAGE_BUCKET_NAME = 'three-in-one-space-bucket'
-AWS_S3_ENDPOINT_URL = 'https://sfo3.digitaloceanspaces.com'
-AWS_S3_OBJECT_PARAMETERS = {
-    'CacheControl': 'max-age=86400',
-}
-AWS_LOCATION = 'three-in-one-static'
+    # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+    # MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'three-in-one-static')
+    MEDIA_URL = '/three-in-one-static/'
+else:
+    AWS_ACCESS_KEY_ID = 'DO00PRT6ALVZRZ9YPQ8K'
+    AWS_SECRET_ACCESS_KEY = 'hlzEl2qyXWgINQuvEncA0HRri0gNZLblj+WqVZ8KNqw'
+    AWS_STORAGE_BUCKET_NAME = 'three-in-one-space-bucket'
+    AWS_S3_ENDPOINT_URL = 'https://sfo3.digitaloceanspaces.com'
+    AWS_S3_OBJECT_PARAMETERS = {
+        'CacheControl': 'max-age=86400',
+    }
+    AWS_LOCATION = 'three-in-one-static'
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
-STATIC_URL = 'https://%s/%s/' % (AWS_S3_ENDPOINT_URL, AWS_LOCATION)
-STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, 'static'),
+    ]
+    STATIC_URL = 'https://%s/%s/' % (AWS_S3_ENDPOINT_URL, AWS_LOCATION)
+    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 
 # Default primary key field type
@@ -211,11 +225,14 @@ AUTHENTICATION_BACKENDS = [
 #     'django.core.files.uploadhandler.TemporaryFileUploadHandler',
 # ]
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_USE_SSL = True
-EMAIL_HOST = "smtp.hostinger.com"
-# EMAIL_HOST_USER = "info@licenciasurbanisticas.com"
-EMAIL_HOST_USER = "info@procesosadministrativos.com"
-# EMAIL_HOST_PASSWORD = "Email10.CD"
-EMAIL_HOST_PASSWORD = "Info10.CD"
-EMAIL_PORT = 465
+if DEBUG:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_USE_SSL = True
+    EMAIL_HOST = "smtp.hostinger.com"
+    # EMAIL_HOST_USER = "info@licenciasurbanisticas.com"
+    EMAIL_HOST_USER = "info@procesosadministrativos.com"
+    # EMAIL_HOST_PASSWORD = "Email10.CD"
+    EMAIL_HOST_PASSWORD = "Info10.CD"
+    EMAIL_PORT = 465
