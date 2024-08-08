@@ -9,7 +9,35 @@ admin.site.register(UserProfile, UserProfileAdmin)
 
 
 class UserAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-        ...
+    list_display = [
+        'id',
+        'username',
+        'position',
+        'is_team',
+        'is_pqrs',
+        'is_agent',
+        'is_agent_org',
+        'is_hiring',
+        'is_hiring_org',
+        'is_sisben',
+        'is_consult',
+        'is_ticket_admin',
+        'is_ticket_agent',
+        'is_lawyer'
+    ]
+    list_filter = ['is_team',
+        'is_pqrs',
+        'is_agent',
+        'is_agent_org',
+        'is_hiring',
+        'is_hiring_org',
+        'is_sisben',
+        'is_consult',
+        'is_ticket_admin',
+        'is_ticket_agent',
+        'is_lawyer']
+    search_fields = ['username']
+
 admin.site.register(User, UserAdmin)
 
 
@@ -24,7 +52,12 @@ admin.site.register(Agent, AgentAdmin)
 
 
 class TeamAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-        ...
+    list_display = [
+        'id',
+        'user',
+        'organisation'
+    ]
+
 admin.site.register(Team, TeamAdmin)
 
 

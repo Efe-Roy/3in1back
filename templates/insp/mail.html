@@ -65,15 +65,15 @@
 </head>
 <body>
   <div>
-      <div style="clear:both;">
-          <p class="Header">
-              <span style="height:0pt; display:block; position:absolute; z-index:-65541;">
-                  <!-- <img src="./bg1.png" width="817" height="1057" alt="" style="margin: 0 0 0 auto; display: block; "> -->
-              </span>
-              <img src="media/profile/logo2.jpeg" width="139" height="110" alt="" style="float: right" />
-              <!-- <img src="media/profile/logo1.png" width="139" height="66" alt="" style="float: right" /> -->
-              <!-- <img src="./logo1.png" width="209" height="96" alt="" style="float: right; "> -->
-          </p>
+      <div style="display: flex; align-items: center; justify-content: center;">
+        {% if userDD.signature is not null %}
+              <img src="{{userDD.image.url}}" alt="..." className="" style="height: 55px; width: 80px" />
+          {% endif %}
+        <!-- <img src="{{ image_url }}" width="139" height="66" alt="" style="float: right" alt="Image from URL"> -->
+          <!-- <img 
+            src="https://sfo3.digitaloceanspaces.com/three-in-one-space-bucket/three-in-one-static/profile/logo3.png?AWSAccessKeyId=DO00PRT6ALVZRZ9YPQ8K&Signature=Tiimq3R%2BTtQzvDdHVRUv1ukrdFM%3D&Expires=1708968776" 
+            width="139" height="66" alt="" style="float: right" /> -->
+          <!-- <img src="media/profile/logo1.png" width="139" height="66" alt="" style="float: right" /> -->
       </div>
       <p style="margin-bottom:0pt; text-align:center; line-height:normal; font-size:11.5pt;">
           <strong>

@@ -3,8 +3,9 @@ from .models import (
     ContratacionMain, processType, acroymsType, 
     typologyType, resSecType, StateType, LawFirmModel,
 
-    ValueAdded, BpinProjectCode, ValueAffectedBpinProjCDP,
-    BudgetItems, ArticleName, ItemValue, Notification
+    ValueAdded, BpinProjectCode, BpinProjName, ValueAffectedBpinProjCDP,
+    BudgetItems, ArticleName, ItemValue, Notification, SourceOfResources,
+    ServiceSegment
 )
 
 
@@ -41,14 +42,29 @@ class ValueAddedSerializer(serializers.ModelSerializer):
         model = ValueAdded
         fields = ('name',)
 
+class ServiceSegmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ServiceSegment
+        fields = ('name',)
+
 class BpinProjectCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = BpinProjectCode
         fields = ('name',)
 
+class BpinProjNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BpinProjName
+        fields = ('name',)
+
 class ValueAffectedBpinProjCDPSerializer(serializers.ModelSerializer):
     class Meta:
         model = ValueAffectedBpinProjCDP
+        fields = ('name',)
+
+class SourceOfResourcesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SourceOfResources
         fields = ('name',)
 
 class BudgetItemsSerializer(serializers.ModelSerializer):
@@ -82,8 +98,11 @@ class PlanContratacionMainSerializer(serializers.ModelSerializer):
 
 class AllContratacionMainSerializer(serializers.ModelSerializer):
     value_added = ValueAddedSerializer(many=True)
+    service_segment = ServiceSegmentSerializer(many=True)
     bpin_project_code = BpinProjectCodeSerializer(many=True)
+    bpin_proj_name = BpinProjNameSerializer(many=True)
     value_affected_bpin_proj_cdp = ValueAffectedBpinProjCDPSerializer(many=True)
+    source_of_resources = SourceOfResourcesSerializer(many=True)
     budget_items = BudgetItemsSerializer(many=True)
     article_name = ArticleNameSerializer(many=True)
     item_value = ItemValueSerializer(many=True)
@@ -95,18 +114,22 @@ class AllContratacionMainSerializer(serializers.ModelSerializer):
           'contractor', 'contractor_identification', 'verification_digit', 
           'birthday_date', 'blood_type', 'sex', 'object', 'worth', 'duration',
           'contract_date', 'start_date', 'finish_date', 'advance', 'report_secop_begins',
-          'secop_contract_report', 'report_honest_antioquia', 'report_institute_web',
+          'secop_contract_report', 'report_institute_web', 'bpin_proj_name',
           'sia_observe_report', 'act_liquidation', 'settlement_report', 'close_record', 'report_date',
-          'addition', 'url_1', 'url_2', 'value_added', 'extra_time', 'bpin_project_code', 
-          'value_affected_bpin_proj_cdp','budget_items', 'article_name', 'item_value', 'state', 
+          'addition', 'url_1', 'url_2', 'value_added', 'service_segment', 'extra_time', 'expense_type', 'bpin_project_code', 
+          'value_affected_bpin_proj_cdp','source_of_resources', 'budget_items', 'article_name', 'item_value', 'state', 
           'responsible_secretary', 'name_supervisor_or_controller', 'observations', 'contract_value_plus',
-          'real_executed_value_according_to_settlement', 'file_status'
+          'real_executed_value_according_to_settlement', 'file_status', 'program'
+        #   , 'report_honest_antioquia'
         )
 
     def create(self, validated_data):
         value_added_datas = validated_data.pop('value_added')
+        service_segment_datas = validated_data.pop('service_segment')
         bpin_project_code_datas = validated_data.pop('bpin_project_code')
+        bpin_proj_name_datas = validated_data.pop('bpin_proj_name')
         value_affected_bpin_proj_cdp_datas = validated_data.pop('value_affected_bpin_proj_cdp')
+        source_of_resources_datas = validated_data.pop('source_of_resources')
         budget_items_datas = validated_data.pop('budget_items')
         article_name_datas = validated_data.pop('article_name')
         item_value_datas = validated_data.pop('item_value')
@@ -117,13 +140,25 @@ class AllContratacionMainSerializer(serializers.ModelSerializer):
             resData = ValueAdded.objects.create(**value_added_data)
             contratacion.value_added.add(resData)
 
+        for service_segment_data in service_segment_datas:
+            resData = ServiceSegment.objects.create(**service_segment_data)
+            contratacion.service_segment.add(resData)
+
         for bpin_project_code_data in bpin_project_code_datas:
             resData = BpinProjectCode.objects.create(**bpin_project_code_data)
             contratacion.bpin_project_code.add(resData)
 
+        for bpin_proj_name_data in bpin_proj_name_datas:
+            resData = BpinProjName.objects.create(**bpin_proj_name_data)
+            contratacion.bpin_proj_name.add(resData)
+
         for value_affected_bpin_proj_cdp_data in value_affected_bpin_proj_cdp_datas:
             resData = ValueAffectedBpinProjCDP.objects.create(**value_affected_bpin_proj_cdp_data)
             contratacion.value_affected_bpin_proj_cdp.add(resData)
+
+        for source_of_resources_data in source_of_resources_datas:
+            resData = SourceOfResources.objects.create(**source_of_resources_data)
+            contratacion.source_of_resources.add(resData)
 
         for budget_items_data in budget_items_datas:
             resData = BudgetItems.objects.create(**budget_items_data)
@@ -159,9 +194,10 @@ class AllContratacionMainSerializer(serializers.ModelSerializer):
         instance.start_date = validated_data.get('start_date', instance.start_date)
         instance.finish_date = validated_data.get('finish_date', instance.finish_date)
         instance.advance = validated_data.get('advance', instance.advance)
+        instance.program = validated_data.get('program', instance.program)
         instance.report_secop_begins = validated_data.get('report_secop_begins', instance.report_secop_begins)
         instance.secop_contract_report = validated_data.get('secop_contract_report', instance.secop_contract_report)
-        instance.report_honest_antioquia = validated_data.get('report_honest_antioquia', instance.report_honest_antioquia)
+        # instance.report_honest_antioquia = validated_data.get('report_honest_antioquia', instance.report_honest_antioquia)
         instance.report_institute_web = validated_data.get('report_institute_web', instance.report_institute_web)
         instance.sia_observe_report = validated_data.get('sia_observe_report', instance.sia_observe_report)
         instance.act_liquidation = validated_data.get('act_liquidation', instance.act_liquidation)
@@ -172,6 +208,8 @@ class AllContratacionMainSerializer(serializers.ModelSerializer):
         instance.url_1 = validated_data.get('url_1', instance.url_1)
         instance.url_2 = validated_data.get('url_2', instance.url_2)
         instance.extra_time = validated_data.get('extra_time', instance.extra_time)
+        instance.expense_type = validated_data.get('expense_type', instance.expense_type)
+        # instance.bpin_proj_name = validated_data.get('bpin_proj_name', instance.bpin_proj_name)
         instance.state = validated_data.get('state', instance.state)
         instance.responsible_secretary = validated_data.get('responsible_secretary', instance.responsible_secretary)
         instance.name_supervisor_or_controller = validated_data.get('name_supervisor_or_controller', instance.name_supervisor_or_controller)
@@ -189,6 +227,13 @@ class AllContratacionMainSerializer(serializers.ModelSerializer):
             value_added_instance = ValueAdded.objects.create(**item_data)
             instance.value_added.add(value_added_instance)  # Add the newly created related object
 
+        # Update the service_segment field (Many-to-many)
+        service_segment_data = validated_data.get('service_segment', [])
+        instance.service_segment.clear()  # Remove existing related objects
+        for item_data in service_segment_data:
+            service_segment_instance = ServiceSegment.objects.create(**item_data)
+            instance.service_segment.add(service_segment_instance)  # Add the newly created related object
+
         # Update the bpin_project_code field (Many-to-many)
         bpin_project_code_data = validated_data.get('bpin_project_code', [])
         instance.bpin_project_code.clear()  # Remove existing related objects
@@ -196,12 +241,26 @@ class AllContratacionMainSerializer(serializers.ModelSerializer):
             bpin_project_code_instance = BpinProjectCode.objects.create(**item_data)
             instance.bpin_project_code.add(bpin_project_code_instance)
 
+        # Update the bpin_proj_name field (Many-to-many)
+        bpin_proj_name_data = validated_data.get('bpin_proj_name', [])
+        instance.bpin_proj_name.clear()  # Remove existing related objects
+        for item_data in bpin_proj_name_data:
+            bpin_proj_name_instance = BpinProjName.objects.create(**item_data)
+            instance.bpin_proj_name.add(bpin_proj_name_instance)
+
         # Update the value_affected_bpin_proj_cdp field (Many-to-many)
         value_affected_bpin_proj_cdp_data = validated_data.get('value_affected_bpin_proj_cdp', [])
         instance.value_affected_bpin_proj_cdp.clear()
         for item_data in value_affected_bpin_proj_cdp_data:
             value_affected_bpin_proj_cdp_instance = ValueAffectedBpinProjCDP.objects.create(**item_data)
             instance.value_affected_bpin_proj_cdp.add(value_affected_bpin_proj_cdp_instance)
+      
+        # Update the source_of_resources field (Many-to-many)
+        source_of_resources_data = validated_data.get('source_of_resources', [])
+        instance.source_of_resources.clear()
+        for item_data in source_of_resources_data:
+            source_of_resources_instance = SourceOfResources.objects.create(**item_data)
+            instance.source_of_resources.add(source_of_resources_instance)
       
         # Update the budget_items field (Many-to-many)
         budget_items_data = validated_data.get('budget_items', [])
@@ -236,8 +295,11 @@ class ContratacionMainSerializer(serializers.ModelSerializer):
     state = serializers.SerializerMethodField()
 
     value_added = ValueAddedSerializer(many=True)
+    service_segment = ServiceSegmentSerializer(many=True)
     bpin_project_code = BpinProjectCodeSerializer(many=True)
+    bpin_proj_name = BpinProjNameSerializer(many=True)
     value_affected_bpin_proj_cdp = ValueAffectedBpinProjCDPSerializer(many=True)
+    source_of_resources = SourceOfResourcesSerializer(many=True)
     budget_items = BudgetItemsSerializer(many=True)
     article_name = ArticleNameSerializer(many=True)
     item_value = ItemValueSerializer(many=True)
@@ -249,12 +311,13 @@ class ContratacionMainSerializer(serializers.ModelSerializer):
           'contractor', 'contractor_identification', 'verification_digit', 
           'birthday_date', 'blood_type', 'sex', 'object', 'worth', 'duration',
           'contract_date', 'start_date', 'finish_date', 'advance', 'report_secop_begins',
-          'secop_contract_report', 'report_honest_antioquia', 'report_institute_web',
-          'sia_observe_report', 'act_liquidation', 'settlement_report', 'close_record', 'report_date',
-          'addition', 'url_1', 'url_2', 'value_added', 'extra_time', 'bpin_project_code', 'value_affected_bpin_proj_cdp',
+          'secop_contract_report', 'report_institute_web', 'bpin_proj_name',
+          'sia_observe_report', 'act_liquidation', 'settlement_report', 'close_record', 'report_date', 'source_of_resources',
+          'addition', 'url_1', 'url_2', 'value_added', 'service_segment', 'extra_time', 'expense_type', 'bpin_project_code', 'value_affected_bpin_proj_cdp',
           'budget_items', 'article_name', 'item_value', 'state', 'responsible_secretary',
           'name_supervisor_or_controller', 'observations', 'contract_value_plus',
-          'real_executed_value_according_to_settlement', 'file_status'
+          'real_executed_value_according_to_settlement', 'file_status', 'program'
+        #   , 'report_honest_antioquia'
         )
 
     def get_process(self, obj):

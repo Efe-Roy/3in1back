@@ -7,8 +7,14 @@
   </head>
   <body>
     <div className='p-5'>
+        {% if userDD.signature is not null %}
+            <img src="{{userDD.image.url}}" alt="..." className="" style="height: 55px; width: 80px" />
+        {% endif %}
+        <!-- <img src="{{ image_url }}" width="139" height="66" alt="" style="float: right" alt="Image from URL"> -->
+        <!-- <img 
+            src="https://sfo3.digitaloceanspaces.com/three-in-one-space-bucket/three-in-one-static/profile/logo3.png?AWSAccessKeyId=DO00PRT6ALVZRZ9YPQ8K&Signature=Tiimq3R%2BTtQzvDdHVRUv1ukrdFM%3D&Expires=1708968776" 
+            width="139" height="66" alt="" style="float: right" /> -->
         <!-- <img src="{{baseUrl}}/media/profile/logo1.png" width="139" height="66" alt="" style="float: right" /> -->
-        <img src="media/profile/logo2.jpeg" width="139" height="110" alt="" style="float: right" />
         <p><strong>DILIGENCIA DE NOTIFICACIÓN AUTO No. {{carNum}} DEL {{ current_date_colombia|date:"d/m/Y"}}</strong></p>
         <p>&nbsp;</p>
         <p>&nbsp;</p>

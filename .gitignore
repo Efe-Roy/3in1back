@@ -131,6 +131,8 @@ ENV/
 env.bak/
 venv.bak/
 
+three-in-one-static/
+
 # Spyder project settings
 .spyderproject
 .spyproject

@@ -4,7 +4,7 @@ from Auth.models import UserProfile, Agent, Team, User
 # Create your models here.
 
 class PqrsMain(models.Model):
-    date_of_entry = models.DateField()
+    date_of_entry = models.DateField(null=True, blank=True)
     # sender = models.ForeignKey(User, on_delete=models.CASCADE)
     sender = models.CharField(max_length=300, null=True, blank=True)
     entity_or_position = models.ForeignKey("EntityType", null=True, blank=True, on_delete=models.SET_NULL)
@@ -22,6 +22,7 @@ class PqrsMain(models.Model):
     file_res = models.CharField(max_length=300, null=True, blank=True)
     comment = models.TextField(null=True, blank=True)
     pdf = models.FileField(null=True, blank=True, upload_to='pdfs/pqrs/')
+    pdf_res = models.FileField(null=True, blank=True, upload_to='pdf/pqrs_res/')
     
 
 class FileResNum(models.Model):

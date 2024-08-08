@@ -19,3 +19,22 @@ class PreviousStudyModel(models.Model):
         return f'{self.process} - {self.data_receive_mail}'
 
 
+class OperationModel(models.Model):
+    corporate_name = models.CharField(max_length=2300, null=True, blank=True)
+    headquarter = models.CharField(max_length=2300, null=True, blank=True)
+    area_of_operation = models.CharField(max_length=2300, null=True, blank=True)
+    
+    v_class = models.CharField(max_length=2300, null=True, blank=True)
+    v_make = models.CharField(max_length=2300, null=True, blank=True)
+    v_model = models.CharField(max_length=2300, null=True, blank=True)
+    v_license_plate = models.CharField(max_length=2300, null=True, blank=True)
+    v_cylinder_capacity = models.CharField(max_length=2300, null=True, blank=True)
+    v_fuel_type = models.CharField(max_length=2300, null=True, blank=True)
+    
+    service_level = models.CharField(max_length=2300, null=True, blank=True)
+    expiration_date = models.CharField(max_length=2300, null=True, blank=True)
+    consecutive_numbering = models.CharField(max_length=2300, null=True, blank=True)
+    
+    authorize_signature = models.BooleanField(default=False)
+    authorize_user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    
