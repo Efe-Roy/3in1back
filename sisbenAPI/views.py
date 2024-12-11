@@ -14,13 +14,13 @@ from rest_framework.status import (
 )
 from django.http import Http404
 from rest_framework.views import APIView
-from twilio.rest import Client
+# from twilio.rest import Client
 from django.conf import settings
 from django.template.loader import render_to_string
 from multiprocessing import Pool
 from multiprocessing import cpu_count
 import time
-from twilio.base.exceptions import TwilioRestException
+# from twilio.base.exceptions import TwilioRestException
 from django.http import HttpResponse
 from django.db.models import Count
 
@@ -127,28 +127,28 @@ def delete_data(request):
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class SendWhatsAppMessage(APIView):
-    def post(self, request):
-        recipient_phone_number = request.POST.get('recipient_phone_number')
+# class SendWhatsAppMessage(APIView):
+#     def post(self, request):
+#         recipient_phone_number = request.POST.get('recipient_phone_number')
 
-        dynamic_data = {
-            'recipient_name': 'John Doe',
-            'appointment_date': '2023-10-10',
-            'appointment_time': '15:00',
-        }
-        message_body = render_to_string('twilo/whatsapp.txt', dynamic_data)
-        client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
+#         dynamic_data = {
+#             'recipient_name': 'John Doe',
+#             'appointment_date': '2023-10-10',
+#             'appointment_time': '15:00',
+#         }
+#         message_body = render_to_string('twilo/whatsapp.txt', dynamic_data)
+#         client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
 
-        try:
-            message = client.messages.create(
-                body=message_body,
-                from_=settings.TWILIO_WHATSAPP_NUMBER,
-                to=f"whatsapp:{recipient_phone_number}"
-            )
-            print(message.sid)
-            return Response({'message': 'WhatsApp message sent successfully'})
-        except Exception as e:
-            return Response({'message': str(e)}, status=500)
+#         try:
+#             message = client.messages.create(
+#                 body=message_body,
+#                 from_=settings.TWILIO_WHATSAPP_NUMBER,
+#                 to=f"whatsapp:{recipient_phone_number}"
+#             )
+#             print(message.sid)
+#             return Response({'message': 'WhatsApp message sent successfully'})
+#         except Exception as e:
+#             return Response({'message': str(e)}, status=500)
            
 # http://your-django-server/api_endpoint/
 # class SendBulkWhatsAppMessages(APIView):
@@ -290,84 +290,84 @@ class SendWhatsAppMessage(APIView):
 #         return success_count, failure_count
     
 
-class SendBulkWhatsAppMessages(APIView):
-    def post(self, request):
-        try:
-            sisben_records = SisbenMain.objects.all()
-            success_count, failure_count = self.send_bulk_whatsapp_messages(sisben_records)
+# class SendBulkWhatsAppMessages(APIView):
+#     def post(self, request):
+#         try:
+#             sisben_records = SisbenMain.objects.all()
+#             success_count, failure_count = self.send_bulk_whatsapp_messages(sisben_records)
 
-            return Response({
-                'success_count': success_count,
-                'failure_count': failure_count,
-            })
-        except Exception as e:
-            return Response({'message': str(e)}, status=500)
+#             return Response({
+#                 'success_count': success_count,
+#                 'failure_count': failure_count,
+#             })
+#         except Exception as e:
+#             return Response({'message': str(e)}, status=500)
 
-    def send_whatsapp_message(self, sisben_record, message_body):
-        try:
-            client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
-            to_number = f"whatsapp:+57{sisben_record.cell_phone}"
+#     def send_whatsapp_message(self, sisben_record, message_body):
+#         try:
+#             client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
+#             to_number = f"whatsapp:+57{sisben_record.cell_phone}"
             
-            message = client.messages.create(
-                body=message_body,
-                from_=settings.TWILIO_WHATSAPP_NUMBER,
-                to=to_number
-            )
+#             message = client.messages.create(
+#                 body=message_body,
+#                 from_=settings.TWILIO_WHATSAPP_NUMBER,
+#                 to=to_number
+#             )
             
-            print(f"Message sent to {to_number}. SID: {message.sid}")
-            return True
-        except TwilioRestException as e:
-            if e.code == 429:  # Twilio's rate limit exceeded (HTTP 429 Too Many Requests)
-                # Implement exponential backoff with retries
-                max_retries = 5
-                retry_delay = 1  # seconds
-                for retry_count in range(max_retries):
-                    print(f"Rate limit exceeded. Retrying in {retry_delay} seconds (Retry {retry_count + 1}/{max_retries})...")
-                    time.sleep(retry_delay)
-                    try:
-                        # Retry sending the message
-                        message = client.messages.create(
-                            body=message_body,
-                            from_=settings.TWILIO_WHATSAPP_NUMBER,
-                            to=to_number
-                        )
-                        print(f"Message sent to {to_number}. SID: {message.sid}")
-                        return True
-                    except TwilioRestException as e:
-                        if e.code != 429:
-                            print(f"Failed to send message to {to_number}: {str(e)}")
-                print(f"Max retry attempts reached. Failed to send message to {to_number}.")
-            else:
-                print(f"Failed to send message to {to_number}: {str(e)}")
-        except Exception as e:
-            print(f"Failed to send message to {to_number}: {str(e)}")
+#             print(f"Message sent to {to_number}. SID: {message.sid}")
+#             return True
+#         except TwilioRestException as e:
+#             if e.code == 429:  # Twilio's rate limit exceeded (HTTP 429 Too Many Requests)
+#                 # Implement exponential backoff with retries
+#                 max_retries = 5
+#                 retry_delay = 1  # seconds
+#                 for retry_count in range(max_retries):
+#                     print(f"Rate limit exceeded. Retrying in {retry_delay} seconds (Retry {retry_count + 1}/{max_retries})...")
+#                     time.sleep(retry_delay)
+#                     try:
+#                         # Retry sending the message
+#                         message = client.messages.create(
+#                             body=message_body,
+#                             from_=settings.TWILIO_WHATSAPP_NUMBER,
+#                             to=to_number
+#                         )
+#                         print(f"Message sent to {to_number}. SID: {message.sid}")
+#                         return True
+#                     except TwilioRestException as e:
+#                         if e.code != 429:
+#                             print(f"Failed to send message to {to_number}: {str(e)}")
+#                 print(f"Max retry attempts reached. Failed to send message to {to_number}.")
+#             else:
+#                 print(f"Failed to send message to {to_number}: {str(e)}")
+#         except Exception as e:
+#             print(f"Failed to send message to {to_number}: {str(e)}")
     
-        return False
+#         return False
 
-    def send_bulk_whatsapp_messages(self, sisben_records):
-        message_body = render_to_string('twilo/whatsapp2.txt')
+#     def send_bulk_whatsapp_messages(self, sisben_records):
+#         message_body = render_to_string('twilo/whatsapp2.txt')
 
-        success_count = 0
-        failure_count = 0
+#         success_count = 0
+#         failure_count = 0
 
-        for sisben_record in sisben_records:
-            if self.send_whatsapp_message(sisben_record, message_body):
-                success_count += 1
-            else:
-                failure_count += 1
+#         for sisben_record in sisben_records:
+#             if self.send_whatsapp_message(sisben_record, message_body):
+#                 success_count += 1
+#             else:
+#                 failure_count += 1
 
-        return success_count, failure_count
+#         return success_count, failure_count
 
-def broadcast_sms(request):
-    message_to_broadcast = ("How are you")
-    client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
-    for recipient in settings.SMS_BROADCAST_TO_NUMBERS:
-        print(recipient)
-        if recipient:
-            client.messages.create(to=recipient,
-                                   from_=settings.TWILIO_NUMBER,
-                                   body=message_to_broadcast)
-    return HttpResponse("messages sent!" + message_to_broadcast, 200)
+# def broadcast_sms(request):
+#     message_to_broadcast = ("How are you")
+#     client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
+#     for recipient in settings.SMS_BROADCAST_TO_NUMBERS:
+#         print(recipient)
+#         if recipient:
+#             client.messages.create(to=recipient,
+#                                    from_=settings.TWILIO_NUMBER,
+#                                    body=message_to_broadcast)
+#     return HttpResponse("messages sent!" + message_to_broadcast, 200)
 
 
 # def broadcast_sms(request):

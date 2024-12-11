@@ -1583,7 +1583,7 @@ class FilterDataView(APIView):
             'current_date': current_date,
             'month_in_spanish': month_in_spanish,
             'agent': agent,
-            'userOrg': userOrg,
+            'userOrg': userOrg
         }
         html2 = template2.render(context2)
 
